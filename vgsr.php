@@ -184,10 +184,10 @@ final class VGSR {
 		/** Paths *************************************************************/
 
 		// Setup some base path and URL information
-		$this->file       = __FILE__;
-		$this->basename   = apply_filters( 'vgsr_plugin_basenname', plugin_basename( $this->file ) );
-		$this->plugin_dir = apply_filters( 'vgsr_plugin_dir_path',  plugin_dir_path( $this->file ) );
-		$this->plugin_url = apply_filters( 'vgsr_plugin_dir_url',   plugin_dir_url ( $this->file ) );
+		$this->file         = __FILE__;
+		$this->basename     = apply_filters( 'vgsr_plugin_basenname', plugin_basename( $this->file ) );
+		$this->plugin_dir   = apply_filters( 'vgsr_plugin_dir_path',  plugin_dir_path( $this->file ) );
+		$this->plugin_url   = apply_filters( 'vgsr_plugin_dir_url',   plugin_dir_url ( $this->file ) );
 
 		// Includes
 		$this->includes_dir = apply_filters( 'vgsr_includes_dir', trailingslashit( $this->plugin_dir . 'includes'  ) );
@@ -200,21 +200,16 @@ final class VGSR {
 		$this->themes_dir   = apply_filters( 'vgsr_themes_dir',   trailingslashit( $this->plugin_dir . 'templates' ) );
 		$this->themes_url   = apply_filters( 'vgsr_themes_url',   trailingslashit( $this->plugin_url . 'templates' ) );
 
-		/** Theme Compat ******************************************************/
-
-		$this->theme_compat   = new stdClass(); // Base theme compatibility class
-		$this->filters        = new stdClass(); // Used when adding/removing filters
-
 		/** Users *************************************************************/
 
-		$this->current_user   = new WP_User(); // Currently logged in user
-		$this->displayed_user = new WP_User(); // Currently displayed user
+		$this->current_user = new WP_User(); // Currently logged in user
+		$this->vsgr_user    = new WP_User(); // Currently displayed user
 
 		/** Misc **************************************************************/
 
-		$this->domain         = 'vgsr';      // Unique identifier for retrieving translated strings
-		$this->extend         = new stdClass(); // Plugins add data here
-		$this->errors         = new WP_Error(); // Feedback
+		$this->domain       = 'vgsr';         // Unique identifier for retrieving translated strings
+		$this->extend       = new stdClass(); // Plugins add data here
+		$this->errors       = new WP_Error(); // Feedback
 	}
 
 	/**
@@ -230,11 +225,11 @@ final class VGSR {
 		/** Core **************************************************************/
 
 		// require( $this->includes_dir . 'core/sub-actions.php'        );
-		// require( $this->includes_dir . 'core/functions.php'          );
+		require( $this->includes_dir . 'core/functions.php'          );
 		// require( $this->includes_dir . 'core/cache.php'              );
-		// require( $this->includes_dir . 'core/options.php'            );
+		require( $this->includes_dir . 'core/options.php'            );
 		// require( $this->includes_dir . 'core/capabilities.php'       );
-		// require( $this->includes_dir . 'core/update.php'             );
+		require( $this->includes_dir . 'core/update.php'             );
 		// require( $this->includes_dir . 'core/template-functions.php' );
 		// require( $this->includes_dir . 'core/template-loader.php'    );
 		// require( $this->includes_dir . 'core/theme-compat.php'       );
@@ -252,21 +247,21 @@ final class VGSR {
 
 		// Users
 		// require( $this->includes_dir . 'users/capabilities.php'   );
-		// require( $this->includes_dir . 'users/functions.php'      );
+		require( $this->includes_dir . 'users/functions.php'      );
 		// require( $this->includes_dir . 'users/template.php'       );
 		// require( $this->includes_dir . 'users/options.php'        );
 
 		/** Hooks *************************************************************/
 
-		// require( $this->includes_dir . 'core/extend.php'  );
-		// require( $this->includes_dir . 'core/actions.php' );
+		require( $this->includes_dir . 'core/extend.php'  );
+		require( $this->includes_dir . 'core/actions.php' );
 		// require( $this->includes_dir . 'core/filters.php' );
 
 		/** Admin *************************************************************/
 
 		// Quick admin check and load if needed
 		if ( is_admin() ) {
-			// require( $this->includes_dir . 'admin/admin.php'   );
+			require( $this->includes_dir . 'admin/admin.php'   );
 			// require( $this->includes_dir . 'admin/actions.php' );
 		}
 	}
