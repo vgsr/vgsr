@@ -8,14 +8,15 @@
  */
 
 /**
- * Plugin Name: VGSR
- * Description: VGSR is designed, used and maintained for vgsr.nl
- * Plugin URI:  https://github.com/vgsr/vgsr
- * Author:      Laurens Offereins
- * Author URI:  https://github.com/lmoffereins
- * Version:     0.1
- * Text Domain: vgsr
- * Domain Path: /languages/
+ * Plugin Name:       VGSR
+ * Description:       A plugin to fill in the blanks for vgsr.nl
+ * Plugin URI:        https://github.com/vgsr/vgsr
+ * Author:            Laurens Offereins
+ * Author URI:        https://github.com/lmoffereins
+ * Version:           0.1
+ * Text Domain:       vgsr
+ * Domain Path:       /languages/
+ * GitHub Plugin URI: vgsr/vgsr
  */
 
 // Exit if accessed directly
