@@ -15,12 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Add settings section for Groupz options
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @param array $sections VGSR settings sections
  * @return array $sections
  */
-function vgsr_groupz_settings_section( $sections = array() ) {
+function vgsr_groupz_settings_sections( $sections = array() ) {
 	$sections['vgsr_settings_groupz'] = array(
 		'title'    => __('Groupz Settings', 'vgsr'),
 		'callback' => 'vgsr_groupz_setting_callback_groupz_section',
@@ -33,7 +33,7 @@ function vgsr_groupz_settings_section( $sections = array() ) {
 /**
  * Add settings fields for Groupz options
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @param array $fields VGSR settings fields
  * @return array $fields
@@ -72,7 +72,7 @@ function vgsr_groupz_settings_fields( $fields = array() ) {
 /**
  * Groupz settings section description for the settings page
  *
- * @since 1.0.0
+ * @since 0.0.1
  */
 function vgsr_groupz_setting_callback_groupz_section() {
 ?>
@@ -85,7 +85,7 @@ function vgsr_groupz_setting_callback_groupz_section() {
 /**
  * Main group settings field
  * 
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses get_groups()
  * @uses vgsr_get_group_vgsr_id()
@@ -110,7 +110,7 @@ function vgsr_groupz_setting_callback_group_vgsr() {
 /**
  * Leden group settings field
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses get_groups()
  * @uses vgsr_get_group_leden_id()
@@ -135,7 +135,7 @@ function vgsr_groupz_setting_callback_group_leden() {
 /**
  * Oud-leden group settings field
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @uses get_groups()
  * @uses vgsr_get_group_oudleden_id()

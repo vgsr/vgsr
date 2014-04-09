@@ -14,7 +14,7 @@ if ( ! class_exists( 'VGSR_Groupz' ) ) :
 /**
  * Loads Groupz Extension
  *
- * @since 1.0.0
+ * @since 0.0.1
  */
 class VGSR_Groupz {
 
@@ -23,7 +23,7 @@ class VGSR_Groupz {
 	/**
 	 * The main VGSR Groupz loader
 	 * 
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	public function __construct() {
 		$this->setup_globals();
@@ -34,7 +34,7 @@ class VGSR_Groupz {
 	/**
 	 * Define default class globals
 	 * 
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
@@ -45,22 +45,23 @@ class VGSR_Groupz {
 	/**
 	 * Include the required files
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	private function includes() {
-		require( $this->includes_dir . 'functions.php' );
+		require( $this->includes_dir . 'settings.php' );
 	}
 
 	/**
 	 * Setup default actions and filters
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	private function setup_actions() {
 
 		// Hook settings
-		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_groupz_settings_section' );
-		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_groupz_settings_fields'  );
+		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_groupz_settings_sections'        );
+		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_groupz_settings_fields'          );
+		add_filter( 'vgsr_map_settings_meta_caps',      array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Group IDs
 		add_filter( 'vgsr_get_group_vgsr_id',     array( $this, 'get_group_vgsr'     ) );
@@ -71,12 +72,37 @@ class VGSR_Groupz {
 		add_filter( 'vgsr_user_in_group', 'groupz_user_in_group', 10, 2 );
 	}
 
+	/** Capabilities *******************************************************/
+
+	/**
+	 * Map VGSR Groupz settings capabilities
+	 *
+	 * @since 0.0.1
+	 * 
+	 * @param  array   $caps    Required capabilities
+	 * @param  string  $cap     Requested capability
+	 * @param  integer $user_id User ID
+	 * @param  array   $args    Additional arguments
+	 * @return array Required capabilities
+	 */
+	public function map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
+
+		switch ( $cap ) {
+
+			case 'vgsr_settings_groupz' :
+				$caps = array( vgsr()->admin->minimum_capability );
+				break;
+		}
+
+		return $caps;
+	}
+
 	/** Methods ************************************************************/
 
 	/**
 	 * Return the vgsr group ID
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses get_option()
 	 * @return int VGSR group ID
@@ -88,7 +114,7 @@ class VGSR_Groupz {
 	/**
 	 * Return the leden group ID
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses get_option()
 	 * @return int Leden group ID
@@ -100,7 +126,7 @@ class VGSR_Groupz {
 	/**
 	 * Return the oud-leden group ID
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses get_option()
 	 * @return int Oud-leden group ID

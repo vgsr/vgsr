@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Loads the bbPress component
  * 
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @return If bbPress is not active
  */
@@ -35,7 +35,7 @@ function vgsr_setup_bbpress() {
 /**
  * Loads the BuddyPress component
  * 
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @return If BuddyPress is not active
  */
@@ -49,13 +49,13 @@ function vgsr_setup_buddypress() {
 	require( vgsr()->includes_dir . 'extend/buddypress/buddypress.php' );
 
 	// Instantiate BuddyPress for VGSR
-	vgsr()->extend->bp = new VGSR_BudddyPress;
+	vgsr()->extend->bp = new VGSR_BuddyPress;
 }
 
 /**
  * Loads the Groupz component
  * 
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @return If Groupz is not active
  */

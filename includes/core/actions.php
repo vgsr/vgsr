@@ -1,57 +1,78 @@
 <?php
 
 /**
- * VGSR Actions
+ * Fiscaat Actions
  *
- * @package VGSR
+ * @package Fiscaat
  * @subpackage Core
+ *
+ * This file contains the actions that are used through-out Fiscaat. They are
+ * consolidated here to make searching for them easier, and to help developers
+ * understand at a glance the order in which things occur.
+ *
+ * There are a few common places that additional actions can currently be found
+ *
+ *  - Fiscaat: In {@link Fiscaat::setup_actions()} in fiscaat.php
+ *  - Admin: More in {@link Fiscaat_Admin::setup_actions()} in admin.php
+ *
+ * @see /core/filters.php
  */
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-/** Main Actions **********************************************************/
-
-// Extensions
-add_action( 'init', 'vgsr_setup_bbpress' );
-add_action( 'init', 'vgsr_setup_groupz'  );
-
-if ( is_admin() ) {
-	add_action ( 'init', 'vgsr_admin' );
-}
-
-/** Activation Actions ****************************************************/
+/**
+ * Attach Fiscaat to WordPress
+ *
+ * Fiscaat uses its own internal actions to help aid in third-party plugin
+ * development, and to limit the amount of potential future code changes when
+ * updates to WordPress core occur.
+ *
+ * These actions exist to create the concept of 'plugin dependencies'. They
+ * provide a safe way for plugins to execute code *only* when Fiscaat is
+ * installed and activated, without needing to do complicated guesswork.
+ *
+ * For more information on how this works, see the 'Plugin Dependency' section
+ * near the bottom of this file.
+ *
+ *           v--WordPress Actions        v--Fiscaat Sub-actions
+ */
+add_action( 'plugins_loaded',           'vgsr_loaded',                   10    );
+add_action( 'init',                     'vgsr_init',                     0     ); // Early for vgsr_register
+add_action( 'parse_query',              'vgsr_parse_query',              2     ); // Early for overrides
+add_action( 'profile_update',           'vgsr_profile_update',           10, 2 ); // user_id and old_user_data
 
 /**
- * Runs on VGSR activation
+ * vgsr_loaded - Attached to 'plugins_loaded' above
  *
- * @since 1.0.0
- * 
- * @uses do_action() Calls 'vgsr_activation' hook
+ * Attach various loader actions to the vgsr_loaded action.
+ * The load order helps to execute code at the correct time.
+ *                                                    v---Load order
  */
-function vgsr_activation() {
-	do_action( 'vgsr_activation' );
-}
+add_action( 'vgsr_loaded', 'vgsr_constants',          2  );
+add_action( 'vgsr_loaded', 'vgsr_boot_strap_globals', 4  );
+add_action( 'vgsr_loaded', 'vgsr_includes',           6  );
+add_action( 'vgsr_loaded', 'vgsr_setup_globals',      8  );
 
 /**
- * Runs on VGSR deactivation
+ * vgsr_init - Attached to 'init' above
  *
- * @since 1.0.0
- * 
- * @uses do_action() Calls 'vgsr_deactivation' hook
+ * Attach various initialization actions to the init action.
+ * The load order helps to execute code at the correct time.
+ *                                                 v---Load order
  */
-function vgsr_deactivation() {
-	do_action( 'vgsr_deactivation' );
-}
+add_action( 'vgsr_init', 'vgsr_load_textdomain',   0   );
+add_action( 'vgsr_init', 'vgsr_register',          0   );
+add_action( 'vgsr_init', 'vgsr_ready',             999 );
 
 /**
- * Runs when uninstalling VGSR
+ * vgsr_ready - attached to end 'vgsr_init' above
  *
- * @since 1.0.0
- * 
- * @uses do_action() Calls 'vgsr_uninstall' hook
+ * Attach actions to the ready action after VGSR has fully initialized.
+ * The load order helps to execute code at the correct time.
+ *                                                 v---Load order
  */
-function vgsr_uninstall() {
-	do_action( 'vgsr_uninstall' );
-}
+add_action( 'vgsr_ready', 'vgsr_setup_bbpress',    10 ); // Forum integration
+add_action( 'vgsr_ready', 'vgsr_setup_buddypress', 10 ); // Social network integration
+add_action( 'vgsr_ready', 'vgsr_setup_groupz',     10 ); // Group integration
 

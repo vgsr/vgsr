@@ -13,7 +13,7 @@
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
- * Version:           0.1
+ * Version:           0.0.1
  * Text Domain:       vgsr
  * Domain Path:       /languages/
  * GitHub Plugin URI: vgsr/vgsr
@@ -26,7 +26,7 @@ if ( ! class_exists( 'VGSR' ) ) :
 /**
  * Main VGSR Class
  *
- * @since 0.1
+ * @since 0.0.1
  */
 final class VGSR {
 
@@ -75,7 +75,7 @@ final class VGSR {
 	 * Insures that only one instance of VGSR exists in memory at any one
 	 * time. Also prevents needing to define globals all over the place.
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 * 
 	 * @staticvar object $instance
 	 * @uses VGSR::setup_globals() Setup the globals needed
@@ -106,7 +106,7 @@ final class VGSR {
 	/**
 	 * A dummy constructor to prevent VGSR from being loaded more than once.
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 * 
 	 * @see VGSR::instance()
 	 * @see vgsr();
@@ -116,49 +116,49 @@ final class VGSR {
 	/**
 	 * A dummy magic method to prevent VGSR from being cloned
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __clone() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'vgsr' ), '0.1' ); }
 
 	/**
 	 * A dummy magic method to prevent VGSR from being unserialized
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __wakeup() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'vgsr' ), '0.1' ); }
 
 	/**
 	 * Magic method for checking the existence of a certain custom field
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __isset( $key ) { return isset( $this->data[$key] ); }
 
 	/**
 	 * Magic method for getting VGSR variables
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __get( $key ) { return isset( $this->data[$key] ) ? $this->data[$key] : null; }
 
 	/**
 	 * Magic method for setting VGSR variables
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __set( $key, $value ) { $this->data[$key] = $value; }
 
 	/**
 	 * Magic method for unsetting VGSR variables
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __unset( $key ) { if ( isset( $this->data[$key] ) ) unset( $this->data[$key] ); }
 
 	/**
 	 * Magic method to prevent notices and errors from invalid method calls
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 */
 	public function __call( $name = '', $args = array() ) { unset( $name, $args ); return null; }
 
@@ -168,7 +168,7 @@ final class VGSR {
 	 * Set some smart defaults to class variables. Allow some of them to be
 	 * filtered to allow for early overriding.
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 * 
 	 * @access private
 	 * @uses plugin_dir_path() To generate VGSR plugin path
@@ -179,8 +179,8 @@ final class VGSR {
 
 		/** Versions **********************************************************/
 
-		$this->version    = '0.1';
-		$this->db_version = '010';
+		$this->version    = '0.0.1';
+		$this->db_version = '001';
 
 		/** Paths *************************************************************/
 
@@ -216,7 +216,7 @@ final class VGSR {
 	/**
 	 * Include required files
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 * 
 	 * @access private
 	 * @uses is_admin() If in WordPress admin, load additional file
@@ -225,52 +225,35 @@ final class VGSR {
 
 		/** Core **************************************************************/
 
-		// require( $this->includes_dir . 'core/sub-actions.php'        );
+		require( $this->includes_dir . 'core/sub-actions.php'        );
 		require( $this->includes_dir . 'core/functions.php'          );
-		// require( $this->includes_dir . 'core/cache.php'              );
 		require( $this->includes_dir . 'core/options.php'            );
-		// require( $this->includes_dir . 'core/capabilities.php'       );
 		require( $this->includes_dir . 'core/update.php'             );
-		// require( $this->includes_dir . 'core/template-functions.php' );
-		// require( $this->includes_dir . 'core/template-loader.php'    );
-		// require( $this->includes_dir . 'core/theme-compat.php'       );
 
 		/** Components ********************************************************/
 
-		// Common
-		// require( $this->includes_dir . 'common/ajax.php'          );
-		// require( $this->includes_dir . 'common/classes.php'       );
-		// require( $this->includes_dir . 'common/functions.php'     );
-		// require( $this->includes_dir . 'common/formatting.php'    );
-		// require( $this->includes_dir . 'common/template.php'      );
-		// require( $this->includes_dir . 'common/widgets.php'       );
-		// require( $this->includes_dir . 'common/shortcodes.php'    );
-
 		// Users
-		// require( $this->includes_dir . 'users/capabilities.php'   );
 		require( $this->includes_dir . 'users/functions.php'      );
-		// require( $this->includes_dir . 'users/template.php'       );
-		// require( $this->includes_dir . 'users/options.php'        );
 
 		/** Hooks *************************************************************/
 
 		require( $this->includes_dir . 'core/extend.php'  );
 		require( $this->includes_dir . 'core/actions.php' );
-		// require( $this->includes_dir . 'core/filters.php' );
+		require( $this->includes_dir . 'core/filters.php' );
 
 		/** Admin *************************************************************/
 
 		// Quick admin check and load if needed
 		if ( is_admin() ) {
 			require( $this->includes_dir . 'admin/admin.php'   );
-			// require( $this->includes_dir . 'admin/actions.php' );
+			require( $this->includes_dir . 'admin/actions.php' );
 		}
 	}
 
 	/**
 	 * Setup the default hooks and actions
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 * 
 	 * @access private
 	 * @uses add_action() To add various actions
@@ -311,7 +294,7 @@ final class VGSR {
 	 * will be removed on VGSR updates. If you're creating custom
 	 * translation files, please use the global language folder.
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 *
 	 * @uses apply_filters() Calls 'plugin_locale' with {@link get_locale()} value
 	 * @uses load_textdomain() To load the textdomain
@@ -334,17 +317,6 @@ final class VGSR {
 	}
 
 	/**
-	 * Register the VGSR shortcodes
-	 *
-	 * @since 0.1
-	 *
-	 * @uses VGSR_Shortcodes
-	 */
-	public function register_shortcodes() {
-		$this->shortcodes = new VGSR_Shortcodes();
-	}
-
-	/**
 	 * Setup the currently logged-in user
 	 *
 	 * Do not to call this prematurely, I.E. before the 'init' action has
@@ -352,7 +324,7 @@ final class VGSR {
 	 * execution. get_currentuserinfo() is used to check for XMLRPC_REQUEST to
 	 * avoid xmlrpc errors.
 	 *
-	 * @since 0.1
+	 * @since 0.0.1
 	 * 
 	 * @uses wp_get_current_user()
 	 */

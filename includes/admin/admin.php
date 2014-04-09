@@ -14,7 +14,7 @@ if ( ! class_exists( 'VGSR_Admin' ) ) :
 /**
  * Loads the VGSR plugin admin area
  *
- * @since 1.0.0
+ * @since 0.0.1
  */
 class VGSR_Admin {
 
@@ -45,7 +45,7 @@ class VGSR_Admin {
 	/** Capability ************************************************************/
 
 	/**
-	 * @var bool Minimum capability to access Tools and Settings
+	 * @var bool Minimum capability to access Settings
 	 */
 	public $minimum_capability = 'manage_options';
 
@@ -54,7 +54,7 @@ class VGSR_Admin {
 	/**
 	 * The main VGSR admin loader
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses VGSR_Admin::setup_globals() Setup the globals needed
 	 * @uses VGSR_Admin::includes() Include the required files
@@ -69,7 +69,7 @@ class VGSR_Admin {
 	/**
 	 * Admin globals
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 * @access private
 	 */
 	private function setup_globals() {
@@ -83,21 +83,17 @@ class VGSR_Admin {
 	/**
 	 * Include required files
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 * @access private
 	 */
 	private function includes() {
-		// require( $this->admin_dir . 'tools.php'     );
 		require( $this->admin_dir . 'settings.php'  );
-		// require( $this->admin_dir . 'functions.php' );
-		// require( $this->admin_dir . 'metaboxes.php' );
-		// require( $this->admin_dir . 'users.php'     );
 	}
 
 	/**
 	 * Setup the admin hooks, actions and filters
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 * @access private
 	 *
 	 * @uses add_action() To add various actions
@@ -111,13 +107,16 @@ class VGSR_Admin {
 
 		/** General Actions ***************************************************/
 
-		add_action( 'admin_menu', array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
-		add_action( 'admin_init', array( $this, 'register_admin_settings' ) ); // Add settings
+		add_action( 'vgsr_admin_menu',              array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
+		add_action( 'vgsr_register_admin_settings', array( $this, 'register_admin_settings' ) ); // Add settings
 
 		/** Filters ***********************************************************/
 
 		// Modify VGSR's admin links
 		add_filter( 'plugin_action_links', array( $this, 'modify_plugin_action_links' ), 10, 2 );
+
+		// Map settings capabilities
+		add_filter( 'vgsr_map_meta_caps',  array( $this, 'map_settings_meta_caps'     ), 10, 4 );
 
 		/** Network Admin *****************************************************/
 
@@ -133,17 +132,15 @@ class VGSR_Admin {
 	/**
 	 * Add the admin menus
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
-	 * @uses add_submenu_page() To add the VGSR settings page in Dashboard
-	 *                           section
+	 * @uses add_options_page() To add the VGSR settings page
 	 */
 	public function admin_menus() {
 
 		// Are settings enabled?
 		if ( current_user_can( 'vgsr_settings_page' ) ) {
-			add_submenu_page(
-				'index.php',
+			add_options_page(
 				__( 'VGSR',  'vgsr' ),
 				__( 'VGSR',  'vgsr' ),
 				$this->minimum_capability,
@@ -156,8 +153,8 @@ class VGSR_Admin {
 	/**
 	 * Add the network admin menus
 	 *
-	 * @since 1.0.0
-	 * @uses add_submenu_page() To add the VGSR page in Dashboard
+	 * @since 0.0.1
+	 * @uses add_options_page() To add the VGSR page
 	 */
 	public function network_admin_menus() {
 
@@ -165,8 +162,7 @@ class VGSR_Admin {
 		if ( ! is_plugin_active_for_network( vgsr()->basename ) )
 			return;
 
-		add_submenu_page(
-			'index.php',
+		add_options_page(
 			__( 'VGSR Network', 'vgsr' ),
 			__( 'VGSR Network', 'vgsr' ),
 			'manage_network',
@@ -176,9 +172,35 @@ class VGSR_Admin {
 	}
 
 	/**
+	 * Maps settings capabilities
+	 *
+	 * @param array $caps Capabilities for meta capability
+	 * @param string $cap Capability name
+	 * @param int $user_id User id
+	 * @param mixed $args Arguments
+	 * @uses apply_filters() Calls 'vgsr_map_settings_meta_caps' with caps, cap, user id and
+	 *                        args
+	 * @return array Actual capabilities for meta capability
+	 */
+	public static function map_settings_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
+
+		// What capability is being checked?
+		switch ( $cap ) {
+
+			// Admins
+			case 'vgsr_settings_page'       : // Settings - Page
+			case 'vgsr_settings_main'       : // Settings - General
+				$caps = array( $this->minimum_capability );
+				break;
+		}
+
+		return apply_filters( 'vgsr_map_settings_meta_caps', $caps, $cap, $user_id, $args );
+	}
+
+	/**
 	 * Register the settings
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses add_settings_section() To add our own settings section
 	 * @uses add_settings_field() To add various settings fields
@@ -224,7 +246,7 @@ class VGSR_Admin {
 	/**
 	 * Add Settings link to plugins area
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @param array $links Links array in which we would prepend our link
 	 * @param string $file Current plugin basename
@@ -238,7 +260,7 @@ class VGSR_Admin {
 
 		// Add a few links to the existing links array
 		return array_merge( $links, array(
-			'settings' => '<a href="' . add_query_arg( array( 'page' => 'vgsr' ), admin_url( 'index.php' ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>',
+			'settings' => '<a href="' . add_query_arg( array( 'page' => 'vgsr' ), admin_url( 'options-general.php' ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>',
 		) );
 	}
 
@@ -249,7 +271,7 @@ endif; // class_exists
 /**
  * Load the VGSR Admin
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses VGSR_Admin
  */

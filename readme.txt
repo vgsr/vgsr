@@ -2,8 +2,8 @@
 Contributors: offereins
 Tags: vgsr, multisite
 Requires at least: 3.6
-Tested up to: 3.6
-Stable tag: 0.1
+Tested up to: 3.9
+Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,5 +29,5 @@ VGSR is designed, used and maintained to support vgsr.nl and bring in to its ful
 
 == Changelog ==
 
-= 0.1 =
+= 0.0.1 =
 * In development

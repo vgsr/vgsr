@@ -14,7 +14,7 @@ if ( ! class_exists( 'VGSR_BBPress' ) ) :
 /**
  * Loads bbPress Extension
  *
- * @since 1.0.0
+ * @since 0.0.1
  */
 class VGSR_BBPress {
 
@@ -23,7 +23,7 @@ class VGSR_BBPress {
 	/**
 	 * The main VGSR bbPress loader
 	 * 
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	public function __construct() {
 		$this->setup_globals();
@@ -34,7 +34,7 @@ class VGSR_BBPress {
 	/**
 	 * Define default class globals
 	 * 
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
@@ -45,22 +45,23 @@ class VGSR_BBPress {
 	/**
 	 * Include the required files
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	private function includes() {
-		require( $this->includes_dir . 'functions.php' );
+		require( $this->includes_dir . 'settings.php' );
 	}
 
 	/**
 	 * Setup default actions and filters
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 */
 	private function setup_actions() {
 
 		// Hook settings
-		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bbp_settings_section' );
-		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bbp_settings_fields'  );
+		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bbp_settings_sections'           );
+		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bbp_settings_fields'             );
+		add_filter( 'vgsr_map_settings_meta_caps',      array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Hide profile root
 		add_filter( 'bbp_get_user_slug', array( $this, 'hide_profile_root' ) );
@@ -69,12 +70,37 @@ class VGSR_BBPress {
 		add_filter( 'bbp_before_get_breadcrumb_parse_args', array( $this, 'breadcrumbs_home' ) );
 	}
 
+	/** Capabilities *******************************************************/
+
+	/**
+	 * Map VGSR bbPress settings capabilities
+	 *
+	 * @since 0.0.1
+	 * 
+	 * @param  array   $caps    Required capabilities
+	 * @param  string  $cap     Requested capability
+	 * @param  integer $user_id User ID
+	 * @param  array   $args    Additional arguments
+	 * @return array Required capabilities
+	 */
+	public function map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
+
+		switch ( $cap ) {
+
+			case 'vgsr_settings_bbpress' :
+				$caps = array( vgsr()->admin->minimum_capability );
+				break;
+		}
+
+		return $caps;
+	}
+
 	/** Methods ************************************************************/
 
 	/**
 	 * Remove the user profile root slug 
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses vgsr_bbp_hide_profile_root()
 	 * @uses get_option()
@@ -94,7 +120,7 @@ class VGSR_BBPress {
 	/**
 	 * Replace the default breadcrumb home text
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses vgsr_bbp_breadcrumbs_home()
 	 * @param array $args Parse args

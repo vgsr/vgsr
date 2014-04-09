@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * If there is no raw DB version, this is the first installation
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses get_option()
  * @uses vgsr_get_db_version() To get VGSR's database version
@@ -26,7 +26,7 @@ function vgsr_is_install() {
 /**
  * Compare the VGSR version to the DB version to determine if updating
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses get_option()
  * @uses vgsr_get_db_version_raw() To get VGSR's database version
@@ -46,7 +46,7 @@ function vgsr_is_update() {
  * Note that this function currently is not used in VGSR core and is here
  * for third party plugins to use to check for VGSR activation.
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @return bool True if activating VGSR, false if not
  */
@@ -96,7 +96,7 @@ function vgsr_is_activation( $basename = '' ) {
 /**
  * Determine if VGSR is being deactivated
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @return bool True if deactivating VGSR, false if not
  */
@@ -146,7 +146,7 @@ function vgsr_is_deactivation( $basename = '' ) {
 /**
  * Update the DB to the latest version
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @uses update_option()
  * @uses vgsr_get_db_version() To get VGSR's database version
@@ -158,7 +158,7 @@ function vgsr_version_bump() {
 /**
  * Setup the VGSR updater
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses vgsr_version_updater()
  * @uses vgsr_version_bump()
@@ -181,7 +181,7 @@ function vgsr_setup_updater() {
  * This is most-often used when the data schema changes, but should also be used
  * to correct issues with VGSR meta-data silently on software update.
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @todo Log update event
  */
@@ -190,9 +190,9 @@ function vgsr_version_updater() {
 	// Get the raw database version
 	$raw_db_version = (int) vgsr_get_db_version_raw();
 
-	/** 0.1 Branch ********************************************************/
+	/** 0.0.1 Branch ********************************************************/
 
-	// 0.1
+	// 0.0.1
 	if ( $raw_db_version < 010 ) {
 
 		// Do stuff

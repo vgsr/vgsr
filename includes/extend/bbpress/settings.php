@@ -15,12 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Add settings section for bbPress options
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @param array $sections VGSR settings sections
  * @return array $sections
  */
-function vgsr_bbp_settings_section( $sections = array() ) {
+function vgsr_bbp_settings_sections( $sections = array() ) {
 	$sections['vgsr_settings_bbpress'] = array(
 		'title'    => __('bbPress Settings', 'vgsr'),
 		'callback' => 'vgsr_bbp_setting_callback_bbpress_section',
@@ -33,7 +33,7 @@ function vgsr_bbp_settings_section( $sections = array() ) {
 /**
  * Add settings fields for bbPress options
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @param array $fields VGSR settings fields
  * @return array $fields
@@ -64,12 +64,12 @@ function vgsr_bbp_settings_fields( $fields = array() ) {
 /**
  * bbPress settings section description for the settings page
  *
- * @since 1.0.0
+ * @since 0.0.1
  */
 function vgsr_bbp_setting_callback_bbpress_section() {
 ?>
 
-	<p><?php esc_html_e('Set the main bbPress manipulations for VGSR.', 'vgsr'); ?></p>
+	<p><?php esc_html_e('bbPress manipulations for VGSR.', 'vgsr'); ?></p>
 
 <?php
 }
@@ -77,7 +77,7 @@ function vgsr_bbp_setting_callback_bbpress_section() {
 /**
  * Profile root slug settings field
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @todo Check rewrite rules to work properly
  *
@@ -117,7 +117,7 @@ function vgsr_bbp_setting_callback_hide_profile_root() {
 /**
  * Breadcrumbs home text settings field
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses bbp_get_user_profile_url()
  * @uses remove_filter()
@@ -137,7 +137,7 @@ function vgsr_bbp_setting_callback_breadcrumbs_home() {
 /**
  * Return whether to hide the root slug for user profiles
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @param int $default Optional. Default value
  * @uses get_option()
@@ -150,7 +150,7 @@ function vgsr_bbp_hide_profile_root( $default = 0 ) {
 /**
  * Return the breadcrumbs home text
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @param string $default Optional. Default value
  * @uses get_option()

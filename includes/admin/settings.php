@@ -15,7 +15,7 @@ if ( ! defined('ABSPATH' ) ) exit;
 /**
  * Return admin settings sections
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses apply_filters() Calls 'vgsr_admin_get_settings_sections' with the sections
  * @return array Settings sections
@@ -35,7 +35,7 @@ function vgsr_admin_get_settings_sections() {
 /**
  * Return admin settings fields
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses apply_filters() Calls 'vgsr_admin_get_settings_fields' with the fields
  * @return array Settings fields
@@ -54,7 +54,7 @@ function vgsr_admin_get_settings_fields() {
 /**
  * Get settings fields by section
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @param string $section_id Section id
  * @return mixed False if section is invalid, array of fields otherwise
@@ -76,7 +76,7 @@ function vgsr_admin_get_settings_fields_for_section( $section_id = '' ) {
 /**
  * Main settings section description for the settings page
  * 
- * @since 1.0.0
+ * @since 0.0.1
  */
 function vgsr_admin_setting_callback_main_section() {
 ?>
@@ -91,7 +91,7 @@ function vgsr_admin_setting_callback_main_section() {
 /**
  * The main settings page
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses screen_icon() To display the screen icon
  * @uses settings_fields() To output the hidden fields for the form
@@ -122,7 +122,7 @@ function vgsr_admin_settings() {
 /**
  * Contextual help for VGSR settings page
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @uses get_current_screen()
  */
@@ -183,7 +183,7 @@ function vgsr_admin_settings_help() {
  * Disable a settings field if the value is forcibly set in VGSR's global
  * options array.
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @param string $option_key
  */
@@ -194,7 +194,7 @@ function vgsr_maybe_admin_setting_disabled( $option_key = '' ) {
 /**
  * Output settings API option
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @uses vgsr_get_form_option()
  *
@@ -208,7 +208,7 @@ function vgsr_form_option( $option, $default = '' , $slug = false ) {
 	/**
 	 * Return settings API option
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @uses get_option()
 	 * @uses esc_attr()

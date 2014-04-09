@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * 
  * These option
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @return array Filtered option names and values
  */
@@ -39,7 +39,7 @@ function vgsr_get_default_options() {
  * Hooked to vgsr_activate, it is only called once when VGSR is activated.
  * This is non-destructive, so existing settings will not be overridden.
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @uses vgsr_get_default_options() To get default options
  * @uses add_option() Adds default options
@@ -61,7 +61,7 @@ function vgsr_add_options() {
  * Hooked to vgsr_uninstall, it is only called once when VGSR is uninstalled.
  * This is destructive, so existing settings will be destroyed.
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @uses vgsr_get_default_options() To get default options
  * @uses delete_option() Removes default options
@@ -81,7 +81,7 @@ function vgsr_delete_options() {
  * Add filters to each VGSR option and allow them to be overloaded from
  * inside the $vgsr->options array.
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @uses vgsr_get_default_options() To get default options
  * @uses add_filter() To add filters to 'pre_option_{$key}'
@@ -101,7 +101,7 @@ function vgsr_setup_option_filters() {
  * Filter default options and allow them to be overloaded from inside the
  * $vgsr->options array.
  *
- * @since 1.0.0
+ * @since 0.0.1
  * 
  * @param bool $value Optional. Default value false
  * @return mixed false if not overloaded, mixed if set
