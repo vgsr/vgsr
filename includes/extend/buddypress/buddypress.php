@@ -193,8 +193,9 @@ class VGSR_BuddyPress {
 				}
 			}
 
-			$bp  = buddypress();
-			$sql = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN (%s)", $user_id, implode( ',', $groups->getArrayCopy() ) );
+			$bp   = buddypress();
+			$gids = implode( ',', $groups->getArrayCopy() );
+			$sql  = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN ($gids)", $user_id );
 			
 			// Run query
 			$is_member = (bool) $wpdb->get_var( $sql );
