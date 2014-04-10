@@ -3,7 +3,7 @@ Contributors: offereins
 Tags: vgsr, multisite
 Requires at least: 3.6
 Tested up to: 3.9
-Stable tag: 0.0.2
+Stable tag: 0.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,14 @@ VGSR is designed, used and maintained to support vgsr.nl and bring in to its ful
 3. Activate VGSR from your Plugins page.
 
 == Changelog ==
+
+= 0.0.3 =
+* Fix BP groups member query
+* Fix settings capabilities
+
+= 0.0.2 =
+* Add support for BuddyPress groups
+* Fix actions/filters
 
 = 0.0.1 =
 * In development
