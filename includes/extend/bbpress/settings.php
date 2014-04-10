@@ -39,7 +39,7 @@ function vgsr_bbp_settings_sections( $sections = array() ) {
  * @return array $fields
  */
 function vgsr_bbp_settings_fields( $fields = array() ) {
-	$fields['vgsr_settings_bbpress'] = (array) apply_filters( 'vgsr_bbp_settings_fields', array(
+	$fields['vgsr_settings_bbpress'] = (array) apply_filters( 'vgsr_settings_fields_bbpress', array(
 	
 		// Hide profile root slug
 		'vgsr_bbp_hide_profile_root' => array(

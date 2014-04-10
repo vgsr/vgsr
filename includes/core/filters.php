@@ -37,10 +37,5 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  *           v--WordPress Actions       v--VGSR Sub-actions
  */
-add_filter( 'request',                 'vgsr_request',            10    );
-add_filter( 'wp_title',                'vgsr_title',              10, 3 );
-add_filter( 'body_class',              'vgsr_body_class',         10, 2 );
 add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',      10, 4 );
-add_filter( 'redirect_canonical',      'vgsr_redirect_canonical', 10    );
-add_filter( 'plugin_locale',           'vgsr_plugin_locale',      10, 2 );
 

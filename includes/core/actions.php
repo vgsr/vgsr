@@ -39,8 +39,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 add_action( 'plugins_loaded',           'vgsr_loaded',                   10    );
 add_action( 'init',                     'vgsr_init',                     0     ); // Early for vgsr_register
-add_action( 'parse_query',              'vgsr_parse_query',              2     ); // Early for overrides
-add_action( 'profile_update',           'vgsr_profile_update',           10, 2 ); // user_id and old_user_data
 
 /**
  * vgsr_loaded - Attached to 'plugins_loaded' above

@@ -52,7 +52,7 @@ function vgsr_bp_settings_sections( $sections = array() ) {
 function vgsr_bp_settings_fields( $fields = array() ) {
 
 	// General
-	$fields['vgsr_settings_bp_general'] = (array) apply_filters( 'vgsr_bp_settings_general_fields', array(
+	$fields['vgsr_settings_bp_general'] = (array) apply_filters( 'vgsr_settings_fields_bp_general', array(
 	
 		// Remove My Account area
 		'vgsr_bp_remove_ab_my_account_root' => array(
@@ -60,12 +60,13 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 			'callback'          => 'vgsr_bp_setting_callback_remove_ab_my_account_root',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
-		),
-	}
+		)
+
+	) );
 	
 	// Groups
 	if ( bp_is_active( 'groups' ) ) {
-		$fields['vgsr_settings_bp_groups'] = (array) apply_filters( 'vgsr_bp_settings_groups_fields', array(
+		$fields['vgsr_settings_bp_groups'] = (array) apply_filters( 'vgsr_settings_fields_bp_groups', array(
 			
 			// VGSR main group
 			'vgsr_bp_group_vgsr' => array(
@@ -90,6 +91,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 				'sanitize_callback' => 'intval',
 				'args'              => array()
 			)
+
 		) );
 	}
 
@@ -103,7 +105,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
  *
  * @since 0.0.1
  */
-function vgsr_bp_setting_callback_bp_general_section() {
+function vgsr_bp_setting_callback_general_section() {
 ?>
 
 	<p><?php esc_html_e('BuddyPress manipulations for VGSR.', 'vgsr'); ?></p>
@@ -116,7 +118,7 @@ function vgsr_bp_setting_callback_bp_general_section() {
  *
  * @since 0.0.1
  */
-function vgsr_bp_setting_callback_bp_groups_section() {
+function vgsr_bp_setting_callback_groups_section() {
 	// Nothing to show
 }
 
@@ -150,7 +152,7 @@ function vgsr_bp_setting_callback_remove_ab_my_account_root() {
 function vgsr_bp_setting_callback_group_vgsr() {
 
 	// Get all group data
-	$data   = groups_get_groups(); 
+	$data   = groups_get_groups( array( 'type' => 'alphabetical', 'show_hidden' => true ) ); 
 	$groups = $data['groups']; ?>
 
 	<select id="vgsr_bp_group_vgsr" name="vgsr_bp_group_vgsr">
@@ -178,7 +180,7 @@ function vgsr_bp_setting_callback_group_vgsr() {
 function vgsr_bp_setting_callback_group_leden() {
 
 	// Get all group data
-	$data   = groups_get_groups(); 
+	$data   = groups_get_groups( array( 'type' => 'alphabetical', 'show_hidden' => true ) ); 
 	$groups = $data['groups']; ?>
 
 	<select id="vgsr_bp_group_leden" name="vgsr_bp_group_leden">
@@ -206,7 +208,7 @@ function vgsr_bp_setting_callback_group_leden() {
 function vgsr_bp_setting_callback_group_oudleden() {
 
 	// Get all group data
-	$data   = groups_get_groups(); 
+	$data   = groups_get_groups( array( 'type' => 'alphabetical', 'show_hidden' => true ) ); 
 	$groups = $data['groups']; ?>
 
 	<select id="vgsr_bp_group_oudleden" name="vgsr_bp_group_oudleden">

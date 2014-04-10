@@ -39,7 +39,7 @@ function vgsr_groupz_settings_sections( $sections = array() ) {
  * @return array $fields
  */
 function vgsr_groupz_settings_fields( $fields = array() ) {
-	$fields['vgsr_settings_groupz'] = (array) apply_filters( 'vgsr_groupz_settings_fields', array(
+	$fields['vgsr_settings_groupz'] = (array) apply_filters( 'vgsr_settings_fields_groupz', array(
 		
 		// VGSR main group
 		'vgsr_groupz_group_vgsr' => array(

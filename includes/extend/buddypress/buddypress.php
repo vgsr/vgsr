@@ -167,22 +167,59 @@ class VGSR_BuddyPress {
 	 * @return bool User is group member
 	 */
 	public function user_in_group( $group_id = 0, $user_id = 0 ) {
+		global $wpdb;
 
-		// Check VGSR subgroups if hierarchy is not enabled
-		if ( ! $this->hierarchy && vgsr_get_group_vgsr_id() == $group_id ) {
+		// Bail if no group provided
+		if ( empty( $group_id ) )
+			return false;
 
-			// Walk leden and oud-leden groups
-			foreach ( array( vgsr_get_group_leden_id(), vgsr_get_group_oudleden_id() ) as $group_id ) {
-				$is_member = groups_is_user_member( $user_id, $group_id );
+		// Default to current user
+		if ( empty( $user_id ) )
+			$user_id = get_current_user_id();
 
-				// Bail if success				
-				if ( $is_member )
-					break;
+		$group_id  = (int) $group_id;
+		$user_id   = (int) $user_id;
+		$is_member = false;
+
+		// Consider hierarchy so look for sub group members too
+		if ( $this->hierarchy ) {
+
+			// Get all hierarchy group ids
+			$groups = new ArrayIterator( array( $group_id ) );
+			foreach ( $groups as $gid ) {
+				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
+					foreach ( $children as $cgid )
+						$groups->append( (int) $cgid );
+				}
 			}
 
+			$bp  = buddypress();
+			$sql = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN (%s)", $user_id, implode( ',', $groups->getArrayCopy() ) );
+			
+			// Run query
+			$is_member = (bool) $wpdb->get_var( $sql );
+
 		} else {
-			$is_member = groups_is_user_member( $user_id, $group_id );
+			switch ( $group_id ) {
+
+				// Default to leden and oud-leden for main group
+				case vgsr_get_group_vgsr_id() :
+
+					// Walk leden and oud-leden groups
+					foreach ( array( vgsr_get_group_leden_id(), vgsr_get_group_oudleden_id() ) as $group_id ) {
+
+						// Quit searching when user is member
+						if ( $is_member = groups_is_user_member( $user_id, $group_id ) )
+							break;
+					}
+					break;
+
+				default :
+					$is_member = groups_is_user_member( $user_id, $group_id );
+					break;
+			}
 		}
+
 
 		return $is_member;
 	}

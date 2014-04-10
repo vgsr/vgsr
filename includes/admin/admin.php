@@ -188,9 +188,9 @@ class VGSR_Admin {
 		switch ( $cap ) {
 
 			// Admins
-			case 'vgsr_settings_page'       : // Settings - Page
-			case 'vgsr_settings_main'       : // Settings - General
-				$caps = array( $this->minimum_capability );
+			case 'vgsr_settings_page' : // Settings - Page
+			case 'vgsr_settings_main' : // Settings - General
+				$caps = array( vgsr()->admin->minimum_capability );
 				break;
 		}
 
