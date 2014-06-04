@@ -53,7 +53,7 @@ class VGSR_Ancienniteit {
 
 		// Add setting
 		$settings['vgsr_always_ancienniteit'] = array(
-			'title'             => __('Always Anci&235;nniteit', 'vgsr'),
+			'title'             => __( 'Always Anci&235;nniteit', 'vgsr' ),
 			'callback'          => array( $this, 'the_settings_field' ),
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -73,7 +73,7 @@ class VGSR_Ancienniteit {
 	?>
 
 		<input id="vgsr_always_ancienniteit" name="vgsr_always_ancienniteit" type="checkbox" value="1" <?php checked( get_option( 'vgsr_always_ancienniteit' ) ); ?> />
-		<label for="vgsr_always_ancienniteit"><span class="description"><?php esc_html_e('For VGSR groups always return users with anci&#235;nniteit.', 'vgsr'); ?></span></label>
+		<label for="vgsr_always_ancienniteit"><span class="description"><?php esc_html_e( 'For VGSR groups always return users with anci&#235;nniteit.', 'vgsr' ); ?></span></label>
 
 	<?php
 	}
