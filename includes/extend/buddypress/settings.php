@@ -86,7 +86,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 		);
 
 		// VGSR main group when using hierarchy
-		if ( vgsr()->admin->bp->hierarchy ) {
+		if ( vgsr()->extend->bp->hierarchy ) {
 			$groups_settings['vgsr_bp_group_vgsr'] = array(
 				'title'             => __( 'Main Group', 'vgsr' ),
 				'callback'          => 'vgsr_bp_setting_callback_group_vgsr',
@@ -97,7 +97,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 
 		// Remove group admin nav
 		$groups_settings['vgsr_bp_remove_groups_admin_nav'] = array(
-			'title'             => __( 'Remove group admin nav', 'vgsr' ),
+			'title'             => __( 'Remove groups admin bar', 'vgsr' ),
 			'callback'          => 'vgsr_bp_setting_callback_remove_groups_admin_nav',
 			'sanitize_callback' => 'intval',
 			'args'              => array()

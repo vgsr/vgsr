@@ -67,6 +67,7 @@ class VGSR_BuddyPress {
 	 * @uses bp_is_active() To enable hooks for active BP components
 	 */
 	private function setup_actions() {
+		$bp = buddypress();
 
 		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections'            );
@@ -78,14 +79,9 @@ class VGSR_BuddyPress {
 			remove_action( 'admin_bar_menu', 'bp_admin_bar_my_account_root', 100 );
 		}
 
-		// Group hooks
+		// Groups
 		if ( bp_is_active( 'groups' ) ) {
-
-			// Groups component
-			$groups = buddypress()->groups;
-
-			// Manage group component
-			add_action( "bp_{$groups->id}_setup_actions", array( $this, 'manage_group_component' ) );
+			$groups = $bp->groups;
 
 			// Use BP groups as VGSR groups
 			add_filter( 'vgsr_get_group_vgsr_id',     array( $this, 'get_group_vgsr'     ) );
@@ -94,6 +90,11 @@ class VGSR_BuddyPress {
 
 			// User in group
 			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
+
+			// Remove groups admin bar menu items
+			if ( vgsr_bp_remove_groups_admin_nav() ) {
+				remove_action( 'bp_setup_admin_bar', array( $groups, 'setup_admin_bar' ), $groups->adminbar_myaccount_order );
+			}
 		}
 	}
 
@@ -121,22 +122,6 @@ class VGSR_BuddyPress {
 		}
 
 		return $caps;
-	}
-
-	/** Component: Groups **************************************************/
-
-	/**
-	 * Manipulate the groups component
-	 *
-	 * @since 0.0.4
-	 */
-	public function manage_group_component() {
-		$component = buddypress()->groups;
-
-		// Remove admin bar menu
-		if ( vgsr_bp_remove_groups_admin_nav() ) {
-			remove_action( 'bp_setup_admin_bar', array( $component, 'setup_admin_bar' ), $this->adminbar_myaccount_order );
-		}
 	}
 
 	/** Options ************************************************************/

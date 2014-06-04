@@ -147,7 +147,7 @@ function vgsr_is_vgsr_group( $group_id = 0 ) {
 
 	// Does group id match any?
 	$is = ! empty( $group_id ) && in_array( (int) $group_id, array(
-		vgsr_get_group_vgsr_id()
+		vgsr_get_group_vgsr_id(),
 		vgsr_get_group_leden_id(),
 		vgsr_get_group_oudleden_id(),
 	) );
