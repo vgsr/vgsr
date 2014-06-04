@@ -1,19 +1,19 @@
 <?php
 
 /**
- * Fiscaat Actions
+ * VGSR Actions
  *
- * @package Fiscaat
+ * @package VGSR
  * @subpackage Core
  *
- * This file contains the actions that are used through-out Fiscaat. They are
+ * This file contains the actions that are used through-out VGSR. They are
  * consolidated here to make searching for them easier, and to help developers
  * understand at a glance the order in which things occur.
  *
  * There are a few common places that additional actions can currently be found
  *
- *  - Fiscaat: In {@link Fiscaat::setup_actions()} in fiscaat.php
- *  - Admin: More in {@link Fiscaat_Admin::setup_actions()} in admin.php
+ *  - VGSR: In {@link VGSR::setup_actions()} in fiscaat.php
+ *  - Admin: More in {@link VGSR_Admin::setup_actions()} in admin.php
  *
  * @see /core/filters.php
  */
@@ -22,23 +22,23 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Attach Fiscaat to WordPress
+ * Attach VGSR to WordPress
  *
- * Fiscaat uses its own internal actions to help aid in third-party plugin
+ * VGSR uses its own internal actions to help aid in third-party plugin
  * development, and to limit the amount of potential future code changes when
  * updates to WordPress core occur.
  *
  * These actions exist to create the concept of 'plugin dependencies'. They
- * provide a safe way for plugins to execute code *only* when Fiscaat is
+ * provide a safe way for plugins to execute code *only* when VGSR is
  * installed and activated, without needing to do complicated guesswork.
  *
  * For more information on how this works, see the 'Plugin Dependency' section
  * near the bottom of this file.
  *
- *           v--WordPress Actions        v--Fiscaat Sub-actions
+ *           v--WordPress Actions    v--VGSR Sub-actions
  */
-add_action( 'plugins_loaded',           'vgsr_loaded',                   10    );
-add_action( 'init',                     'vgsr_init',                     0     ); // Early for vgsr_register
+add_action( 'plugins_loaded',        'vgsr_loaded',       10 );
+add_action( 'init',                  'vgsr_init',         0  ); // Early for vgsr_register
 
 /**
  * vgsr_loaded - Attached to 'plugins_loaded' above
@@ -70,7 +70,8 @@ add_action( 'vgsr_init', 'vgsr_ready',             999 );
  * The load order helps to execute code at the correct time.
  *                                                 v---Load order
  */
-add_action( 'vgsr_ready', 'vgsr_setup_bbpress',    10 ); // Forum integration
-add_action( 'vgsr_ready', 'vgsr_setup_buddypress', 10 ); // Social network integration
-add_action( 'vgsr_ready', 'vgsr_setup_groupz',     10 ); // Group integration
+add_action( 'vgsr_ready', 'vgsr_setup_ancienniteit',    10 ); // Ancienniteit for groups
+add_action( 'vgsr_ready', 'vgsr_setup_bbpress',         10 ); // Forum integration
+add_action( 'vgsr_ready', 'vgsr_setup_buddypress',      10 ); // Social network integration
+add_action( 'vgsr_ready', 'vgsr_setup_groupz',          10 ); // Group integration
 

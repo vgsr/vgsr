@@ -13,7 +13,7 @@
  * There are a few common places that additional filters can currently be found
  *
  *  - VGSR: In {@link VGSR::setup_actions()} in fiscaat.php
- *  - Admin: More in {@link Fiscaat_Admin::setup_actions()} in admin.php
+ *  - Admin: More in {@link VGSR_Admin::setup_actions()} in admin.php
  *
  * @see /core/actions.php
  */

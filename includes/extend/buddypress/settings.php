@@ -24,7 +24,7 @@ function vgsr_bp_settings_sections( $sections = array() ) {
 
 	// General
 	$sections['vgsr_settings_bp_general'] = array(
-		'title'    => __('BuddyPress General', 'vgsr'),
+		'title'    => __( 'BuddyPress General', 'vgsr' ),
 		'callback' => 'vgsr_bp_setting_callback_general_section',
 		'page'     => 'vgsr'
 	);
@@ -32,7 +32,7 @@ function vgsr_bp_settings_sections( $sections = array() ) {
 	// Groups
 	if ( bp_is_active( 'groups' ) ) {	
 		$sections['vgsr_settings_bp_groups'] = array(
-			'title'    => __('BuddyPress Groups', 'vgsr'),
+			'title'    => __( 'BuddyPress Groups', 'vgsr' ),
 			'callback' => 'vgsr_bp_setting_callback_groups_section',
 			'page'     => 'vgsr'
 		);
@@ -56,7 +56,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 	
 		// Remove My Account area
 		'vgsr_bp_remove_ab_my_account_root' => array(
-			'title'             => __('Remove My Account area', 'vgsr'),
+			'title'             => __( 'Remove My Account area', 'vgsr' ),
 			'callback'          => 'vgsr_bp_setting_callback_remove_ab_my_account_root',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -64,21 +64,13 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 
 	) );
 	
-	// Groups
+	// Component: Groups
 	if ( bp_is_active( 'groups' ) ) {
-		$fields['vgsr_settings_bp_groups'] = (array) apply_filters( 'vgsr_settings_fields_bp_groups', array(
-			
-			// VGSR main group
-			'vgsr_bp_group_vgsr' => array(
-				'title'             => __('Main Group', 'vgsr'),
-				'callback'          => 'vgsr_bp_setting_callback_group_vgsr',
-				'sanitize_callback' => 'intval',
-				'args'              => array()
-			),
+		$groups_settings = array(
 			
 			// VGSR leden group
 			'vgsr_bp_group_leden' => array(
-				'title'             => __('Leden Group', 'vgsr'),
+				'title'             => __( 'Leden Group', 'vgsr' ),
 				'callback'          => 'vgsr_bp_setting_callback_group_leden',
 				'sanitize_callback' => 'intval',
 				'args'              => array()
@@ -86,13 +78,32 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 
 			// VGSR oud-leden group
 			'vgsr_bp_group_oudleden' => array(
-				'title'             => __('Oud-leden Group', 'vgsr'),
+				'title'             => __( 'Oud-leden Group', 'vgsr' ),
 				'callback'          => 'vgsr_bp_setting_callback_group_oudleden',
 				'sanitize_callback' => 'intval',
 				'args'              => array()
 			)
+		);
 
-		) );
+		// VGSR main group when using hierarchy
+		if ( vgsr()->admin->bp->hierarchy ) {
+			$groups_settings['vgsr_bp_group_vgsr'] = array(
+				'title'             => __( 'Main Group', 'vgsr' ),
+				'callback'          => 'vgsr_bp_setting_callback_group_vgsr',
+				'sanitize_callback' => 'intval',
+				'args'              => array()
+			);
+		}
+
+		// Remove group admin nav
+		$groups_settings['vgsr_bp_remove_groups_admin_nav'] = array(
+			'title'             => __( 'Remove group admin nav', 'vgsr' ),
+			'callback'          => 'vgsr_bp_setting_callback_remove_groups_admin_nav',
+			'sanitize_callback' => 'intval',
+			'args'              => array()
+		);
+			
+		$fields['vgsr_settings_bp_groups'] = (array) apply_filters( 'vgsr_settings_fields_bp_groups', $groups_settings );
 	}
 
 	return $fields;
@@ -122,15 +133,14 @@ function vgsr_bp_setting_callback_groups_section() {
 	// Nothing to show
 }
 
-/** Settings fields ********************************************************/
+/** Settings General *******************************************************/
 
 /**
- * Hide profile links settings field
+ * Remove My Account area settings field
  * 
  * @since 0.0.1
  *
- * @uses groups_get_groups()
- * @uses vgsr_get_group_vgsr_id()
+ * @uses vgsr_bp_remove_ab_my_account_root()
  */
 function vgsr_bp_setting_callback_remove_ab_my_account_root() {
 ?>
@@ -140,6 +150,8 @@ function vgsr_bp_setting_callback_remove_ab_my_account_root() {
 
 <?php
 }
+
+/** Settings Groups ********************************************************/
 
 /**
  * VGSR group settings field
@@ -225,6 +237,22 @@ function vgsr_bp_setting_callback_group_oudleden() {
 <?php
 }
 
+/**
+ * Remove groups admin nav settings field
+ * 
+ * @since 0.0.1
+ *
+ * @uses vgsr_bp_remove_groups_admin_nav()
+ */
+function vgsr_bp_setting_callback_remove_groups_admin_nav() {
+?>
+
+	<input id="vgsr_bp_remove_groups_admin_nav" name="vgsr_bp_remove_groups_admin_nav" type="checkbox" value="1" <?php checked( vgsr_bp_remove_groups_admin_nav() ); ?> />
+	<label for="vgsr_bp_remove_groups_admin_nav"><span class="description"><?php esc_html_e('Remove the groups admin bar menu items.', 'vgsr'); ?></span></label>
+
+<?php
+}
+
 /** Options ***************************************************************/
 
 /**
@@ -237,4 +265,16 @@ function vgsr_bp_setting_callback_group_oudleden() {
  */
 function vgsr_bp_remove_ab_my_account_root() {
 	return (bool) get_option( 'vgsr_bp_remove_ab_my_account_root', 0 );
+}
+
+/**
+ * Return whether to remove the group admin bar menu items
+ *
+ * @since 0.0.1
+ *
+ * @uses get_option()
+ * @return bool Remove menu items
+ */
+function vgsr_bp_remove_groups_admin_nav() {
+	return (bool) get_option( 'vgsr_bp_remove_groups_admin_nav', 0 );
 }

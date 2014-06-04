@@ -58,7 +58,7 @@ class VGSR_Groupz {
 	 */
 	private function setup_actions() {
 
-		// Hook settings
+		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_groupz_settings_sections'        );
 		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_groupz_settings_fields'          );
 		add_filter( 'vgsr_map_settings_meta_caps',      array( $this, 'map_meta_caps' ), 10, 4 );
@@ -69,7 +69,7 @@ class VGSR_Groupz {
 		add_filter( 'vgsr_get_group_oudleden_id', array( $this, 'get_group_oudleden' ) );
 
 		// User in group
-		add_filter( 'vgsr_user_in_group', 'groupz_user_in_group', 10, 2 );
+		add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
 	}
 
 	/** Capabilities *******************************************************/
@@ -97,7 +97,7 @@ class VGSR_Groupz {
 		return $caps;
 	}
 
-	/** Methods ************************************************************/
+	/** Options ************************************************************/
 
 	/**
 	 * Return the vgsr group ID
@@ -133,6 +133,24 @@ class VGSR_Groupz {
 	 */
 	public function get_group_oudleden() {
 		return (int) get_option( 'vgsr_groupz_group_oudleden', 0 );
+	}
+
+	/** Methods ************************************************************/
+
+	/**
+	 * Map user group membership checks to Groupz function
+	 *
+	 * @since 0.0.2
+	 *
+	 * @uses groupz_user_in_group()
+	 * 
+	 * @param bool  $is_member Whether the user is a valid member
+	 * @param integer $group_id Group ID
+	 * @param integer $user_id User ID
+	 * @return bool User is group member
+	 */
+	public function user_in_group( $is_member, $group_id = 0, $user_id = 0 ) {
+		return groupz_user_in_group( $group_id, $user_id );
 	}
 }
 

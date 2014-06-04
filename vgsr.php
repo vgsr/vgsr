@@ -9,7 +9,7 @@
 
 /**
  * Plugin Name:       VGSR
- * Description:       WP plugin to fill in the blanks for vgsr.nl
+ * Description:       Plugin to fill in the blanks for vgsr.nl
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins

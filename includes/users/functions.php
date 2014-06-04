@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @since 0.0.1
  *
+ * @uses apply_filters() Calls 'vgsr_get_group_vgsr_id'
  * @return int VGSR group ID
  */
 function vgsr_get_group_vgsr_id() {
@@ -28,6 +29,7 @@ function vgsr_get_group_vgsr_id() {
  *
  * @since 0.0.1
  *
+ * @uses apply_filters() Calls 'vgsr_get_group_leden_id'
  * @return int Leden group ID
  */
 function vgsr_get_group_leden_id() {
@@ -39,6 +41,7 @@ function vgsr_get_group_leden_id() {
  *
  * @since 0.0.1
  *
+ * @uses apply_filters() Calls 'vgsr_get_group_oudleden_id'
  * @return int Oud-leden group ID
  */
 function vgsr_get_group_oudleden_id() {
@@ -114,25 +117,40 @@ function user_is_oudlid( $user_id = 0 ) {
  * @since 0.0.1
  * 
  * @uses apply_filters() Calls 'vgsr_user_in_group' with the
- *                        group ID and user ID
+ *                        membership, group ID and user ID
  *
  * @param int $group_id Group ID
  * @param int $user_id User ID. Defaults to current user
  * @return bool User is in group
  */
 function vgsr_user_in_group( $group_id = 0, $user_id = 0 ) {
-	$user_id = (int) $user_id;
 
 	// Default to current user
 	if ( empty( $user_id ) )
 		$user_id = get_current_user_id();
 
-	$in_group = apply_filters( 'vgsr_user_in_group', $group_id, $user_id );
+	// Assume no membership
+	$is_member = false;
 
-	// No callback filter was run
-	if ( $in_group === $group_id )
-		$in_group = false;
-
-	return (bool) $in_group;
+	return (bool) apply_filters( 'vgsr_user_in_group', $is_member, $group_id, $user_id );
 }
 
+/**
+ * Return whether the given group is a VGSR group
+ *
+ * @since 0.0.3
+ * 
+ * @param int $group_id Group ID
+ * @return bool Group is VGSR group
+ */
+function vgsr_is_vgsr_group( $group_id = 0 ) {
+
+	// Does group id match any?
+	$is = ! empty( $group_id ) && in_array( (int) $group_id, array(
+		vgsr_get_group_vgsr_id()
+		vgsr_get_group_leden_id(),
+		vgsr_get_group_oudleden_id(),
+	) );
+
+	return apply_filters( 'vgsr_is_vgsr_group', $is, $group_id );
+}

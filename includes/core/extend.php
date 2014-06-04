@@ -13,6 +13,26 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /** Extend *****************************************************************/
 
 /**
+ * Loads the Ancienniteit component
+ * 
+ * @since 0.0.3
+ *
+ * @return If Ancienniteit is not active
+ */
+function vgsr_setup_ancienniteit() {
+
+	// Bail if no Ancienniteit
+	if ( ! class_exists( 'Ancienniteit' ) )
+		return;
+
+	// Include the Ancienniteit component
+	require( vgsr()->includes_dir . 'extend/ancienniteit.php' );
+
+	// Instantiate Ancienniteit for VGSR
+	vgsr()->extend->ancienniteit = new VGSR_Ancienniteit;
+}
+
+/**
  * Loads the bbPress component
  * 
  * @since 0.0.1
@@ -35,7 +55,7 @@ function vgsr_setup_bbpress() {
 /**
  * Loads the BuddyPress component
  * 
- * @since 0.0.1
+ * @since 0.0.2
  *
  * @return If BuddyPress is not active
  */

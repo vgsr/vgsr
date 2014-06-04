@@ -38,11 +38,16 @@ class VGSR_BuddyPress {
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
+
+		/** Paths **********************************************************/
+
 		$this->includes_dir = trailingslashit( $vgsr->includes_dir . 'extend/buddypress' );
 		$this->includes_url = trailingslashit( $vgsr->includes_url . 'extend/buddypress' );
 
-		// Support BP Group Hierarcy plugin
-		$this->hierarchy = defined( 'BP_GROUP_HIERARCHY_VERSION');
+		/** Supports *******************************************************/
+
+		// BP Group Hierarchy plugin
+		$this->hierarchy = defined( 'BP_GROUP_HIERARCHY_VERSION' );
 	}
 
 	/**
@@ -63,12 +68,12 @@ class VGSR_BuddyPress {
 	 */
 	private function setup_actions() {
 
-		// Hook settings
+		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections'            );
 		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'              );
-		add_filter( 'vgsr_map_settings_meta_caps',      array( $this, 'map_meta_caps' ), 10, 4 );
+		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
-		// Remove admin bar My Account root
+		// Remove BP's admin bar My Account area
 		if ( vgsr_bp_remove_ab_my_account_root() ) {
 			remove_action( 'admin_bar_menu', 'bp_admin_bar_my_account_root', 100 );
 		}
@@ -76,13 +81,19 @@ class VGSR_BuddyPress {
 		// Group hooks
 		if ( bp_is_active( 'groups' ) ) {
 
-			// Group IDs
+			// Groups component
+			$groups = buddypress()->groups;
+
+			// Manage group component
+			add_action( "bp_{$groups->id}_setup_actions", array( $this, 'manage_group_component' ) );
+
+			// Use BP groups as VGSR groups
 			add_filter( 'vgsr_get_group_vgsr_id',     array( $this, 'get_group_vgsr'     ) );
 			add_filter( 'vgsr_get_group_leden_id',    array( $this, 'get_group_leden'    ) );
 			add_filter( 'vgsr_get_group_oudleden_id', array( $this, 'get_group_oudleden' ) );
 
 			// User in group
-			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 2 );
+			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
 		}
 	}
 
@@ -110,6 +121,22 @@ class VGSR_BuddyPress {
 		}
 
 		return $caps;
+	}
+
+	/** Component: Groups **************************************************/
+
+	/**
+	 * Manipulate the groups component
+	 *
+	 * @since 0.0.4
+	 */
+	public function manage_group_component() {
+		$component = buddypress()->groups;
+
+		// Remove admin bar menu
+		if ( vgsr_bp_remove_groups_admin_nav() ) {
+			remove_action( 'bp_setup_admin_bar', array( $component, 'setup_admin_bar' ), $this->adminbar_myaccount_order );
+		}
 	}
 
 	/** Options ************************************************************/
@@ -150,7 +177,7 @@ class VGSR_BuddyPress {
 		return (int) get_option( 'vgsr_bp_group_oudleden', 0 );
 	}
 
-	/** Methods ************************************************************/
+	/** Groups *************************************************************/
 
 	/**
 	 * Map user group membership checks to BP function
@@ -162,11 +189,12 @@ class VGSR_BuddyPress {
 	 * @uses vgsr_get_group_oudleden_id()
 	 * @uses groups_is_user_member()
 	 *
+	 * @param bool $is_member Whether the user is a valid member
 	 * @param int $group_id Group ID
 	 * @param int $user_id User ID
 	 * @return bool User is group member
 	 */
-	public function user_in_group( $group_id = 0, $user_id = 0 ) {
+	public function user_in_group( $is_member, $group_id = 0, $user_id = 0 ) {
 		global $wpdb;
 
 		// Bail if no group provided
@@ -179,31 +207,40 @@ class VGSR_BuddyPress {
 
 		$group_id  = (int) $group_id;
 		$user_id   = (int) $user_id;
-		$is_member = false;
 
-		// Consider hierarchy so look for sub group members too
+		// Hierarchical groups
 		if ( $this->hierarchy ) {
 
-			// Get all hierarchy group ids
+			/**
+			 * Get all hierarchy group ids
+			 * 
+			 * Use the ArrayIterator class to dynamically walk all 
+			 * array elements while simultaneously adding new items 
+			 * to that array.
+			 */
 			$groups = new ArrayIterator( array( $group_id ) );
 			foreach ( $groups as $gid ) {
 				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
-					foreach ( $children as $cgid )
-						$groups->append( (int) $cgid );
+					foreach ( $children as $sub_group_id )
+						$groups->append( (int) $sub_group_id );
 				}
 			}
 
+			// Build the query
 			$bp   = buddypress();
 			$gids = implode( ',', $groups->getArrayCopy() );
 			$sql  = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN ($gids)", $user_id );
 			
-			// Run query
+			// Run the query
 			$is_member = (bool) $wpdb->get_var( $sql );
 
+		// Flat group list
 		} else {
+
+			// Check the group ID
 			switch ( $group_id ) {
 
-				// Default to leden and oud-leden for main group
+				// Main VGSR group defaults to leden and oud-leden
 				case vgsr_get_group_vgsr_id() :
 
 					// Walk leden and oud-leden groups
@@ -215,12 +252,12 @@ class VGSR_BuddyPress {
 					}
 					break;
 
+				// Look for user in provided group
 				default :
 					$is_member = groups_is_user_member( $user_id, $group_id );
 					break;
 			}
 		}
-
 
 		return $is_member;
 	}
