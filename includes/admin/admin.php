@@ -74,6 +74,7 @@ class VGSR_Admin {
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
+		
 		$this->admin_dir  = trailingslashit( $vgsr->includes_dir . 'admin'  ); // Admin path
 		$this->admin_url  = trailingslashit( $vgsr->includes_url . 'admin'  ); // Admin url
 		$this->images_url = trailingslashit( $this->admin_url    . 'images' ); // Admin images URL
@@ -255,7 +256,7 @@ class VGSR_Admin {
 	public static function modify_plugin_action_links( $links, $file ) {
 
 		// Return normal links if not VGSR
-		if ( plugin_basename( vgsr()->file ) !== $file )
+		if ( plugin_basename( vgsr()->basename ) !== $file )
 			return $links;
 
 		// Add a few links to the existing links array

@@ -13,7 +13,7 @@
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
- * Version:           0.0.3
+ * Version:           0.0.4
  * Text Domain:       vgsr
  * Domain Path:       /languages/
  * GitHub Plugin URI: vgsr/vgsr
@@ -179,16 +179,16 @@ final class VGSR {
 
 		/** Versions **********************************************************/
 
-		$this->version    = '0.0.3';
-		$this->db_version = '001';
+		$this->version    = '0.0.4';
+		$this->db_version = '004';
 
 		/** Paths *************************************************************/
 
 		// Setup some base path and URL information
 		$this->file         = __FILE__;
-		$this->basename     = apply_filters( 'vgsr_plugin_basenname', plugin_basename( $this->file ) );
-		$this->plugin_dir   = apply_filters( 'vgsr_plugin_dir_path',  plugin_dir_path( $this->file ) );
-		$this->plugin_url   = apply_filters( 'vgsr_plugin_dir_url',   plugin_dir_url ( $this->file ) );
+		$this->basename     = apply_filters( 'vgsr_plugin_basename', plugin_basename( $this->file ) );
+		$this->plugin_dir   = apply_filters( 'vgsr_plugin_dir_path', plugin_dir_path( $this->file ) );
+		$this->plugin_url   = apply_filters( 'vgsr_plugin_dir_url',  plugin_dir_url ( $this->file ) );
 
 		// Includes
 		$this->includes_dir = apply_filters( 'vgsr_includes_dir', trailingslashit( $this->plugin_dir . 'includes'  ) );
@@ -276,8 +276,9 @@ final class VGSR {
 		);
 
 		// Add the actions
-		foreach ( $actions as $class_action )
+		foreach ( $actions as $class_action ) {
 			add_action( 'vgsr_' . $class_action, array( $this, $class_action ), 5 );
+		}
 
 		// All VGSR actions are setup (includes vgsr-core-hooks.php)
 		do_action_ref_array( 'vgsr_after_setup_actions', array( &$this ) );

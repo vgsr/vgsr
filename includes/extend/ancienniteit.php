@@ -72,7 +72,7 @@ class VGSR_Ancienniteit {
 	?>
 
 		<input id="vgsr_always_ancienniteit" name="vgsr_always_ancienniteit" type="checkbox" value="1" <?php checked( get_option( 'vgsr_always_ancienniteit' ) ); ?> />
-		<label for="vgsr_always_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR group member always in anci&#235;nniteit.', 'vgsr' ); ?></span></label>
+		<label for="vgsr_always_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR group members always in anci&#235;nniteit.', 'vgsr' ); ?></span></label>
 
 	<?php
 	}
