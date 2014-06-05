@@ -38,6 +38,9 @@ class VGSR_BBPress {
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
+
+		/** Paths **********************************************************/
+
 		$this->includes_dir = trailingslashit( $vgsr->includes_dir . 'extend/bbpress' );
 		$this->includes_url = trailingslashit( $vgsr->includes_url . 'extend/bbpress' );
 	}
@@ -63,8 +66,10 @@ class VGSR_BBPress {
 		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bbp_settings_fields'             );
 		add_filter( 'vgsr_map_settings_meta_caps',      array( $this, 'map_meta_caps' ), 10, 4 );
 
-		// Hide profile root
-		add_filter( 'bbp_get_user_slug', array( $this, 'hide_profile_root' ) );
+		// Not using BuddyPress? Hide profile root
+		if ( ! function_exists( 'buddypress' ) ) {
+			add_filter( 'bbp_get_user_slug', array( $this, 'hide_profile_root' ) );
+		}
 
 		// Breadcrumbs home
 		add_filter( 'bbp_before_get_breadcrumb_parse_args', array( $this, 'breadcrumbs_home' ) );
@@ -128,10 +133,10 @@ class VGSR_BBPress {
 	 */
 	public function breadcrumbs_home( $args ) {
 
-		// Home text
+		// Get the Home text
 		$home = vgsr_bbp_breadcrumbs_home();
 
-		// Replace home text
+		// Only replace when not empty
 		if ( ! empty( $home ) )
 			$args['home_text'] = $home;
 

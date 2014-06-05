@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function vgsr_bbp_settings_sections( $sections = array() ) {
 	$sections['vgsr_settings_bbpress'] = array(
-		'title'    => __('bbPress Settings', 'vgsr'),
+		'title'    => __( 'bbPress Settings', 'vgsr' ),
 		'callback' => 'vgsr_bbp_setting_callback_bbpress_section',
 		'page'     => 'vgsr'
 	);
@@ -43,7 +43,7 @@ function vgsr_bbp_settings_fields( $fields = array() ) {
 	
 		// Hide profile root slug
 		'vgsr_bbp_hide_profile_root' => array(
-			'title'             => __('Hide profile root', 'vgsr'),
+			'title'             => __( 'Hide profile root', 'vgsr' ),
 			'callback'          => 'vgsr_bbp_setting_callback_hide_profile_root',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -51,12 +51,17 @@ function vgsr_bbp_settings_fields( $fields = array() ) {
 	
 		// Breadcrumbs Home
 		'vgsr_bbp_breadcrumbs_home' => array(
-			'title'             => __('Breadcrumbs Home', 'vgsr'),
+			'title'             => __( 'Breadcrumbs Home', 'vgsr' ),
 			'callback'          => 'vgsr_bbp_setting_callback_breadcrumbs_home',
 			'sanitize_callback' => 'esc_sql',
 			'args'              => array()
 		)
 	) );
+
+	// Prevale BuddyPress profiles
+	if ( function_exists( 'buddypress' ) ) {
+		unset( $fields['vgsr_settings_bbpress']['vgsr_bbp_hide_profile_root'] );
+	}
 
 	return $fields;
 }
@@ -69,7 +74,7 @@ function vgsr_bbp_settings_fields( $fields = array() ) {
 function vgsr_bbp_setting_callback_bbpress_section() {
 ?>
 
-	<p><?php esc_html_e('bbPress manipulations for VGSR.', 'vgsr'); ?></p>
+	<p><?php esc_html_e( 'bbPress manipulations for VGSR.', 'vgsr' ); ?></p>
 
 <?php
 }
@@ -91,11 +96,8 @@ function vgsr_bbp_setting_callback_hide_profile_root() {
 	if ( isset( $_GET['settings-updated'] ) && isset( $_GET['page'] ) )
 		flush_rewrite_rules(); 
 
-	// Get extend class
-	$bbp_extend = vgsr()->extend->bbpress;
-
 	// Remove the profile filter now for demonstration purposes
-	remove_filter( 'bbp_get_user_slug', array( $bbp_extend, 'hide_profile_root' ) );
+	remove_filter( 'bbp_get_user_slug', array( vgsr()->extend->bbp, 'hide_profile_root' ) );
 
 	// Get default user profile link
 	$show_root_url = bbp_get_user_profile_url( get_current_user_id() );
@@ -106,10 +108,10 @@ function vgsr_bbp_setting_callback_hide_profile_root() {
 	remove_filter( 'bbp_maybe_get_root_slug', '__return_false' );
 
 	// Setup the profile filter back again
-	add_filter( 'bbp_get_user_slug', array( $bbp_extend, 'hide_profile_root' ) ); ?>
+	add_filter( 'bbp_get_user_slug', array( vgsr()->extend->bbp, 'hide_profile_root' ) ); ?>
 
 	<input id="vgsr_bbp_hide_profile_root" name="vgsr_bbp_hide_profile_root" type="checkbox" value="1" <?php checked( vgsr_get_form_option( 'vgsr_bbp_hide_profile_root' ) ); vgsr_maybe_admin_setting_disabled( 'vgsr_bbp_hide_profile_root' ); ?> />
-	<label for="vgsr_bbp_hide_profile_root"><span class="description"><?php printf( esc_html__('Remove forums root slug for user profile pages. Turns %1$s into %2$s.', 'vgsr'), $show_root_url, $hide_root_url ); ?></span></label>
+	<label for="vgsr_bbp_hide_profile_root"><span class="description"><?php printf( esc_html__( 'Remove forums root slug for user profile pages. Turns %1$s into %2$s.', 'vgsr' ), $show_root_url, $hide_root_url ); ?></span></label>
 
 <?php
 }
@@ -127,7 +129,7 @@ function vgsr_bbp_setting_callback_breadcrumbs_home() {
 ?>
 
 	<input id="vgsr_bbp_breadcrumbs_home" name="vgsr_bbp_breadcrumbs_home" type="text" class="regular-text" value="<?php vgsr_form_option( 'vgsr_bbp_breadcrumbs_home' ); ?>" <?php vgsr_maybe_admin_setting_disabled( 'vgsr_bbp_breadcrumbs_home' ); ?> />
-	<label for="vgsr_bbp_breadcrumbs_home"><span class="description"><?php esc_html_e('Overwrite the forums breadcrumbs home text. Keep empty to default to the home page title.', 'vgsr' ); ?></span></label>
+	<label for="vgsr_bbp_breadcrumbs_home"><span class="description"><?php esc_html_e( 'Overwrite the forums breadcrumbs home text. Keep empty to default to the home page title.', 'vgsr' ); ?></span></label>
 
 <?php
 }

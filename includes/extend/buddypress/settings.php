@@ -67,6 +67,14 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 	// Component: Groups
 	if ( bp_is_active( 'groups' ) ) {
 		$groups_settings = array(
+
+			// VGSR main group
+			'vgsr_bp_group_vgsr' => array(
+				'title'             => __( 'Main Group', 'vgsr' ),
+				'callback'          => 'vgsr_bp_setting_callback_group_vgsr',
+				'sanitize_callback' => 'intval',
+				'args'              => array()
+			),
 			
 			// VGSR leden group
 			'vgsr_bp_group_leden' => array(
@@ -82,27 +90,22 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 				'callback'          => 'vgsr_bp_setting_callback_group_oudleden',
 				'sanitize_callback' => 'intval',
 				'args'              => array()
-			)
-		);
+			),
 
-		// VGSR main group when using hierarchy
-		if ( vgsr()->extend->bp->hierarchy ) {
-			$groups_settings['vgsr_bp_group_vgsr'] = array(
-				'title'             => __( 'Main Group', 'vgsr' ),
-				'callback'          => 'vgsr_bp_setting_callback_group_vgsr',
+			'vgsr_bp_remove_groups_admin_nav' => array(
+				'title'             => __( 'Remove groups admin bar', 'vgsr' ),
+				'callback'          => 'vgsr_bp_setting_callback_remove_groups_admin_nav',
 				'sanitize_callback' => 'intval',
 				'args'              => array()
-			);
+			),
+		);
+
+		// Not using group hierarchy
+		if ( ! vgsr()->extend->bp->hierarchy ) {
+			unset( $groups_settings['vgsr_bp_group_vgsr'] );
 		}
 
 		// Remove group admin nav
-		$groups_settings['vgsr_bp_remove_groups_admin_nav'] = array(
-			'title'             => __( 'Remove groups admin bar', 'vgsr' ),
-			'callback'          => 'vgsr_bp_setting_callback_remove_groups_admin_nav',
-			'sanitize_callback' => 'intval',
-			'args'              => array()
-		);
-			
 		$fields['vgsr_settings_bp_groups'] = (array) apply_filters( 'vgsr_settings_fields_bp_groups', $groups_settings );
 	}
 
@@ -119,7 +122,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 function vgsr_bp_setting_callback_general_section() {
 ?>
 
-	<p><?php esc_html_e('BuddyPress manipulations for VGSR.', 'vgsr'); ?></p>
+	<p><?php esc_html_e( 'BuddyPress manipulations for VGSR.', 'vgsr' ); ?></p>
 
 <?php
 }
@@ -146,7 +149,7 @@ function vgsr_bp_setting_callback_remove_ab_my_account_root() {
 ?>
 
 	<input id="vgsr_bp_remove_ab_my_account_root" name="vgsr_bp_remove_ab_my_account_root" type="checkbox" value="1" <?php checked( vgsr_bp_remove_ab_my_account_root() ); ?> />
-	<label for="vgsr_bp_remove_ab_my_account_root"><span class="description"><?php esc_html_e('Remove the BuddyPress My Account area in the admin bar.', 'vgsr'); ?></span></label>
+	<label for="vgsr_bp_remove_ab_my_account_root"><span class="description"><?php esc_html_e( 'Remove the BuddyPress My Account area in the admin bar.', 'vgsr' ); ?></span></label>
 
 <?php
 }
@@ -168,7 +171,7 @@ function vgsr_bp_setting_callback_group_vgsr() {
 	$groups = $data['groups']; ?>
 
 	<select id="vgsr_bp_group_vgsr" name="vgsr_bp_group_vgsr">
-		<option><?php _e('Select a group', 'vgsr'); ?></option>
+		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( $groups as $group ) : ?>
 
@@ -176,7 +179,7 @@ function vgsr_bp_setting_callback_group_vgsr() {
 
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_bp_group_vgsr"><span class="description"><?php esc_html_e('The main VGSR group.', 'vgsr'); ?></span></label>
+	<label for="vgsr_bp_group_vgsr"><span class="description"><?php esc_html_e( 'The main VGSR group.', 'vgsr' ); ?></span></label>
 
 <?php
 }
@@ -196,7 +199,7 @@ function vgsr_bp_setting_callback_group_leden() {
 	$groups = $data['groups']; ?>
 
 	<select id="vgsr_bp_group_leden" name="vgsr_bp_group_leden">
-		<option><?php _e('Select a group', 'vgsr'); ?></option>
+		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( $groups as $group ) : ?>
 
@@ -204,7 +207,7 @@ function vgsr_bp_setting_callback_group_leden() {
 
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_bp_group_leden"><span class="description"><?php esc_html_e('The leden VGSR group.', 'vgsr'); ?></span></label>
+	<label for="vgsr_bp_group_leden"><span class="description"><?php esc_html_e( 'The leden VGSR group.', 'vgsr' ); ?></span></label>
 
 <?php
 }
@@ -224,7 +227,7 @@ function vgsr_bp_setting_callback_group_oudleden() {
 	$groups = $data['groups']; ?>
 
 	<select id="vgsr_bp_group_oudleden" name="vgsr_bp_group_oudleden">
-		<option><?php _e('Select a group', 'vgsr'); ?></option>
+		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( $groups as $group ) : ?>
 
@@ -232,7 +235,7 @@ function vgsr_bp_setting_callback_group_oudleden() {
 
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_bp_group_oudleden"><span class="description"><?php esc_html_e('The oud-leden VGSR group.', 'vgsr'); ?></span></label>
+	<label for="vgsr_bp_group_oudleden"><span class="description"><?php esc_html_e( 'The oud-leden VGSR group.', 'vgsr' ); ?></span></label>
 
 <?php
 }
@@ -248,7 +251,7 @@ function vgsr_bp_setting_callback_remove_groups_admin_nav() {
 ?>
 
 	<input id="vgsr_bp_remove_groups_admin_nav" name="vgsr_bp_remove_groups_admin_nav" type="checkbox" value="1" <?php checked( vgsr_bp_remove_groups_admin_nav() ); ?> />
-	<label for="vgsr_bp_remove_groups_admin_nav"><span class="description"><?php esc_html_e('Remove the groups admin bar menu items.', 'vgsr'); ?></span></label>
+	<label for="vgsr_bp_remove_groups_admin_nav"><span class="description"><?php esc_html_e( 'Remove the groups admin bar menu items.', 'vgsr' ); ?></span></label>
 
 <?php
 }
