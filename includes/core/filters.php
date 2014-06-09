@@ -41,4 +41,5 @@ add_filter( 'request',                 'vgsr_request',            10    );
 add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',      10, 4 );
 
 // Posts
-add_filter( 'vgsr_request', 'vgsr_filter_vgsr_posts' );
+add_filter( 'vgsr_request',        'vgsr_filter_vgsr_posts'                   );
+add_filter( 'wp_nav_menu_objects', 'vgsr_filter_vgsr_nav_menu_objects', 10, 2 );
