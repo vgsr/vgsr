@@ -118,10 +118,13 @@ class VGSR_Admin {
 		add_filter( 'plugin_action_links', array( $this, 'modify_plugin_action_links' ), 10, 2 );
 
 		// Map settings capabilities
-		add_filter( 'display_post_states', array( $this, 'display_post_states'        ), 10, 2 );
-
-		// Map settings capabilities
 		add_filter( 'vgsr_map_meta_caps',  array( $this, 'map_settings_meta_caps'     ), 10, 4 );
+
+		// VGSR-only columns
+		add_filter( 'display_post_states',        array( $this, 'display_post_states'  ), 10, 2 );
+		add_filter( 'manage_posts_columns',       array( $this, 'get_post_columns'     )        );
+		add_filter( 'manage_posts_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
+		add_filter( 'manage_pages_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
 
 		/** Network Admin *****************************************************/
 
@@ -249,25 +252,6 @@ class VGSR_Admin {
 	}
 
 	/**
-	 * Manipulate post states
-	 *
-	 * @since 0.0.6
-	 * 
-	 * @param array $states Post states
-	 * @param WP_Post $post Post object
-	 * @return array $states
-	 */
-	public function display_post_states( $states, $post ) {
-
-		// Post is vgsr-only
-		if ( vgsr_is_post_vgsr_only( $post->ID ) ) {
-			$states['vgsr-only'] = __( 'VGSR', 'vgsr' );
-		}
-
-		return $states;
-	}
-
-	/**
 	 * Add Settings link to plugins area
 	 *
 	 * @since 0.0.1
@@ -286,6 +270,82 @@ class VGSR_Admin {
 		return array_merge( $links, array(
 			'settings' => '<a href="' . add_query_arg( array( 'page' => 'vgsr' ), admin_url( 'options-general.php' ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>',
 		) );
+	}
+
+	/** VGSR Only *************************************************************/
+
+	/**
+	 * Filter the post administration columns
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $columns Columns
+	 * @return array
+	 */
+	public function get_post_columns( $columns ) {
+
+		// Dummy column to enable quick edit
+		$columns['vgsr-only'] = __( 'VGSR Only', 'vgsr' );
+
+		// Hide dummy column by default
+		$screen = get_current_screen();
+		add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
+
+		return $columns;
+	}
+
+	/**
+	 * Filter the hidden post administration columns
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $columns Hidden columns
+	 * @return array
+	 */
+	public function get_post_columns_hidden( $columns ) {
+
+		// Hide vgsr-only dummy column by default
+		$columns[] = 'vgsr-only';
+
+		return $columns;
+	}
+
+	/**
+	 * Display dedicated column content
+	 *
+	 * @since 0.0.6
+	 *
+	 * @uses vgsr_is_post_vgsr_only()
+	 */
+	public function post_columns_content( $column, $post_id ) {
+
+		// Check column name
+		switch ( $column ) {
+			case 'vgsr-only' :
+
+				// Output quick edit value reference
+				echo '<input type="hidden" value="' . (int) vgsr_is_post_vgsr_only( $post_id ) . '" />';
+				break;
+		}
+	}
+
+	/**
+	 * Manipulate post states
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $states Post states
+	 * @param WP_Post $post Post object
+	 * @return array $states
+	 */
+	public function display_post_states( $states, $post ) {
+
+		// Post is vgsr-only
+		if ( vgsr_is_post_vgsr_only( $post->ID ) ) {
+			$states['vgsr-only'] = __( 'VGSR', 'vgsr' );
+		}
+
+		return $states;
 	}
 }
 

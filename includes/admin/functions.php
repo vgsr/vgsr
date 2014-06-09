@@ -78,3 +78,40 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 
 	return $post_id;
 }
+
+/**
+ * Output quick edit vgsr-only post fields
+ *
+ * @since 0.0.6
+ */
+function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
+
+	// Bail if this is not our column
+	if ( 'vgsr-only' != $column_name )
+		return; ?>
+
+	<fieldset class="inline-edit-col-right"><div class="inline-edit-col">
+		<div class="inline-edit-group">
+			<label class="alignleft">
+				<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
+				<input type="checkbox" name="_vgsr_post_vgsr_only" value="1" />
+				<span class="checkbox-title"><?php _e( 'VGSR only?' ); ?></span>
+			</label>
+		</div>
+	</div></fieldset>
+
+    <script type="text/javascript">
+    jQuery(document).ready( function( $ ) {
+        $('#the-list').on('click', 'a.editinline', function() {
+			var id    = inlineEditPost.getId( this ),
+			    input = $('#inline-edit input[name="_vgsr_post_vgsr_only"]').attr('checked', false);
+
+			// Mark checked if vgsr-only
+			if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) )
+				input.attr('checked', 'checked');
+        });
+    });
+    </script>
+
+	<?php
+}
