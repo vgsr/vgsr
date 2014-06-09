@@ -43,7 +43,7 @@ function vgsr_is_post_vgsr_only( $post_id = 0 ) {
  * @uses apply_filters() Calls 'vgsr_get_group_vgsr_id'
  * @return int VGSR group ID
  */
-function vgsr_filter_vgsr_posts( $query_vars ) {
+function vgsr_filter_vgsr_only_posts( $query_vars ) {
 
 	// Bail if current user _is_ VGSR
 	if ( user_is_vgsr() )
@@ -73,7 +73,7 @@ function vgsr_filter_vgsr_posts( $query_vars ) {
  * @param array $args Query arguments
  * @return array Nav menu items
  */
-function vgsr_filter_vgsr_nav_menu_objects( $nav_menu_items, $args ) {
+function vgsr_filter_vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 
 	// Bail if current user _is_ VGSR
 	if ( user_is_vgsr() )

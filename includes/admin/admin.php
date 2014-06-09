@@ -118,6 +118,9 @@ class VGSR_Admin {
 		add_filter( 'plugin_action_links', array( $this, 'modify_plugin_action_links' ), 10, 2 );
 
 		// Map settings capabilities
+		add_filter( 'display_post_states', array( $this, 'display_post_states'        ), 10, 2 );
+
+		// Map settings capabilities
 		add_filter( 'vgsr_map_meta_caps',  array( $this, 'map_settings_meta_caps'     ), 10, 4 );
 
 		/** Network Admin *****************************************************/
@@ -245,8 +248,23 @@ class VGSR_Admin {
 		}
 	}
 
-	public function post_states() {
+	/**
+	 * Manipulate post states
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $states Post states
+	 * @param WP_Post $post Post object
+	 * @return array $states
+	 */
+	public function display_post_states( $states, $post ) {
 
+		// Post is vgsr-only
+		if ( vgsr_is_post_vgsr_only( $post->ID ) ) {
+			$states['vgsr-only'] = __( 'VGSR', 'vgsr' );
+		}
+
+		return $states;
 	}
 
 	/**
