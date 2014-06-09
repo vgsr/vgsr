@@ -88,6 +88,7 @@ class VGSR_Admin {
 	 * @access private
 	 */
 	private function includes() {
+		require( $this->admin_dir . 'functions.php' );
 		require( $this->admin_dir . 'settings.php'  );
 	}
 
@@ -244,6 +245,10 @@ class VGSR_Admin {
 		}
 	}
 
+	public function post_states() {
+
+	}
+
 	/**
 	 * Add Settings link to plugins area
 	 *
@@ -264,7 +269,6 @@ class VGSR_Admin {
 			'settings' => '<a href="' . add_query_arg( array( 'page' => 'vgsr' ), admin_url( 'options-general.php' ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>',
 		) );
 	}
-
 }
 
 endif; // class_exists

@@ -47,6 +47,10 @@ add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings' );
 // Initialize the admin area
 add_action( 'vgsr_init', 'vgsr_admin' );
 
+// Posts
+add_action( 'post_submitbox_misc_actions', 'vgsr_post_vgsr_only_meta'      );
+add_action( 'save_post',                   'vgsr_post_vgsr_only_meta_save' );
+
 /** Sub-Actions ***************************************************************/
 
 /**

@@ -150,6 +150,16 @@ function vgsr_ready() {
 /** Filters *******************************************************************/
 
 /**
+ * Piggy back filter for WordPress's 'request' filter
+ *
+ * @param array $query_vars
+ * @return array
+ */
+function vgsr_request( $query_vars = array() ) {
+	return apply_filters( 'vgsr_request', $query_vars );
+}
+
+/**
  * Maps caps to built in WordPress caps
  *
  * @param array $caps Capabilities for meta capability

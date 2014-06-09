@@ -48,6 +48,8 @@ function vgsr_get_group_oudleden_id() {
 	return (int) apply_filters( 'vgsr_get_group_oudleden_id', 0 );
 }
 
+/** Is Functions **********************************************************/
+
 /**
  * Return whether a given user is in the VGSR group
  *
@@ -113,6 +115,10 @@ function user_is_oudlid( $user_id = 0 ) {
 
 /**
  * Abstraction function to check user group membership
+ *
+ * Group plugins hook in here to verify group membership
+ * of the given user. When no external filters are added,
+ * this function assumes no membership, returning False.
  *
  * @since 0.0.1
  * 
