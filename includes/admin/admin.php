@@ -123,6 +123,7 @@ class VGSR_Admin {
 		// VGSR-only columns
 		add_filter( 'display_post_states',        array( $this, 'display_post_states'  ), 10, 2 );
 		add_filter( 'manage_posts_columns',       array( $this, 'get_post_columns'     )        );
+		add_filter( 'manage_pages_columns',       array( $this, 'get_post_columns'     )        );
 		add_filter( 'manage_posts_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
 		add_filter( 'manage_pages_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
 

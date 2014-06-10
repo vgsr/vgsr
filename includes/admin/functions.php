@@ -16,6 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Display the vgsr-only post meta field
  *
  * @since 0.0.6
+ *
+ * @uses get_post_type_object()
+ * @uses vgsr_is_post_vgsr_only()
  */
 function vgsr_post_vgsr_only_meta() {
 	global $post;
@@ -24,9 +27,8 @@ function vgsr_post_vgsr_only_meta() {
 	if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->publish_posts ) )
 		return; ?>
 
-		<div class="misc-pub-section misc-pub-vgsr-only">
+		<div class="misc-pub-section misc-pub-vgsr-only dashicons-before dashicons-flag">
 			<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
-			<i class="dashicons-before dashicons-flag" style="color:#888;"></i>
 			<label for="post_vgsr_only"><?php _e( 'VGSR only', 'vgsr' ); ?>:</label>
 			<input type="checkbox" id="post_vgsr_only" name="_vgsr_post_vgsr_only" value="1" <?php checked( vgsr_is_post_vgsr_only( $post->ID ) ); ?>/>
 		</div>
@@ -35,9 +37,56 @@ function vgsr_post_vgsr_only_meta() {
 }
 
 /**
- * Save the vgsr-only post meta field
+ * Output quick edit vgsr-only post fields
  *
  * @since 0.0.6
+ *
+ * @uses wp_nonce_field()
+ */
+function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
+
+	// Bail if this is not our column
+	if ( 'vgsr-only' != $column_name )
+		return; ?>
+
+	<fieldset class="inline-edit-col-right"><div class="inline-edit-col">
+		<div class="inline-edit-group">
+			<label class="alignleft">
+				<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
+				<input type="checkbox" name="_vgsr_post_vgsr_only" value="1" />
+				<span class="checkbox-title"><?php _e( 'VGSR only', 'vgsr' ); ?></span>
+			</label>
+		</div>
+	</div></fieldset>
+
+    <script type="text/javascript">
+    jQuery(document).ready( function( $ ) {
+
+    	// When selecting new post to edit inline
+        $('#the-list').on('click', 'a.editinline', function() {
+			var id    = inlineEditPost.getId( this ),
+			    input = $('#inline-edit input[name="_vgsr_post_vgsr_only"]').attr('checked', false);
+
+			// Mark checked if vgsr-only. Value is in hidden input field in vgsr-only column
+			if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) )
+				input.attr('checked', 'checked');
+        });
+    });
+    </script>
+
+	<?php
+}
+
+/**
+ * Save the vgsr-only post meta field
+ *
+ * Handles saving from metabox as well as from quick edit.
+ *
+ * @since 0.0.6
+ *
+ * @uses get_post_type_object()
+ * @uses update_post_meta()
+ * @uses delete_post_meta()
  */
 function vgsr_post_vgsr_only_meta_save( $post_id ) {
 
@@ -68,7 +117,7 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 		return $post_id;
 
 	// Field selected
-	if ( isset( $_POST['_vgsr_post_vgsr_only'] ) ) {
+	if ( isset( $_POST['_vgsr_post_vgsr_only'] ) && ! empty( $_POST['_vgsr_post_vgsr_only'] ) ) {
 		update_post_meta( $post_id, '_vgsr_post_vgsr_only', 1 );
 
 	// Not selected
@@ -77,41 +126,4 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 	}
 
 	return $post_id;
-}
-
-/**
- * Output quick edit vgsr-only post fields
- *
- * @since 0.0.6
- */
-function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
-
-	// Bail if this is not our column
-	if ( 'vgsr-only' != $column_name )
-		return; ?>
-
-	<fieldset class="inline-edit-col-right"><div class="inline-edit-col">
-		<div class="inline-edit-group">
-			<label class="alignleft">
-				<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
-				<input type="checkbox" name="_vgsr_post_vgsr_only" value="1" />
-				<span class="checkbox-title"><?php _e( 'VGSR only?' ); ?></span>
-			</label>
-		</div>
-	</div></fieldset>
-
-    <script type="text/javascript">
-    jQuery(document).ready( function( $ ) {
-        $('#the-list').on('click', 'a.editinline', function() {
-			var id    = inlineEditPost.getId( this ),
-			    input = $('#inline-edit input[name="_vgsr_post_vgsr_only"]').attr('checked', false);
-
-			// Mark checked if vgsr-only
-			if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) )
-				input.attr('checked', 'checked');
-        });
-    });
-    </script>
-
-	<?php
 }
