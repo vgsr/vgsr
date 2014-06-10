@@ -28,6 +28,16 @@ function vgsr_post_vgsr_only_meta() {
 		return; ?>
 
 		<div class="misc-pub-section misc-pub-vgsr-only dashicons-before dashicons-flag">
+			<style>
+				.misc-pub-vgsr-only:before {
+					position: relative;
+					top: 0;
+					left: -1px;
+					padding: 0 2px 0 0;
+					color: #888;
+				}
+			</style>
+
 			<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
 			<label for="post_vgsr_only"><?php _e( 'VGSR only', 'vgsr' ); ?>:</label>
 			<input type="checkbox" id="post_vgsr_only" name="_vgsr_post_vgsr_only" value="1" <?php checked( vgsr_is_post_vgsr_only( $post->ID ) ); ?>/>
