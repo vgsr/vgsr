@@ -32,16 +32,6 @@ class VGSR_Admin {
 	 */
 	public $admin_url = '';
 
-	/**
-	 * @var string URL to the VGSR images directory
-	 */
-	public $images_url = '';
-
-	/**
-	 * @var string URL to the VGSR admin styles directory
-	 */
-	public $styles_url = '';
-
 	/** Capability ************************************************************/
 
 	/**
@@ -75,10 +65,10 @@ class VGSR_Admin {
 	private function setup_globals() {
 		$vgsr = vgsr();
 		
-		$this->admin_dir  = trailingslashit( $vgsr->includes_dir . 'admin'  ); // Admin path
-		$this->admin_url  = trailingslashit( $vgsr->includes_url . 'admin'  ); // Admin url
-		$this->images_url = trailingslashit( $this->admin_url    . 'images' ); // Admin images URL
-		$this->styles_url = trailingslashit( $this->admin_url    . 'styles' ); // Admin styles URL
+		/** Paths *************************************************************/
+
+		$this->admin_dir = trailingslashit( $vgsr->includes_dir . 'admin'  ); // Admin path
+		$this->admin_url = trailingslashit( $vgsr->includes_url . 'admin'  ); // Admin url
 	}
 
 	/**
@@ -273,7 +263,7 @@ class VGSR_Admin {
 		) );
 	}
 
-	/** VGSR Only *************************************************************/
+	/** Posts *****************************************************************/
 
 	/**
 	 * Filter the post administration columns
@@ -325,6 +315,7 @@ class VGSR_Admin {
 			case 'vgsr-only' :
 
 				// Output quick edit value reference
+				// @todo Display check mark. It's existence will do for quick edit data finding.
 				echo '<input type="hidden" value="' . (int) vgsr_is_post_vgsr_only( $post_id ) . '" />';
 				break;
 		}

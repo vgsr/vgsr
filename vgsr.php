@@ -57,16 +57,6 @@ final class VGSR {
 	 */
 	public $extend;
 
-	/**
-	 * @var array Overloads get_option()
-	 */
-	public $options      = array();
-
-	/**
-	 * @var array Overloads get_user_meta()
-	 */
-	public $user_options = array();
-
 	/** Singleton *************************************************************/
 
 	/**
@@ -204,7 +194,6 @@ final class VGSR {
 		/** Users *************************************************************/
 
 		$this->current_user = new WP_User(); // Currently logged in user
-		$this->vsgr_user    = new WP_User(); // Currently displayed user
 
 		/** Misc **************************************************************/
 

@@ -40,17 +40,30 @@ function vgsr_is_post_vgsr_only( $post_id = 0 ) {
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls 'vgsr_get_group_vgsr_id'
+ * @uses apply_filters() Calls 'vgsr_filter_vgsr_only_posts'
+ * @param WP_Query|array $query Query (vars)
  * @return int VGSR group ID
  */
-function vgsr_filter_vgsr_only_posts( $query_vars ) {
+function vgsr_filter_vgsr_only_posts( $query ) {
 
 	// Bail if current user _is_ VGSR
 	if ( user_is_vgsr() )
-		return $query_vars;
+		return $query;
+
+	// Logic to work with 'pre_get_posts' filter
+	if ( 'pre_get_posts' === current_filter() ) {
+
+		// Bail if editing main query, since that was done through
+		// the 'vgsr_request' filter
+		if ( $query->is_main_query() )
+			return;
+
+		// Setup query vars
+		$query = &$query->query_vars;
+	}
 
 	// Setup meta query
-	$meta_query = isset( $query_vars['meta_query'] ) ? $query_vars['meta_query'] : array();
+	$meta_query = isset( $query['meta_query'] ) ? $query['meta_query'] : array();
 
 	// Handle post mark
 	$meta_query[] = array(
@@ -59,9 +72,9 @@ function vgsr_filter_vgsr_only_posts( $query_vars ) {
 	);
 
 	// Set meta query
-	$query_vars['meta_query'] = $meta_query;
+	$query['meta_query'] = $meta_query;
 
-	return apply_filters( 'vgsr_filter_vgsr_posts', $query_vars );
+	return apply_filters( 'vgsr_filter_vgsr_only_posts', $query );
 }
 
 /**
@@ -69,6 +82,7 @@ function vgsr_filter_vgsr_only_posts( $query_vars ) {
  *
  * @since 0.0.6
  *
+ * @uses apply_filters() Calls 'vgsr_filter_vgsr_only_nav_menu_objects'
  * @param array $nav_menu_items Nav menu items
  * @param array $args Query arguments
  * @return array Nav menu items
@@ -87,5 +101,5 @@ function vgsr_filter_vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 			unset( $nav_menu_items[$k] );
 	}
 
-	return apply_filters( 'vgsr_filter_vgsr_nav_menu_objects', $nav_menu_items, $args );
+	return apply_filters( 'vgsr_filter_vgsr_only_nav_menu_objects', $nav_menu_items, $args );
 }
