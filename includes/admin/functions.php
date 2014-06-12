@@ -135,5 +135,8 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 		delete_post_meta( $post_id, '_vgsr_post_vgsr_only' );
 	}
 
+	// Update hierarchy
+	_vgsr_only_update_post_hierarchy( $post_id );
+
 	return $post_id;
 }

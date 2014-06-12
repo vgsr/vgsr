@@ -121,3 +121,13 @@ function vgsr_pre_get_option( $value = '' ) {
 
 /** Active? *******************************************************************/
 
+/**
+ * Return the private reading post types option
+ *
+ * @since 0.0.6
+ * 
+ * @return array Post type names
+ */
+function vgsr_get_private_reading_post_types() {
+	return (array) get_option( '_vgsr_private_reading_post_types', array() );
+}

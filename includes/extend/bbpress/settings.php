@@ -110,7 +110,7 @@ function vgsr_bbp_setting_callback_hide_profile_root() {
 	// Setup the profile filter back again
 	add_filter( 'bbp_get_user_slug', array( vgsr()->extend->bbp, 'hide_profile_root' ) ); ?>
 
-	<input id="vgsr_bbp_hide_profile_root" name="vgsr_bbp_hide_profile_root" type="checkbox" value="1" <?php checked( vgsr_get_form_option( 'vgsr_bbp_hide_profile_root' ) ); vgsr_maybe_admin_setting_disabled( 'vgsr_bbp_hide_profile_root' ); ?> />
+	<input id="vgsr_bbp_hide_profile_root" name="vgsr_bbp_hide_profile_root" type="checkbox" value="1" <?php checked( vgsr_get_form_option( 'vgsr_bbp_hide_profile_root' ) ); ?> />
 	<label for="vgsr_bbp_hide_profile_root"><span class="description"><?php printf( esc_html__( 'Remove forums root slug for user profile pages. Turns %1$s into %2$s.', 'vgsr' ), $show_root_url, $hide_root_url ); ?></span></label>
 
 <?php
@@ -128,7 +128,7 @@ function vgsr_bbp_setting_callback_hide_profile_root() {
 function vgsr_bbp_setting_callback_breadcrumbs_home() {
 ?>
 
-	<input id="vgsr_bbp_breadcrumbs_home" name="vgsr_bbp_breadcrumbs_home" type="text" class="regular-text" value="<?php vgsr_form_option( 'vgsr_bbp_breadcrumbs_home' ); ?>" <?php vgsr_maybe_admin_setting_disabled( 'vgsr_bbp_breadcrumbs_home' ); ?> />
+	<input id="vgsr_bbp_breadcrumbs_home" name="vgsr_bbp_breadcrumbs_home" type="text" class="regular-text" value="<?php vgsr_form_option( 'vgsr_bbp_breadcrumbs_home' ); ?>" />
 	<label for="vgsr_bbp_breadcrumbs_home"><span class="description"><?php esc_html_e( 'Overwrite the forums breadcrumbs home text. Keep empty to default to the home page title.', 'vgsr' ); ?></span></label>
 
 <?php

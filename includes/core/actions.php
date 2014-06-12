@@ -74,3 +74,6 @@ add_action( 'vgsr_ready', 'vgsr_setup_ancienniteit', 10 ); // Ancienniteit for g
 add_action( 'vgsr_ready', 'vgsr_setup_bbpress',      10 ); // Forum integration
 add_action( 'vgsr_ready', 'vgsr_setup_buddypress',   10 ); // Social network integration
 add_action( 'vgsr_ready', 'vgsr_setup_groupz',       10 ); // Group integration
+
+// Set vgsr-only posts global. For now
+add_action( 'vgsr_register', '_vgsr_only_update_post_hierarchy', 0 );

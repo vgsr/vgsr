@@ -187,8 +187,9 @@ class VGSR_Admin {
 		switch ( $cap ) {
 
 			// Admins
-			case 'vgsr_settings_page' : // Settings - Page
-			case 'vgsr_settings_main' : // Settings - General
+			case 'vgsr_settings_page' :   // Settings - Page
+			case 'vgsr_settings_main' :   // Settings - General
+			case 'vgsr_settings_access' : // Settings - Access
 				$caps = array( vgsr()->admin->minimum_capability );
 				break;
 		}
@@ -332,9 +333,13 @@ class VGSR_Admin {
 	 */
 	public function display_post_states( $states, $post ) {
 
-		// Post is vgsr-only
+		// Post is vgsr-only: big notation.
 		if ( vgsr_is_post_vgsr_only( $post->ID ) ) {
 			$states['vgsr-only'] = __( 'VGSR', 'vgsr' );
+
+		// Some parent is vgsr-only: small notation.
+		} elseif ( vgsr_is_post_vgsr_only( $post->ID, true ) ) {
+			$states['vgsr-only'] = __( 'vgsr', 'vgsr' );
 		}
 
 		return $states;

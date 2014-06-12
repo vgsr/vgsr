@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 function vgsr_groupz_settings_sections( $sections = array() ) {
 	$sections['vgsr_settings_groupz'] = array(
-		'title'    => __('Groupz Settings', 'vgsr'),
+		'title'    => __( 'Groupz Settings', 'vgsr' ),
 		'callback' => 'vgsr_groupz_setting_callback_groupz_section',
 		'page'     => 'vgsr'
 	);
@@ -43,7 +43,7 @@ function vgsr_groupz_settings_fields( $fields = array() ) {
 		
 		// VGSR main group
 		'vgsr_groupz_group_vgsr' => array(
-			'title'             => __('Main group', 'vgsr'),
+			'title'             => __( 'Main group', 'vgsr' ),
 			'callback'          => 'vgsr_groupz_setting_callback_group_vgsr',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -51,7 +51,7 @@ function vgsr_groupz_settings_fields( $fields = array() ) {
 		
 		// VGSR leden group
 		'vgsr_groupz_group_leden' => array(
-			'title'             => __('Leden group', 'vgsr'),
+			'title'             => __( 'Leden group', 'vgsr' ),
 			'callback'          => 'vgsr_groupz_setting_callback_group_leden',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -59,7 +59,7 @@ function vgsr_groupz_settings_fields( $fields = array() ) {
 
 		// VGSR oud-leden group
 		'vgsr_groupz_group_oudleden' => array(
-			'title'             => __('Oud-leden group', 'vgsr'),
+			'title'             => __( 'Oud-leden group', 'vgsr' ),
 			'callback'          => 'vgsr_groupz_setting_callback_group_oudleden',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -77,7 +77,7 @@ function vgsr_groupz_settings_fields( $fields = array() ) {
 function vgsr_groupz_setting_callback_groupz_section() {
 ?>
 
-	<p><?php esc_html_e('Set VGSR groups and other Groupz functionalities for VGSR.', 'vgsr'); ?></p>
+	<p><?php esc_html_e( 'Set VGSR groups and other Groupz functionalities for VGSR.', 'vgsr' ); ?></p>
 
 <?php
 }
@@ -94,7 +94,7 @@ function vgsr_groupz_setting_callback_group_vgsr() {
 ?>
 
 	<select id="vgsr_groupz_group_vgsr" name="vgsr_groupz_group_vgsr">
-		<option><?php _e('Select a group', 'vgsr'); ?></option>
+		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( get_groups() as $group ) : ?>
 
@@ -102,7 +102,7 @@ function vgsr_groupz_setting_callback_group_vgsr() {
 
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_groupz_group_vgsr"><span class="description"><?php esc_html_e('The main VGSR group.', 'vgsr'); ?></span></label>
+	<label for="vgsr_groupz_group_vgsr"><span class="description"><?php esc_html_e( 'The main VGSR group.', 'vgsr' ); ?></span></label>
 
 <?php
 }
@@ -119,7 +119,7 @@ function vgsr_groupz_setting_callback_group_leden() {
 ?>
 
 	<select id="vgsr_groupz_group_leden" name="vgsr_groupz_group_leden">
-		<option><?php _e('Select a group', 'vgsr'); ?></option>
+		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( get_groups() as $group ) : ?>
 
@@ -127,7 +127,7 @@ function vgsr_groupz_setting_callback_group_leden() {
 
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_groupz_group_leden"><span class="description"><?php esc_html_e('The leden VGSR group.', 'vgsr'); ?></span></label>
+	<label for="vgsr_groupz_group_leden"><span class="description"><?php esc_html_e( 'The leden VGSR group.', 'vgsr' ); ?></span></label>
 
 <?php
 }
@@ -144,7 +144,7 @@ function vgsr_groupz_setting_callback_group_oudleden() {
 ?>
 
 	<select id="vgsr_groupz_group_oudleden" name="vgsr_groupz_group_oudleden">
-		<option><?php _e('Select a group', 'vgsr'); ?></option>
+		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( get_groups() as $group ) : ?>
 
@@ -152,7 +152,7 @@ function vgsr_groupz_setting_callback_group_oudleden() {
 
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_groupz_group_oudleden"><span class="description"><?php esc_html_e('The oud-leden VGSR group.', 'vgsr'); ?></span></label>
+	<label for="vgsr_groupz_group_oudleden"><span class="description"><?php esc_html_e( 'The oud-leden VGSR group.', 'vgsr' ); ?></span></label>
 
 <?php
 }

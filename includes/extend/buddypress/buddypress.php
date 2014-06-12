@@ -67,7 +67,6 @@ class VGSR_BuddyPress {
 	 * @uses bp_is_active() To enable hooks for active BP components
 	 */
 	private function setup_actions() {
-		$bp = buddypress();
 
 		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections'            );
@@ -81,7 +80,7 @@ class VGSR_BuddyPress {
 
 		// Groups
 		if ( bp_is_active( 'groups' ) ) {
-			$groups = $bp->groups;
+			$groups = buddypress()->groups;
 
 			// Use BP groups as VGSR groups
 			add_filter( 'vgsr_get_group_vgsr_id',     array( $this, 'get_group_vgsr'     ) );
@@ -90,6 +89,10 @@ class VGSR_BuddyPress {
 
 			// User in group
 			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
+
+			// Manage private reading caps
+			// add_action( 'groups_join_group',  array( $this, 'add_private_caps'    ), 10, 2 );
+			// add_action( 'groups_leave_group', array( $this, 'remove_private_caps' ), 10, 2 );
 
 			// Remove groups admin bar menu items
 			if ( vgsr_bp_remove_groups_admin_nav() ) {
@@ -193,28 +196,28 @@ class VGSR_BuddyPress {
 		$group_id  = (int) $group_id;
 		$user_id   = (int) $user_id;
 
-		// Hierarchical groups
+		// Hierarchical group list
 		if ( $this->hierarchy ) {
 
 			/**
-			 * Get all hierarchy group ids
+			 * Get all group ids in VGSR hierarchy
 			 * 
 			 * Use the ArrayIterator class to dynamically walk all 
 			 * array elements while simultaneously adding new items 
-			 * to that array.
+			 * to that array for iteration.
 			 */
-			$groups = new ArrayIterator( array( $group_id ) );
-			foreach ( $groups as $gid ) {
+			$group_array = new ArrayIterator( array( $group_id ) );
+			foreach ( $group_array as $gid ) {
 				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
 					foreach ( $children as $sub_group_id )
-						$groups->append( (int) $sub_group_id );
+						$group_array->append( (int) $sub_group_id );
 				}
 			}
 
 			// Build the query
-			$bp   = buddypress();
-			$gids = implode( ',', $groups->getArrayCopy() );
-			$sql  = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN ($gids)", $user_id );
+			$bp     = buddypress();
+			$groups = implode( ',', $group_array->getArrayCopy() );
+			$sql    = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN ($groups)", $user_id );
 			
 			// Run the query
 			$is_member = (bool) $wpdb->get_var( $sql );
@@ -245,6 +248,42 @@ class VGSR_BuddyPress {
 		}
 
 		return $is_member;
+	}
+
+	/**
+	 * Add private reading caps after user joins a VGSR group
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param int $group_id Group ID
+	 * @param int $user_id  User ID
+	 */
+	public function add_private_caps( $group_id, $user_id ) {
+
+		// Bail if the group is not VGSR
+		if ( empty( $group_id ) || ! vgsr_is_vgsr_group( $group_id ) )
+			return;
+
+		// Add caps
+		vgsr_user_add_private_caps( $user_id );
+	}
+
+	/**
+	 * Remove private reading caps after user leaves a VGSR group
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param int $group_id Group ID
+	 * @param int $user_id  User ID
+	 */
+	public function remove_private_caps( $group_id, $user_id ) {
+
+		// Bail if the group is not VGSR
+		if ( empty( $group_id ) || ! vgsr_is_vgsr_group( $group_id ) )
+			return;
+
+		// Add caps
+		vgsr_user_remove_private_caps( $user_id );
 	}
 }
 
