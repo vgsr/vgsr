@@ -106,7 +106,7 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
  * @param WP_Query|array $query Query (vars)
  * @return int VGSR group ID
  */
-function vgsr_only_post_query( $query ) {
+function _vgsr_only_post_query( $query ) {
 
 	// Bail if current user _is_ VGSR
 	if ( user_is_vgsr() )
@@ -140,7 +140,7 @@ function vgsr_only_post_query( $query ) {
 	// Post Hierarchy
 	// 
 	
-	if ( $post__not_in = get_option( '_vgsr_only_post_hierarchy' ) ) {
+	if ( $post__not_in = _vgsr_only_get_post_hierarchy() ) {
 		if ( isset( $query['post__not_in'] ) ) 
 			$post__not_in = array_merge( (array) $query['post__not_in'], $post__not_in );
 		
@@ -160,7 +160,7 @@ function vgsr_only_post_query( $query ) {
  * @param array $args Query arguments
  * @return array Nav menu items
  */
-function vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
+function _vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 
 	// Bail if current user _is_ VGSR
 	if ( user_is_vgsr() )
@@ -179,7 +179,8 @@ function vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 
 // filter wp_count_posts()
 // filter get_pages()
-// filter wp_get_adjacent_post()
+// filter wp_get_adjacent_post() - get_next_post_where, get_previous_post_where
+// filter get_comments() - comments_clauses, comment_feed_where
 // 
 
 /** Vgsr-only: Hierarchy ********************************************************/
@@ -213,7 +214,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 		return;
 
 	// Un-hook query filter
-	remove_filter( 'pre_get_posts', 'vgsr_only_post_query' );
+	remove_filter( 'pre_get_posts', '_vgsr_only_post_query' );
 
 	// Define vgsr-only post types
 	$only_post_types = apply_filters( 'vgsr_only_post_types', get_post_types( array( 'public' => true ) ) );
@@ -226,9 +227,11 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 		'meta_value'  => 1,
 	) );
 
-	// Process single post
+	// Process a single post
 	if ( ! empty( $post_id ) ) {
-		$add   = vgsr_is_post_vgsr_only( $post_id );
+
+		// According to current vgsr-only ancestry
+		$add   = vgsr_is_post_vgsr_only( $post_id, true );
 		$posts = array( $post_id );
 
 	// Do full rebuild if explicitly requested. NOTE: this may take a while.
@@ -256,7 +259,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	}
 
 	// Get the post hierarchy
-	$hierarchy = (array) get_option( '_vgsr_only_post_hierarchy' );
+	$hierarchy = _vgsr_only_get_post_hierarchy();
 	$collected = $_posts->getArrayCopy();
 
 	// Update global
@@ -264,7 +267,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 
 		// Add to hierarchy
 		if ( $add ) {
-			$hierarchy = array_merge( $hierarchy, $collected );
+			$hierarchy = array_unique( array_merge( $hierarchy, $collected ) );
 
 		// Remove from hierarchy
 		} else {
@@ -276,5 +279,17 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	update_option( '_vgsr_only_post_hierarchy', $hierarchy );
 
 	// Re-hook query filter
-	add_filter( 'pre_get_posts', 'vgsr_only_post_query' );
+	add_filter( 'pre_get_posts', '_vgsr_only_post_query' );
+}
+
+/**
+ * Return the array of the entire vgsr-only post hierarchy
+ *
+ * @since 0.0.6
+ *
+ * @uses apply_filters() Calls '_vgsr_only_get_post_hierarchy'
+ * @return array Post ids in vgsr-only post hierarchy
+ */
+function _vgsr_only_get_post_hierarchy() {
+	return (array) apply_filters( 'vgsr_only_get_post_hierarchy', get_option( '_vgsr_only_post_hierarchy' ) );
 }

@@ -41,6 +41,6 @@ add_filter( 'request',                 'vgsr_request',               10    );
 add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',         10, 4 );
 
 // Posts
-add_filter( 'vgsr_request',            'vgsr_only_post_query'                   );
-add_filter( 'pre_get_posts',           'vgsr_only_post_query'                   );
-add_filter( 'wp_nav_menu_objects',     'vgsr_only_nav_menu_objects',      10, 2 );
+add_filter( 'vgsr_request',            '_vgsr_only_post_query'              );
+add_filter( 'pre_get_posts',           '_vgsr_only_post_query'              );
+add_filter( 'wp_nav_menu_objects',     '_vgsr_only_nav_menu_objects', 10, 2 );

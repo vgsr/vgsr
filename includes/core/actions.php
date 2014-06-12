@@ -77,3 +77,4 @@ add_action( 'vgsr_ready', 'vgsr_setup_groupz',       10 ); // Group integration
 
 // Set vgsr-only posts global. For now
 add_action( 'vgsr_register', '_vgsr_only_update_post_hierarchy', 0 );
+add_action( 'save_post',     '_vgsr_only_update_post_hierarchy'    );
