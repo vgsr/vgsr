@@ -177,8 +177,58 @@ function _vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 	return apply_filters( 'vgsr_only_nav_menu_objects', $nav_menu_items, $args );
 }
 
+/**
+ * Filter pages marked as VGSR-only for non-VGSR users
+ *
+ * @since 0.0.6
+ *
+ * @uses apply_filters() Calls 'vgsr_only_get_pages'
+ * @param array $pages Pages
+ * @param array $args Query arguments
+ * @return array Pages
+ */
+function _vgsr_only_get_pages( $pages, $args ) {
+
+	// Bail if current user _is_ VGSR
+	if ( user_is_vgsr() )
+		return $pages;
+
+	// Do stuff...
+	foreach ( $pages as $k => $page ) {
+
+		// Remove vgsr-only pages
+		if ( vgsr_is_post_vgsr_only( $page->ID, true ) )
+			unset( $pages[$k] );
+	}
+
+	return apply_filters( 'vgsr_only_get_pages', $pages, $args );
+}
+
+/**
+ * Mark a single page as VGSR-only for VGSR users in page list
+ *
+ * @since 0.0.6
+ *
+ * @uses apply_filters() Calls 'vgsr_only_list_pages'
+ * @param string $title Page title
+ * @param WP_Post $args Page object
+ * @return string Page title
+ */
+function _vgsr_only_list_pages( $title, $page ) {
+
+	// Bail if current user _is_ not VGSR
+	if ( ! user_is_vgsr() )
+		return $title;
+
+	// Mark vgsr-only pages
+	if ( vgsr_is_post_vgsr_only( $page->ID, true ) )
+		$title .= '*'; // Optional marking?
+
+	return apply_filters( 'vgsr_only_list_pages', $title, $page );
+}
+
+//
 // filter wp_count_posts()
-// filter get_pages()
 // filter wp_get_adjacent_post() - get_next_post_where, get_previous_post_where
 // filter get_comments() - comments_clauses, comment_feed_where
 // 
