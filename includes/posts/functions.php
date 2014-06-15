@@ -227,6 +227,16 @@ function _vgsr_only_list_pages( $title, $page ) {
 	return apply_filters( 'vgsr_only_list_pages', $title, $page );
 }
 
+/**
+ * Manipulate WHERE clause for adjacent post to exclude
+ * vgsr-only posts for non-vgsr users
+ *
+ * @since 0.0.6
+ *
+ * @uses _vgsr_only_get_post_hierarchy()
+ * @param string $where Where clause
+ * @return string Where clause
+ */
 function _vgsr_only_get_adjacent_post( $where ) {
 
 	// Bail if current user _is_ VGSR
@@ -235,7 +245,7 @@ function _vgsr_only_get_adjacent_post( $where ) {
 
 	// Exclude posts
 	if ( $post__not_in = _vgsr_only_get_post_hierarchy() && ! empty( $post__not_in ) ) {
-		$where .= sprintf( ' p.ID NOT IN (%s)', implode( ',', $post__not_in ) );
+		$where .= sprintf( ' AND p.ID NOT IN (%s)', implode( ',', $post__not_in ) );
 	}
 
 	return $where;
