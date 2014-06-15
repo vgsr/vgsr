@@ -140,7 +140,7 @@ function _vgsr_only_post_query( $query ) {
 	// Post Hierarchy
 	// 
 	
-	if ( $post__not_in = _vgsr_only_get_post_hierarchy() ) {
+	if ( $post__not_in = _vgsr_only_get_post_hierarchy() && ! empty( $post__not_in ) ) {
 		if ( isset( $query['post__not_in'] ) ) 
 			$post__not_in = array_merge( (array) $query['post__not_in'], $post__not_in );
 		
@@ -222,15 +222,35 @@ function _vgsr_only_list_pages( $title, $page ) {
 
 	// Mark vgsr-only pages
 	if ( vgsr_is_post_vgsr_only( $page->ID, true ) )
-		$title .= '*'; // Optional marking?
+		$title .= '*'; // Make marking optional?
 
 	return apply_filters( 'vgsr_only_list_pages', $title, $page );
+}
+
+function _vgsr_only_get_adjacent_post( $where ) {
+
+	// Bail if current user _is_ VGSR
+	if ( user_is_vgsr() )
+		return $where;
+
+	// Exclude posts
+	if ( $post__not_in = _vgsr_only_get_post_hierarchy() && ! empty( $post__not_in ) ) {
+		$where .= sprintf( ' p.ID NOT IN (%s)', implode( ',', $post__not_in ) );
+	}
+
+	return $where;
 }
 
 //
 // filter wp_count_posts()
 // filter wp_get_adjacent_post() - get_next_post_where, get_previous_post_where
 // filter get_comments() - comments_clauses, comment_feed_where
+// 
+// wp-includes/general-template.php:
+// - filter wp_get_archives()
+// - filter get_calendar()
+// 
+// filter attachment queries
 // 
 
 /** Vgsr-only: Hierarchy ********************************************************/
@@ -241,6 +261,9 @@ function _vgsr_only_list_pages( $title, $page ) {
  * A single option holds the full vgsr-only post hierarchy
  * which is used for excluding posts in WP_Query and other
  * situations. This function creates that array of posts.
+ *
+ * This handles both marked posts as well as posts that are
+ * added or removed as child of marked parent posts.
  *
  * @since 0.0.6
  *

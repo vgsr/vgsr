@@ -37,12 +37,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  *           v--WordPress Actions       v--VGSR Sub-actions
  */
-add_filter( 'request',                 'vgsr_request',               10    );
-add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',         10, 4 );
+add_filter( 'request',                 'vgsr_request',                 10    );
+add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
 
 // Posts
-add_filter( 'vgsr_request',            '_vgsr_only_post_query'              );
-add_filter( 'pre_get_posts',           '_vgsr_only_post_query'              );
-add_filter( 'wp_nav_menu_objects',     '_vgsr_only_nav_menu_objects', 10, 2 );
-add_filter( 'get_pages',               '_vgsr_only_get_pages',        10, 2 );
-add_filter( 'list_pages',              '_vgsr_only_list_pages',       10, 2 );
+add_filter( 'vgsr_request',            '_vgsr_only_post_query'               );
+add_filter( 'pre_get_posts',           '_vgsr_only_post_query'               );
+add_filter( 'wp_nav_menu_objects',     '_vgsr_only_nav_menu_objects',  10, 2 );
+add_filter( 'get_pages',               '_vgsr_only_get_pages',         10, 2 );
+add_filter( 'list_pages',              '_vgsr_only_list_pages',        10, 2 );
+add_filter( 'get_next_post_where',     '_vgsr_only_get_adjacent_post'        );
+add_filter( 'get_previous_post_where', '_vgsr_only_get_adjacent_post'        );
