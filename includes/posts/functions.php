@@ -98,7 +98,8 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 /** Vgsr-only: Query Filters ****************************************************/
 
 /**
- * Filter posts in the query that are marked as VGSR-only for non-VGSR users
+ * Manipulate query clauses for WP_Query to exclude posts
+ * that are marked as VGSR-only for non-VGSR users
  *
  * @since 0.0.6
  *
@@ -140,7 +141,7 @@ function _vgsr_only_post_query( $query ) {
 	// Post Hierarchy
 	// 
 	
-	if ( $post__not_in = _vgsr_only_get_post_hierarchy() && ! empty( $post__not_in ) ) {
+	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
 		if ( isset( $query['post__not_in'] ) ) 
 			$post__not_in = array_merge( (array) $query['post__not_in'], $post__not_in );
 		
@@ -229,7 +230,7 @@ function _vgsr_only_list_pages( $title, $page ) {
 
 /**
  * Manipulate WHERE clause for {@link get_adjacent_post()} 
- * to exclude vgsr-only posts for non-vgsr users
+ * to exclude VGSR-only posts for non-VGSR users
  *
  * @since 0.0.6
  *
@@ -251,18 +252,60 @@ function _vgsr_only_get_adjacent_post( $where ) {
 	return $where;
 }
 
+/**
+ * Manipulate query clauses for WP_Query (feed) or WP_Comment_Query 
+ * to exclude comments of VGSR-only posts for non-VGSR users
+ *
+ * @since 0.0.6
+ * 
+ * @param string|array $clause Comment WHERE query clause or all query clauses
+ * @param WP_QueryWP_Comment_Query $query The query object
+ * @return string|array Clauses
+ */
+function _vgsr_only_comment_query( $clause, $query ) {
+
+	// Bail if current user _is_ VGSR
+	if ( user_is_vgsr() || ( is_a( $query, 'WP_Query' ) && $query->is_singular ) )
+		return $clause;
+
+	// Exclude posts
+	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
+
+		// Logic to work with collection of clauses
+		if ( is_array( $clause ) ) {
+			$clauses = $clause;
+			$clause  = $clauses['where'];
+		}
+
+		$clause .= sprintf( ' AND comment_post_ID NOT IN (%s)', implode( ',', $post__not_in ) );
+
+		// Reset logic
+		if ( isset( $clauses ) ) {
+			$clauses['where'] = $clause;
+			$clause = $clauses;
+		}
+	}
+
+	return $clause;
+}
+
 //
-// filter wp_count_posts()
-// filter get_comments() - comments_clauses, comment_feed_where
+// wp-includes/post.php
+// - wp_count_posts()       - only output filter
+// - wp_count_attachments() - only output filter
+// 
+// wp-includes/comment.php
+// - get_comment_count() - unfilterable
+// - wp_count_comments() - unfilterable
 // 
 // wp-includes/general-template.php:
-// - filter wp_get_archives()
-// - filter get_calendar()
+// - wp_get_archives()
+// - get_calendar() - unfilterable
 // 
 // filter attachment queries
 // 
 
-/** Vgsr-only: Hierarchy ********************************************************/
+/** VGSR-only: Hierarchy ********************************************************/
 
 /**
  * Update the post hierarchy option
