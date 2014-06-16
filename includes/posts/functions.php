@@ -253,6 +253,32 @@ function _vgsr_only_get_adjacent_post( $where ) {
 }
 
 /**
+ * Manipulate WHERE clause for {@link wp_get_archives()} 
+ * to exclude VGSR-only posts for non-VGSR users
+ *
+ * @since 0.0.6
+ *
+ * @uses _vgsr_only_get_post_hierarchy()
+ * @param string $where Where clause
+ * @param array $args Query args
+ * @return string Where clause
+ */
+function _vgsr_only_get_archives( $where, $args = array() ) {
+	global $wpdb;
+
+	// Bail if current user _is_ VGSR
+	if ( user_is_vgsr() )
+		return $where;
+
+	// Exclude posts
+	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
+		$where .= sprintf( " AND {$wpdb->posts}.ID NOT IN (%s)", implode( ',', $post__not_in ) );
+	}
+
+	return $where;
+}
+
+/**
  * Manipulate query clauses for WP_Query (feed) or WP_Comment_Query 
  * to exclude comments of VGSR-only posts for non-VGSR users
  *
@@ -289,18 +315,17 @@ function _vgsr_only_comment_query( $clause, $query ) {
 	return $clause;
 }
 
-//
-// wp-includes/post.php
-// - wp_count_posts()       - only output filter
-// - wp_count_attachments() - only output filter
 // 
 // wp-includes/comment.php
 // - get_comment_count() - unfilterable
 // - wp_count_comments() - unfilterable
 // 
-// wp-includes/general-template.php:
-// - wp_get_archives()
+// wp-includes/general-template.php
 // - get_calendar() - unfilterable
+//
+// wp-includes/post.php
+// - wp_count_posts()       - no query filter
+// - wp_count_attachments() - no query filter
 // 
 // filter attachment queries
 // 

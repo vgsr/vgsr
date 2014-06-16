@@ -45,6 +45,8 @@ add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
 add_filter( 'vgsr_request',            '_vgsr_only_post_query'               );
 // wp-includes/comment.php
 add_filter( 'comments_clauses',        '_vgsr_only_comment_query',     10, 2 );
+// wp-includes/general-template.php
+add_filter( 'getarchives_where',       '_vgsr_only_get_archives',      10, 2 );
 // wp-includes/link-template.php
 add_filter( 'get_next_post_where',     '_vgsr_only_get_adjacent_post'        );
 add_filter( 'get_previous_post_where', '_vgsr_only_get_adjacent_post'        );
