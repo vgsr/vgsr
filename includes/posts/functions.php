@@ -228,8 +228,8 @@ function _vgsr_only_list_pages( $title, $page ) {
 }
 
 /**
- * Manipulate WHERE clause for adjacent post to exclude
- * vgsr-only posts for non-vgsr users
+ * Manipulate WHERE clause for {@link get_adjacent_post()} 
+ * to exclude vgsr-only posts for non-vgsr users
  *
  * @since 0.0.6
  *
@@ -244,7 +244,7 @@ function _vgsr_only_get_adjacent_post( $where ) {
 		return $where;
 
 	// Exclude posts
-	if ( $post__not_in = _vgsr_only_get_post_hierarchy() && ! empty( $post__not_in ) ) {
+	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
 		$where .= sprintf( ' AND p.ID NOT IN (%s)', implode( ',', $post__not_in ) );
 	}
 
@@ -253,7 +253,6 @@ function _vgsr_only_get_adjacent_post( $where ) {
 
 //
 // filter wp_count_posts()
-// filter wp_get_adjacent_post() - get_next_post_where, get_previous_post_where
 // filter get_comments() - comments_clauses, comment_feed_where
 // 
 // wp-includes/general-template.php:
