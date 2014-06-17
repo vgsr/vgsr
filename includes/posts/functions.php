@@ -321,13 +321,11 @@ function _vgsr_only_comment_query( $clause, $query ) {
 // - wp_count_comments() - unfilterable
 // 
 // wp-includes/general-template.php
-// - get_calendar() - unfilterable
+// - get_calendar()      - unfilterable
 //
 // wp-includes/post.php
 // - wp_count_posts()       - no query filter
 // - wp_count_attachments() - no query filter
-// 
-// filter attachment queries
 // 
 
 /** VGSR-only: Hierarchy ********************************************************/

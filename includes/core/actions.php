@@ -73,6 +73,7 @@ add_action( 'vgsr_init', 'vgsr_ready',             999 );
 add_action( 'vgsr_ready', 'vgsr_setup_ancienniteit', 10 ); // Ancienniteit for groups
 add_action( 'vgsr_ready', 'vgsr_setup_bbpress',      10 ); // Forum integration
 add_action( 'vgsr_ready', 'vgsr_setup_buddypress',   10 ); // Social network integration
+add_action( 'vgsr_ready', 'vgsr_setup_gravityforms', 10 ); // Forms integration
 add_action( 'vgsr_ready', 'vgsr_setup_groupz',       10 ); // Group integration
 
 // Set vgsr-only posts global. For now

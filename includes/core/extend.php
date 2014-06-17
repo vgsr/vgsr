@@ -73,6 +73,26 @@ function vgsr_setup_buddypress() {
 }
 
 /**
+ * Loads the Gravity Forms component
+ * 
+ * @since 0.0.6
+ *
+ * @return If Gravity Forms is not active
+ */
+function vgsr_setup_gravityforms() {
+
+	// Bail if no Gravity Forms
+	if ( ! class_exists( 'GFForms' ) )
+		return;
+
+	// Include the Gravity Forms component
+	require( vgsr()->includes_dir . 'extend/gravityforms/gravityforms.php' );
+
+	// Instantiate Gravity Forms for VGSR
+	vgsr()->extend->gf = new VGSR_GravityForms;
+}
+
+/**
  * Loads the Groupz component
  * 
  * @since 0.0.1
