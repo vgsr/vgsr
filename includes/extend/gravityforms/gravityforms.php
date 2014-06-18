@@ -70,6 +70,9 @@ class VGSR_GravityForms {
 		add_filter( 'gform_form_settings',          array( $this, 'display_form_settings' ), 10, 2 );
 		add_filter( 'gform_pre_form_settings_save', array( $this, 'save_form_settings'    )        );
 		add_filter( 'gform_pre_render',             array( $this, 'hide_form_vgsr_only'   ), 10, 2 );
+
+		// Admin
+		add_filter( 'gform_form_actions', array( $this, 'admin_form_actions' ), 10, 2 );
 	}
 
 	/** Capabilities *******************************************************/
@@ -186,7 +189,7 @@ class VGSR_GravityForms {
 	 * Prevent vgsr-only forms to display for non-vgsr users
 	 *
 	 * Still results in an 'Oops! We could not locate your form.'
-	 * message, but it's better than nothing.
+	 * message, but it's the only way to hide before form process.
 	 *
 	 * @since 0.0.6
 	 * 
@@ -205,6 +208,36 @@ class VGSR_GravityForms {
 			$form = null;
 
 		return $form;
+	}
+
+	/** Admin **************************************************************/
+
+	/**
+	 * Prepend to form actions whether the form is marked vgsr-only
+	 *
+	 * Title filters or appending actions are not available.
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $actions Form actions
+	 * @param int $form_id Form ID
+	 * @return array Form actions
+	 */
+	public function admin_form_actions( $actions, $form_id ) {
+
+		// Form is marked vgsr-only
+		if ( $this->is_form_vgsr_only( $form_id ) ) {
+
+			// Prepend non-action
+			$actions['vgsr-only'] = array(
+				'label'    => __( 'VGSR', 'vgsr' ),
+				'title'    => __( 'This form is marked VGSR-only', 'vgsr' ),
+				'url'      => '#',
+				'priority' => 1100,
+			);
+		}
+
+		return $actions;
 	}
 }
 
