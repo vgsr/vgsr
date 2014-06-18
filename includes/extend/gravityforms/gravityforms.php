@@ -69,7 +69,7 @@ class VGSR_GravityForms {
 		// VGSR-only
 		add_filter( 'gform_form_settings',          array( $this, 'display_form_settings' ), 10, 2 );
 		add_filter( 'gform_pre_form_settings_save', array( $this, 'save_form_settings'    )        );
-
+		add_filter( 'gform_pre_render',             array( $this, 'hide_form_vgsr_only'   ), 10, 2 );
 	}
 
 	/** Capabilities *******************************************************/
@@ -180,6 +180,31 @@ class VGSR_GravityForms {
 		$is = isset( $form['vgsr-only'] ) && $form['vgsr-only'];
 
 		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr_only', $is, $form_id, $form );
+	}
+
+	/**
+	 * Prevent vgsr-only forms to display for non-vgsr users
+	 *
+	 * Still results in an 'Oops! We could not locate your form.'
+	 * message, but it's better than nothing.
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $form Form meta data
+	 * @param bool $ajax Whether the form is AJAX based
+	 * @return null|array Form meta data
+	 */
+	public function hide_form_vgsr_only( $form, $ajax ) {
+
+		// Bail if user _is_ VGSR
+		if ( user_is_vgsr() )
+			return $form;
+
+		// Set form to null to block display
+		if ( $this->is_form_vgsr_only( $form ) )
+			$form = null;
+
+		return $form;
 	}
 }
 
