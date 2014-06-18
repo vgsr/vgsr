@@ -73,6 +73,9 @@ class VGSR_GravityForms {
 
 		// Admin
 		add_filter( 'gform_form_actions', array( $this, 'admin_form_actions' ), 10, 2 );
+
+		// GF-Pages
+		add_filter( 'gf_pages_hide_single_form', array( $this, 'gf_pages_hide_form_vgsr_only' ), 10, 2 );
 	}
 
 	/** Capabilities *******************************************************/
@@ -238,6 +241,30 @@ class VGSR_GravityForms {
 		}
 
 		return $actions;
+	}
+
+	/** GF-Pages ***********************************************************/
+
+	/**
+	 * Hide single form for GF-Pages plugin
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param bool $hide Whether to hide the form
+	 * @param object $form Form data
+	 * @return bool Whether to hide the form
+	 */
+	public function gf_pages_hide_form_vgsr_only( $hide, $form ) {
+
+		// Bail if user _is_ VGSR
+		if ( user_is_vgsr() )
+			return $hide;
+
+		// Set form to null to block display
+		if ( $this->is_form_vgsr_only( $form->id ) )
+			$hide = true;
+
+		return $hide;		
 	}
 }
 
