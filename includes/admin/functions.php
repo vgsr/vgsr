@@ -40,7 +40,7 @@ function vgsr_post_vgsr_only_meta() {
 
 			<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
 			<label for="post_vgsr_only"><?php _e( 'VGSR only', 'vgsr' ); ?>:</label>
-			<input type="checkbox" id="post_vgsr_only" name="_vgsr_post_vgsr_only" value="1" <?php checked( vgsr_is_post_vgsr_only( $post->ID ) ); ?>/>
+			<input type="checkbox" id="post_vgsr_only" name="vgsr_post_vgsr_only" value="1" <?php checked( vgsr_is_post_vgsr_only( $post->ID ) ); ?>/>
 		</div>
 
 	<?php
@@ -63,7 +63,7 @@ function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
 		<div class="inline-edit-group">
 			<label class="alignleft">
 				<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
-				<input type="checkbox" name="_vgsr_post_vgsr_only" value="1" />
+				<input type="checkbox" name="vgsr_post_vgsr_only" value="1" />
 				<span class="checkbox-title"><?php _e( 'VGSR only', 'vgsr' ); ?></span>
 			</label>
 		</div>
@@ -75,7 +75,7 @@ function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
     	// When selecting new post to edit inline
         $('#the-list').on('click', 'a.editinline', function() {
 			var id    = inlineEditPost.getId( this ),
-			    input = $('#inline-edit input[name="_vgsr_post_vgsr_only"]').attr('checked', false);
+			    input = $('#inline-edit input[name="vgsr_post_vgsr_only"]').attr('checked', false);
 
 			// Mark checked if vgsr-only. Value is in hidden input field in vgsr-only column
 			if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) )
@@ -127,7 +127,7 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 		return $post_id;
 
 	// Field selected
-	if ( isset( $_POST['_vgsr_post_vgsr_only'] ) && ! empty( $_POST['_vgsr_post_vgsr_only'] ) ) {
+	if ( isset( $_POST['vgsr_post_vgsr_only'] ) && ! empty( $_POST['vgsr_post_vgsr_only'] ) ) {
 		update_post_meta( $post_id, '_vgsr_post_vgsr_only', 1 );
 
 	// Not selected

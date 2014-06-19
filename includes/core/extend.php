@@ -111,4 +111,3 @@ function vgsr_setup_groupz() {
 	// Instantiate Groupz for VGSR
 	vgsr()->extend->groupz = new VGSR_Groupz;
 }
-

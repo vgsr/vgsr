@@ -325,7 +325,6 @@ final class VGSR {
 	public function setup_current_user() {
 		$this->current_user = wp_get_current_user();
 	}
-
 }
 
 /**

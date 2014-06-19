@@ -66,10 +66,14 @@ class VGSR_GravityForms {
 		// add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_gf_settings_fields'   );
 		// add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
-		// VGSR-only
+		// VGSR-only - Forms
 		add_filter( 'gform_form_settings',          array( $this, 'display_form_settings' ), 10, 2 );
 		add_filter( 'gform_pre_form_settings_save', array( $this, 'save_form_settings'    )        );
 		add_filter( 'gform_pre_render',             array( $this, 'hide_form_vgsr_only'   ), 10, 2 );
+
+		// VGSR-only - Fields
+		add_action( 'gform_field_advanced_settings', array( $this, 'display_field_settings' ), 10, 2 );
+		add_action( 'gform_after_save_form',         array( $this, 'save_field_settings'    ), 10, 2 );
 
 		// Admin
 		add_filter( 'gform_form_actions', array( $this, 'admin_form_actions' ), 10, 2 );
@@ -103,7 +107,7 @@ class VGSR_GravityForms {
 		return $caps;
 	}
 
-	/** Groups *************************************************************/
+	/** Forms **************************************************************/
 
 	/**
 	 * Manipulate the form settings sections
@@ -211,6 +215,39 @@ class VGSR_GravityForms {
 			$form = null;
 
 		return $form;
+	}
+
+	/** Form Fields ********************************************************/
+
+	/**
+	 * Display form field settings
+	 *
+	 * @since 0.0.6
+	 *
+	 * @param int $position Settings position
+	 * @param int $form_id Form ID
+	 */
+	public function display_field_settings( $position, $form_id ) {
+
+		// Check settings position
+		switch ( $position ) {
+
+			// After Visibility settings
+			case 450 : 
+			default : ?>
+
+				<li class="vgsr-only_setting field_setting">
+					<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" <?php checked( $this->is_form_vgsr_only( $form_id ) ); ?> />
+					<label for="vgsr_form_field_vgsr_only"><?php _e( 'Mark this form as VGSR-only', 'vgsr' ); ?></label>
+				</li>
+
+				<?php
+				break;
+		}
+	}
+
+	public function save_field_settings( $form_meta, $update ) {
+		var_dump( $form_meta );
 	}
 
 	/** Admin **************************************************************/
