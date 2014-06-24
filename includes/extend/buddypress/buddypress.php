@@ -91,10 +91,6 @@ class VGSR_BuddyPress {
 			// User in group
 			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
 
-			// Manage private reading caps
-			// add_action( 'groups_join_group',  array( $this, 'add_private_caps'    ), 10, 2 );
-			// add_action( 'groups_leave_group', array( $this, 'remove_private_caps' ), 10, 2 );
-
 			// Remove groups admin bar menu items
 			if ( vgsr_bp_remove_groups_admin_nav() ) {
 				remove_action( 'bp_setup_admin_bar', array( $groups, 'setup_admin_bar' ), $groups->adminbar_myaccount_order );
@@ -170,7 +166,8 @@ class VGSR_BuddyPress {
 	 * Return all VGSR group ids
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
+	 * @uses BP_Groups_Hierarchy::has_children()
 	 * @param array $groups VGSR groups
 	 * @return array VGSR groups
 	 */
@@ -204,6 +201,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.1
 	 *
+	 * @uses BP_Groups_Hierarchy::has_children()
 	 * @uses vgsr_get_group_vgsr_id()
 	 * @uses vgsr_get_vgsr_groups()
 	 * @uses groups_is_user_member()
@@ -279,42 +277,6 @@ class VGSR_BuddyPress {
 		}
 
 		return $is_member;
-	}
-
-	/**
-	 * Add private reading caps after user joins a VGSR group
-	 *
-	 * @since 0.0.6
-	 * 
-	 * @param int $group_id Group ID
-	 * @param int $user_id  User ID
-	 */
-	public function add_private_caps( $group_id, $user_id ) {
-
-		// Bail if the group is not VGSR
-		if ( empty( $group_id ) || ! vgsr_is_vgsr_group( $group_id ) )
-			return;
-
-		// Add caps
-		vgsr_user_add_private_caps( $user_id );
-	}
-
-	/**
-	 * Remove private reading caps after user leaves a VGSR group
-	 *
-	 * @since 0.0.6
-	 * 
-	 * @param int $group_id Group ID
-	 * @param int $user_id  User ID
-	 */
-	public function remove_private_caps( $group_id, $user_id ) {
-
-		// Bail if the group is not VGSR
-		if ( empty( $group_id ) || ! vgsr_is_vgsr_group( $group_id ) )
-			return;
-
-		// Add caps
-		vgsr_user_remove_private_caps( $user_id );
 	}
 }
 
