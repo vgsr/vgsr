@@ -86,6 +86,7 @@ class VGSR_BuddyPress {
 			add_filter( 'vgsr_get_group_vgsr_id',     array( $this, 'get_group_vgsr'     ) );
 			add_filter( 'vgsr_get_group_leden_id',    array( $this, 'get_group_leden'    ) );
 			add_filter( 'vgsr_get_group_oudleden_id', array( $this, 'get_group_oudleden' ) );
+			add_filter( 'vgsr_get_vgsr_groups',       array( $this, 'get_vgsr_groups'    ) );
 
 			// User in group
 			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
@@ -165,6 +166,37 @@ class VGSR_BuddyPress {
 		return (int) get_option( 'vgsr_bp_group_oudleden', 0 );
 	}
 
+	/**
+	 * Return all VGSR group ids
+	 *
+	 * @since 0.0.6
+	 * 
+	 * @param array $groups VGSR groups
+	 * @return array VGSR groups
+	 */
+	public function get_vgsr_groups( $groups ) {
+
+		// Add hierarchical VGSR groups
+		if ( $this->hierarchy ) {
+
+			// Sub groups of the main basic group
+			$group_array = new ArrayIterator( array( vgsr_get_group_vgsr_id() ) );
+
+			// Find all subgroup ids
+			foreach ( $group_array as $gid ) {
+				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
+					foreach ( $children as $sub_group_id )
+						$group_array->append( (int) $sub_group_id );
+				}
+			}
+
+			// Append group hierarchy
+			$groups = array_unique( array_merge( $groups, $group_array->getArrayCopy() ) );
+		}
+
+		return $groups;
+	}
+
 	/** Groups *************************************************************/
 
 	/**
@@ -173,8 +205,7 @@ class VGSR_BuddyPress {
 	 * @since 0.0.1
 	 *
 	 * @uses vgsr_get_group_vgsr_id()
-	 * @uses vgsr_get_group_leden_id()
-	 * @uses vgsr_get_group_oudleden_id()
+	 * @uses vgsr_get_vgsr_groups()
 	 * @uses groups_is_user_member()
 	 *
 	 * @param bool $is_member Whether the user is a valid member
@@ -228,11 +259,11 @@ class VGSR_BuddyPress {
 			// Check the group ID
 			switch ( $group_id ) {
 
-				// Main VGSR group defaults to leden and oud-leden
+				// Main VGSR group defaults to basic VGSR groups
 				case vgsr_get_group_vgsr_id() :
 
-					// Walk leden and oud-leden groups
-					foreach ( array( vgsr_get_group_leden_id(), vgsr_get_group_oudleden_id() ) as $group_id ) {
+					// Walk basic VGSR groups
+					foreach ( vgsr_get_vgsr_groups() as $group_id ) {
 
 						// Quit searching when user is member
 						if ( $is_member = groups_is_user_member( $user_id, $group_id ) )
