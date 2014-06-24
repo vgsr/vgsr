@@ -343,7 +343,7 @@ final class VGSR {
  * @return The one true VGSR Instance
  */
 function vgsr() {
-	return vgsr::instance();
+	return VGSR::instance();
 }
 
 // "Dat kan alleen in Rotterdam!"

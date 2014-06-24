@@ -48,10 +48,26 @@ function vgsr_get_group_oudleden_id() {
 	return (int) apply_filters( 'vgsr_get_group_oudleden_id', 0 );
 }
 
+/**
+ * Return IDs of all VGSR groups
+ *
+ * @since 0.0.6
+ *
+ * @uses apply_filters() Calls 'vgsr_get_vgsr_groups'
+ * @return array VGSR groups IDs
+ */
+function vgsr_get_vgsr_groups() {
+	return (array) array_map( 'intval', apply_filters( 'vgsr_get_vgsr_groups', array(
+		vgsr_get_group_vgsr_id(),
+		vgsr_get_group_leden_id(),
+		vgsr_get_group_oudleden_id(),
+	) ) );
+}
+
 /** Is Functions **********************************************************/
 
 /**
- * Return whether a given user is in the VGSR group
+ * Return whether a given user is in any VGSR group
  *
  * @since 0.0.1
  *
@@ -145,18 +161,15 @@ function vgsr_user_in_group( $group_id = 0, $user_id = 0 ) {
  * Return whether the given group is a VGSR group
  *
  * @since 0.0.3
- * 
+ *
+ * @uses vgsr_get_vgsr_groups()
  * @param int $group_id Group ID
  * @return bool Group is VGSR group
  */
 function vgsr_is_vgsr_group( $group_id = 0 ) {
 
 	// Does group id match any?
-	$is = ! empty( $group_id ) && in_array( (int) $group_id, array(
-		vgsr_get_group_vgsr_id(),
-		vgsr_get_group_leden_id(),
-		vgsr_get_group_oudleden_id(),
-	) );
+	$is = ! empty( $group_id ) && in_array( (int) $group_id, vgsr_get_vgsr_groups() );
 
 	return apply_filters( 'vgsr_is_vgsr_group', $is, $group_id );
 }

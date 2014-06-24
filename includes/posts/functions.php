@@ -11,7 +11,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Vgsr-only: Post access
+ * VGSR-only: Post access
  *
  * This is a simple in-or-out structure, which is based on
  * user group membership within the VGSR groups. Posts are
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * site users in two camps, so nothing fancy besides that.
  */
 
-/** Vgsr-only: Checks ***********************************************************/
+/** VGSR-only: Checks ***********************************************************/
 
 /**
  * Return whether the given post is marked vgsr-only
@@ -95,7 +95,7 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 	return $only;
 }
 
-/** Vgsr-only: Query Filters ****************************************************/
+/** VGSR-only: Query Filters ****************************************************/
 
 /**
  * Manipulate query clauses for WP_Query to exclude posts
@@ -279,8 +279,9 @@ function _vgsr_only_get_archives( $where, $args = array() ) {
 }
 
 /**
- * Manipulate query clauses for WP_Query (feed) or WP_Comment_Query 
- * to exclude comments of VGSR-only posts for non-VGSR users
+ * Manipulate query clauses for WP_Query (comment feed) or 
+ * WP_Comment_Query to exclude comments of VGSR-only posts 
+ * for non-VGSR users
  *
  * @since 0.0.6
  * 
@@ -379,6 +380,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	if ( ! empty( $post_id ) ) {
 
 		// According to current vgsr-only ancestry
+		// @todo Sort this out: how to explicitly mark children of marked posts?
 		$add   = vgsr_is_post_vgsr_only( $post_id, true );
 		$posts = array( $post_id );
 
@@ -410,7 +412,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	$hierarchy = _vgsr_only_get_post_hierarchy();
 	$collected = $_posts->getArrayCopy();
 
-	// Update global
+	// Manipulate global
 	if ( null !== $add ) {
 
 		// Add to hierarchy
