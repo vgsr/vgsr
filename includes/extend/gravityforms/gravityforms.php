@@ -22,7 +22,7 @@ class VGSR_GravityForms {
 
 	/**
 	 * The main VGSR Gravity Forms loader
-	 * 
+	 *
 	 * @since 0.0.6
 	 */
 	public function __construct() {
@@ -33,7 +33,7 @@ class VGSR_GravityForms {
 
 	/**
 	 * Define default class globals
-	 * 
+	 *
 	 * @since 0.0.6
 	 */
 	private function setup_globals() {
@@ -88,7 +88,7 @@ class VGSR_GravityForms {
 	 * Map VGSR Gravity Forms settings capabilities
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param  array   $caps    Required capabilities
 	 * @param  string  $cap     Requested capability
 	 * @param  integer $user_id User ID
@@ -157,12 +157,12 @@ class VGSR_GravityForms {
 	 * Return the sanitized form settings to save
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param array $settings Settings to be updated
 	 * @return array Settings
 	 */
 	public function save_form_settings( $settings ) {
-		
+
 		// Append vgsr-only setting
 		$settings['vgsr-only'] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
 
@@ -173,7 +173,7 @@ class VGSR_GravityForms {
 	 * Return whether the given form is marked vgsr-only
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param int|array $form Form ID or form meta array
 	 * @return bool Form is marked vgsr-only
 	 */
@@ -199,7 +199,7 @@ class VGSR_GravityForms {
 	 * message, but it's the only way to hide before form process.
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param array $form Form meta data
 	 * @param bool $ajax Whether the form is AJAX based
 	 * @return null|array Form meta data
@@ -207,7 +207,7 @@ class VGSR_GravityForms {
 	public function hide_form_vgsr_only( $form, $ajax ) {
 
 		// Bail if user _is_ VGSR
-		if ( user_is_vgsr() )
+		if ( is_user_vgsr() )
 			return $form;
 
 		// Set form to null to block display
@@ -233,7 +233,7 @@ class VGSR_GravityForms {
 		switch ( $position ) {
 
 			// After Visibility settings
-			case 450 : 
+			case 450 :
 			default : ?>
 
 				<li class="vgsr-only_setting field_setting">
@@ -258,7 +258,7 @@ class VGSR_GravityForms {
 	 * Title filters or appending actions are not available.
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param array $actions Form actions
 	 * @param int $form_id Form ID
 	 * @return array Form actions
@@ -286,7 +286,7 @@ class VGSR_GravityForms {
 	 * Hide single form for GF-Pages plugin
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param bool $hide Whether to hide the form
 	 * @param object $form Form data
 	 * @return bool Whether to hide the form
@@ -294,14 +294,14 @@ class VGSR_GravityForms {
 	public function gf_pages_hide_form_vgsr_only( $hide, $form ) {
 
 		// Bail if user _is_ VGSR
-		if ( user_is_vgsr() )
+		if ( is_user_vgsr() )
 			return $hide;
 
 		// Set form to null to block display
 		if ( $this->is_form_vgsr_only( $form->id ) )
 			$hide = true;
 
-		return $hide;		
+		return $hide;
 	}
 }
 

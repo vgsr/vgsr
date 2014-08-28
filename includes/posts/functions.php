@@ -110,7 +110,7 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 function _vgsr_only_post_query( $query ) {
 
 	// Bail if current user _is_ VGSR
-	if ( user_is_vgsr() )
+	if ( is_user_vgsr() )
 		return $query;
 
 	// Logic to work with 'pre_get_posts' filter
@@ -139,12 +139,12 @@ function _vgsr_only_post_query( $query ) {
 
 	//
 	// Post Hierarchy
-	// 
-	
+	//
+
 	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
-		if ( isset( $query['post__not_in'] ) ) 
+		if ( isset( $query['post__not_in'] ) )
 			$post__not_in = array_merge( (array) $query['post__not_in'], $post__not_in );
-		
+
 		$query['post__not_in'] = $post__not_in;
 	}
 
@@ -164,7 +164,7 @@ function _vgsr_only_post_query( $query ) {
 function _vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 
 	// Bail if current user _is_ VGSR
-	if ( user_is_vgsr() )
+	if ( is_user_vgsr() )
 		return $nav_menu_items;
 
 	// Do stuff...
@@ -191,7 +191,7 @@ function _vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 function _vgsr_only_get_pages( $pages, $args ) {
 
 	// Bail if current user _is_ VGSR
-	if ( user_is_vgsr() )
+	if ( is_user_vgsr() )
 		return $pages;
 
 	// Do stuff...
@@ -218,7 +218,7 @@ function _vgsr_only_get_pages( $pages, $args ) {
 function _vgsr_only_list_pages( $title, $page ) {
 
 	// Bail if current user _is_ not VGSR
-	if ( ! user_is_vgsr() )
+	if ( ! is_user_vgsr() )
 		return $title;
 
 	// Mark vgsr-only pages
@@ -229,7 +229,7 @@ function _vgsr_only_list_pages( $title, $page ) {
 }
 
 /**
- * Manipulate WHERE clause for {@link get_adjacent_post()} 
+ * Manipulate WHERE clause for {@link get_adjacent_post()}
  * to exclude VGSR-only posts for non-VGSR users
  *
  * @since 0.0.6
@@ -241,7 +241,7 @@ function _vgsr_only_list_pages( $title, $page ) {
 function _vgsr_only_get_adjacent_post( $where ) {
 
 	// Bail if current user _is_ VGSR
-	if ( user_is_vgsr() )
+	if ( is_user_vgsr() )
 		return $where;
 
 	// Exclude posts
@@ -253,7 +253,7 @@ function _vgsr_only_get_adjacent_post( $where ) {
 }
 
 /**
- * Manipulate WHERE clause for {@link wp_get_archives()} 
+ * Manipulate WHERE clause for {@link wp_get_archives()}
  * to exclude VGSR-only posts for non-VGSR users
  *
  * @since 0.0.6
@@ -267,7 +267,7 @@ function _vgsr_only_get_archives( $where, $args = array() ) {
 	global $wpdb;
 
 	// Bail if current user _is_ VGSR
-	if ( user_is_vgsr() )
+	if ( is_user_vgsr() )
 		return $where;
 
 	// Exclude posts
@@ -279,12 +279,12 @@ function _vgsr_only_get_archives( $where, $args = array() ) {
 }
 
 /**
- * Manipulate query clauses for WP_Query (comment feed) or 
- * WP_Comment_Query to exclude comments of VGSR-only posts 
+ * Manipulate query clauses for WP_Query (comment feed) or
+ * WP_Comment_Query to exclude comments of VGSR-only posts
  * for non-VGSR users
  *
  * @since 0.0.6
- * 
+ *
  * @param string|array $clause Comment WHERE query clause or all query clauses
  * @param WP_QueryWP_Comment_Query $query The query object
  * @return string|array Clauses
@@ -292,7 +292,7 @@ function _vgsr_only_get_archives( $where, $args = array() ) {
 function _vgsr_only_comment_query( $clause, $query ) {
 
 	// Bail if current user _is_ VGSR
-	if ( user_is_vgsr() || ( is_a( $query, 'WP_Query' ) && $query->is_singular ) )
+	if ( is_user_vgsr() || ( is_a( $query, 'WP_Query' ) && $query->is_singular ) )
 		return $clause;
 
 	// Exclude posts
@@ -316,18 +316,18 @@ function _vgsr_only_comment_query( $clause, $query ) {
 	return $clause;
 }
 
-// 
+//
 // wp-includes/comment.php
 // - get_comment_count() - unfilterable
 // - wp_count_comments() - unfilterable
-// 
+//
 // wp-includes/general-template.php
 // - get_calendar()      - unfilterable
 //
 // wp-includes/post.php
 // - wp_count_posts()       - no query filter
 // - wp_count_attachments() - no query filter
-// 
+//
 
 /** VGSR-only: Hierarchy ********************************************************/
 
@@ -352,7 +352,7 @@ function _vgsr_only_comment_query( $clause, $query ) {
  * @uses get_children()
  * @uses get_option()
  * @uses update_option()
- * 
+ *
  * @param int $post_id Post ID
  * @param bool $rebuild Optional. Whether to fully rebuild the post hierarchy
  */
@@ -367,12 +367,12 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 
 	// Define vgsr-only post types
 	$only_post_types = apply_filters( 'vgsr_only_post_types', get_post_types( array( 'public' => true ) ) );
-	$only_posts      = get_posts( array( 
+	$only_posts      = get_posts( array(
 		'numberposts' => -1,
 		'post_type'   => $only_post_types,
 		'post_status' => 'any',
 		'fields'      => 'ids',
-		'meta_key'    => '_vgsr_post_vgsr_only', 
+		'meta_key'    => '_vgsr_post_vgsr_only',
 		'meta_value'  => 1,
 	) );
 

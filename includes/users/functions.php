@@ -76,7 +76,7 @@ function vgsr_get_vgsr_groups() {
  * @param int $user_id User ID. Defaults to current user
  * @return boolean User is VGSR
  */
-function user_is_vgsr( $user_id = 0 ) {
+function is_user_vgsr( $user_id = 0 ) {
 
 	// Default to current user
 	if ( empty( $user_id ) )
@@ -84,7 +84,7 @@ function user_is_vgsr( $user_id = 0 ) {
 
 	$is = vgsr_user_in_group( vgsr_get_group_vgsr_id(), $user_id );
 
-	return (bool) apply_filters( 'user_is_vgsr', $is, $user_id );
+	return (bool) apply_filters( 'is_user_vgsr', $is, $user_id );
 }
 
 /**
@@ -97,7 +97,7 @@ function user_is_vgsr( $user_id = 0 ) {
  * @param int $user_id User ID. Defaults to current user
  * @return boolean User is lid
  */
-function user_is_lid( $user_id = 0 ) {
+function is_user_lid( $user_id = 0 ) {
 
 	// Default to current user
 	if ( empty( $user_id ) )
@@ -105,7 +105,7 @@ function user_is_lid( $user_id = 0 ) {
 
 	$is = vgsr_user_in_group( vgsr_get_group_leden_id(), $user_id );
 
-	return (bool) apply_filters( 'user_is_lid', $is, $user_id );
+	return (bool) apply_filters( 'is_user_lid', $is, $user_id );
 }
 
 /**
@@ -118,7 +118,7 @@ function user_is_lid( $user_id = 0 ) {
  * @param int $user_id User ID. Defaults to current user
  * @return boolean User is oud-lid
  */
-function user_is_oudlid( $user_id = 0 ) {
+function is_user_oudlid( $user_id = 0 ) {
 
 	// Default to current user
 	if ( empty( $user_id ) )
@@ -126,7 +126,7 @@ function user_is_oudlid( $user_id = 0 ) {
 
 	$is = vgsr_user_in_group( vgsr_get_group_oudleden_id(), $user_id );
 
-	return (bool) apply_filters( 'user_is_oudlid', $is, $user_id );
+	return (bool) apply_filters( 'is_user_oudlid', $is, $user_id );
 }
 
 /**
@@ -137,7 +137,7 @@ function user_is_oudlid( $user_id = 0 ) {
  * this function assumes no membership, returning False.
  *
  * @since 0.0.1
- * 
+ *
  * @uses apply_filters() Calls 'vgsr_user_in_group' with the
  *                        membership, group ID and user ID
  *

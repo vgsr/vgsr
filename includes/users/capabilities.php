@@ -14,7 +14,7 @@
  *
  * @since 0.0.6
  *
- * @uses user_is_vgsr()
+ * @uses is_user_vgsr()
  * @uses vgsr_get_private_reading_post_types()
  * @uses WP_User::add_cap()
  * @uses get_post_type_object()
@@ -23,7 +23,7 @@
 function vgsr_user_add_private_caps( $user_id = 0 ) {
 
 	// Bail if user is not VGSR member
-	if ( ! user_is_vgsr( $user_id ) )
+	if ( ! is_user_vgsr( $user_id ) )
 		return;
 
 	// Get user object and add private read caps
@@ -38,7 +38,7 @@ function vgsr_user_add_private_caps( $user_id = 0 ) {
  *
  * @since 0.0.6
  *
- * @uses user_is_vgsr()
+ * @uses is_user_vgsr()
  * @uses vgsr_get_private_reading_post_types()
  * @uses get_post_type_object()
  * @uses WP_User::remove_cap()
@@ -49,7 +49,7 @@ function vgsr_user_add_private_caps( $user_id = 0 ) {
 function vgsr_user_remove_private_caps( $user_id = 0 ) {
 
 	// Bail if user is still VGSR member
-	if ( user_is_vgsr( $user_id ) )
+	if ( is_user_vgsr( $user_id ) )
 		return;
 
 	global $wp_roles;
