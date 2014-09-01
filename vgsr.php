@@ -13,7 +13,7 @@
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
- * Version:           0.0.5
+ * Version:           0.0.6
  * Text Domain:       vgsr
  * Domain Path:       /languages/
  * GitHub Plugin URI: vgsr/vgsr
@@ -66,7 +66,7 @@ final class VGSR {
 	 * time. Also prevents needing to define globals all over the place.
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @staticvar object $instance
 	 * @uses VGSR::setup_globals() Setup the globals needed
 	 * @uses VGSR::includes() Include the required files
@@ -97,7 +97,7 @@ final class VGSR {
 	 * A dummy constructor to prevent VGSR from being loaded more than once.
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @see VGSR::instance()
 	 * @see vgsr();
 	 */
@@ -159,7 +159,7 @@ final class VGSR {
 	 * filtered to allow for early overriding.
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @access private
 	 * @uses plugin_dir_path() To generate VGSR plugin path
 	 * @uses plugin_dir_url() To generate VGSR plugin url
@@ -169,8 +169,8 @@ final class VGSR {
 
 		/** Versions **********************************************************/
 
-		$this->version    = '0.0.5';
-		$this->db_version = '005';
+		$this->version    = '0.0.6';
+		$this->db_version = '006';
 
 		/** Paths *************************************************************/
 
@@ -206,7 +206,7 @@ final class VGSR {
 	 * Include required files
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @access private
 	 * @uses is_admin() If in WordPress admin, load additional file
 	 */
@@ -247,7 +247,7 @@ final class VGSR {
 	 * Setup the default hooks and actions
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @access private
 	 * @uses add_action() To add various actions
 	 */
@@ -319,7 +319,7 @@ final class VGSR {
 	 * avoid xmlrpc errors.
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @uses wp_get_current_user()
 	 */
 	public function setup_current_user() {
