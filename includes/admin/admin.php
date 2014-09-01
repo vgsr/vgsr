@@ -64,7 +64,7 @@ class VGSR_Admin {
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
-		
+
 		/** Paths *************************************************************/
 
 		$this->admin_dir = trailingslashit( $vgsr->includes_dir . 'admin'  ); // Admin path
@@ -270,18 +270,24 @@ class VGSR_Admin {
 	 * Filter the post administration columns
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param array $columns Columns
 	 * @return array
 	 */
 	public function get_post_columns( $columns ) {
 
-		// Dummy column to enable quick edit
-		$columns['vgsr-only'] = __( 'VGSR Only', 'vgsr' );
-
-		// Hide dummy column by default
+		// Use screen object
 		$screen = get_current_screen();
-		add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
+
+		// Only if this post type applies
+		if ( isset( $screen->post_type ) && vgsr_only_is_post_type_markable( $screen->post_type ) ) {
+
+			// Dummy column to enable quick edit
+			$columns['vgsr-only'] = __( 'VGSR Only', 'vgsr' );
+
+			// Hide dummy column by default
+			add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
+		}
 
 		return $columns;
 	}
@@ -290,7 +296,7 @@ class VGSR_Admin {
 	 * Filter the hidden post administration columns
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param array $columns Hidden columns
 	 * @return array
 	 */
@@ -326,7 +332,7 @@ class VGSR_Admin {
 	 * Manipulate post states
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
 	 * @param array $states Post states
 	 * @param WP_Post $post Post object
 	 * @return array $states

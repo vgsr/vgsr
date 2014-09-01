@@ -95,6 +95,35 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 	return $only;
 }
 
+/**
+ * Return whether the given post type is markable for vgsr-only
+ *
+ * Enables filtering for custom repsonse.
+ *
+ * @since 0.0.7
+ *
+ * @param string|int $post_type Post type name or post ID
+ * @return bool Post type is markable
+ */
+function vgsr_only_is_post_type_markable( $post_type = '' ) {
+
+	// Default to global post type
+	if ( empty( $post_type ) ) {
+		global $post;
+		if ( ! isset( $post ) ) {
+			return false;
+		} else {
+			$post_type = $post->post_type;
+		}
+
+	// Post ID was provided
+	} elseif ( is_numeric( $post_type ) ) {
+		$post_type = get_post_type( $post_type );
+	}
+
+	return apply_filters( 'vgsr_only_is_post_type_markable', true, $post_type );
+}
+
 /** VGSR-only: Query Filters ****************************************************/
 
 /**
