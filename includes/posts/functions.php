@@ -96,32 +96,47 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 }
 
 /**
- * Return whether the given post type is markable for vgsr-only
- *
- * Enables filtering for custom repsonse.
+ * Return whether the given post type allows for vgsr-only marking
  *
  * @since 0.0.7
  *
  * @param string|int $post_type Post type name or post ID
- * @return bool Post type is markable
+ * @return bool Post type allows for vgsr-only marking
  */
-function vgsr_only_is_post_type_markable( $post_type = '' ) {
+function is_vgsr_only_post_type( $post_type = '' ) {
+
+	// Post ID was provided
+	if ( is_numeric( $post_type ) ) {
+		$post_type = get_post_type( $post_type );
 
 	// Default to global post type
-	if ( empty( $post_type ) ) {
+	} elseif ( empty( $post_type ) ) {
 		global $post;
 		if ( ! isset( $post ) ) {
 			return false;
 		} else {
 			$post_type = $post->post_type;
 		}
-
-	// Post ID was provided
-	} elseif ( is_numeric( $post_type ) ) {
-		$post_type = get_post_type( $post_type );
 	}
 
-	return apply_filters( 'vgsr_only_is_post_type_markable', true, $post_type );
+	// Post type can be marked vgsr-only
+	$retval = in_array( $post_type, vgsr_only_post_types() );
+
+	return $retval;
+}
+
+/**
+ * Return the post types that allow for vgsr-only marking
+ *
+ * Defaults to all public registered post types.
+ *
+ * @since 0.0.7
+ *
+ * @uses apply_filters() Calls 'vgsr_only_post_types'
+ * @return array Post types
+ */
+function vgsr_only_post_types() {
+	return apply_filters( 'vgsr_only_post_types', get_post_types( array( 'public' => true ) ) );
 }
 
 /** VGSR-only: Query Filters ****************************************************/
@@ -395,10 +410,10 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	remove_filter( 'pre_get_posts', '_vgsr_only_post_query' );
 
 	// Define vgsr-only post types
-	$only_post_types = apply_filters( 'vgsr_only_post_types', get_post_types( array( 'public' => true ) ) );
-	$only_posts      = get_posts( array(
+	$post_types = vgsr_only_post_types();
+	$only_posts = get_posts( array(
 		'numberposts' => -1,
-		'post_type'   => $only_post_types,
+		'post_type'   => $post_types,
 		'post_status' => 'any',
 		'fields'      => 'ids',
 		'meta_key'    => '_vgsr_post_vgsr_only',
@@ -426,7 +441,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	$_posts = new ArrayIterator( $posts );
 	foreach ( $_posts as $post_id ) {
 		if ( $children = get_children( array(
-			'post_type'    => $only_post_types,
+			'post_type'    => $post_types,
 			'post_parent'  => $post_id,
 			'fields'       => 'ids',
 			'post__not_in' => $only_posts, // Exclude marked posts and their children

@@ -17,11 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @since 0.0.6
  *
+ * @uses is_vgsr_only_post_type()
  * @uses get_post_type_object()
  * @uses vgsr_is_post_vgsr_only()
  */
 function vgsr_post_vgsr_only_meta() {
 	global $post;
+
+	// Bail if this post cannot be marked vgsr-only
+	if ( ! is_vgsr_only_post_type( $post->post_type ) )
+		return;
 
 	// Bail if user is not capable
 	if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->publish_posts ) )
@@ -51,12 +56,13 @@ function vgsr_post_vgsr_only_meta() {
  *
  * @since 0.0.6
  *
+ * @uses is_vgsr_only_post_type()
  * @uses wp_nonce_field()
  */
 function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
 
-	// Bail if this is not our column
-	if ( 'vgsr-only' != $column_name )
+	// Bail if this is not our column or post cannot be marked
+	if ( 'vgsr-only' != $column_name || ! is_vgsr_only_post_type( $post_type ) )
 		return; ?>
 
 	<fieldset class="inline-edit-col-right"><div class="inline-edit-col">

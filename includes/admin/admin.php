@@ -280,7 +280,7 @@ class VGSR_Admin {
 		$screen = get_current_screen();
 
 		// Only if this post type applies
-		if ( isset( $screen->post_type ) && vgsr_only_is_post_type_markable( $screen->post_type ) ) {
+		if ( isset( $screen->post_type ) && is_vgsr_only_post_type( $screen->post_type ) ) {
 
 			// Dummy column to enable quick edit
 			$columns['vgsr-only'] = __( 'VGSR Only', 'vgsr' );
