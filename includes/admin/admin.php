@@ -100,6 +100,7 @@ class VGSR_Admin {
 		/** General Actions ***************************************************/
 
 		add_action( 'vgsr_admin_menu',              array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
+		add_action( 'network_admin_menu',           array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
 		add_action( 'vgsr_register_admin_settings', array( $this, 'register_admin_settings' ) ); // Add settings
 
 		/** Filters ***********************************************************/
@@ -117,11 +118,6 @@ class VGSR_Admin {
 		add_filter( 'manage_posts_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
 		add_filter( 'manage_pages_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
 
-		/** Network Admin *****************************************************/
-
-		// Add menu item to settings menu
-		add_action( 'network_admin_menu',  array( $this, 'network_admin_menus' ) );
-
 		/** Dependencies ******************************************************/
 
 		// Allow plugins to modify these actions
@@ -133,41 +129,43 @@ class VGSR_Admin {
 	 *
 	 * @since 0.0.1
 	 *
+	 * @uses current_user_can()
+	 * @uses is_plugin_active_for_network()
+	 * @uses is_network_admin()
+	 * @uses add_submenu_page()
 	 * @uses add_options_page() To add the VGSR settings page
 	 */
 	public function admin_menus() {
 
 		// Are settings enabled?
 		if ( current_user_can( 'vgsr_settings_page' ) ) {
-			add_options_page(
-				__( 'VGSR',  'vgsr' ),
-				__( 'VGSR',  'vgsr' ),
-				$this->minimum_capability,
-				'vgsr',
-				'vgsr_admin_settings'
-			);
+
+			// When the plugin is network activated
+			if ( is_plugin_active_for_network( vgsr()->basename ) ) {
+
+				// Create a menu page in the network admin
+				if ( is_network_admin() ) {
+					add_submenu_page(
+						'settings.php',
+						__( 'VGSR', 'vgsr' ),
+						__( 'VGSR', 'vgsr' ),
+						'manage_network',
+						'vgsr',
+						'vgsr_admin_settings'
+					);
+				}
+
+			// Single site menu
+			} else {
+				add_options_page(
+					__( 'VGSR',  'vgsr' ),
+					__( 'VGSR',  'vgsr' ),
+					$this->minimum_capability,
+					'vgsr',
+					'vgsr_admin_settings'
+				);
+			}
 		}
-	}
-
-	/**
-	 * Add the network admin menus
-	 *
-	 * @since 0.0.1
-	 * @uses add_options_page() To add the VGSR page
-	 */
-	public function network_admin_menus() {
-
-		// Bail if plugin is not network activated
-		if ( ! is_plugin_active_for_network( vgsr()->basename ) )
-			return;
-
-		add_options_page(
-			__( 'VGSR Network', 'vgsr' ),
-			__( 'VGSR Network', 'vgsr' ),
-			'manage_network',
-			'vgsr',
-			'vgsr_admin_settings'
-		);
 	}
 
 	/**
