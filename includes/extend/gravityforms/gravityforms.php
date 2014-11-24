@@ -67,12 +67,12 @@ class VGSR_GravityForms {
 		// add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// VGSR-only - Forms
-		add_filter( 'gform_form_settings',          array( $this, 'display_form_settings' ), 10, 2 );
-		add_filter( 'gform_pre_form_settings_save', array( $this, 'save_form_settings'    )        );
+		add_filter( 'gform_form_settings',          array( $this, 'register_form_setting' ), 10, 2 );
+		add_filter( 'gform_pre_form_settings_save', array( $this, 'update_form_settings'  )        );
 		add_filter( 'gform_pre_render',             array( $this, 'hide_form_vgsr_only'   ), 10, 2 );
 
 		// VGSR-only - Fields
-		add_action( 'gform_field_advanced_settings', array( $this, 'display_field_settings' ), 10, 2 );
+		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
 		add_action( 'gform_after_save_form',         array( $this, 'save_field_settings'    ), 10, 2 );
 
 		// Admin
@@ -85,7 +85,7 @@ class VGSR_GravityForms {
 	/** Capabilities *******************************************************/
 
 	/**
-	 * Map VGSR Gravity Forms settings capabilities
+	 * Map plugin settings capabilities
 	 *
 	 * @since 0.0.6
 	 *
@@ -98,7 +98,6 @@ class VGSR_GravityForms {
 	public function map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 
 		switch ( $cap ) {
-
 			case 'vgsr_settings_gf_general' :
 				$caps = array( vgsr()->admin->minimum_capability );
 				break;
@@ -107,66 +106,28 @@ class VGSR_GravityForms {
 		return $caps;
 	}
 
-	/** Forms **************************************************************/
+	/** Public Methods *****************************************************/
 
 	/**
-	 * Manipulate the form settings sections
+	 * Return the given form's meta value
 	 *
-	 * @since 0.0.6
-	 *
-	 * @param array $settings Form settings sections
-	 * @param object $form Form object
+	 * @since 0.0.7
+	 * 
+	 * @param array|int $form Form object or form ID
+	 * @param string $meta_key Form meta key
+	 * @return mixed Form setting's value or NULL when not found
 	 */
-	public function display_form_settings( $settings, $form ) {
+	public function get_form_meta( $form, $meta_key ) {
 
-		// Walk settings
-		foreach ( $settings as $title => $fields ) {
-
-			// Check settings section. Translatable section titles are used as key (!)
-			switch ( $title ) {
-
-				// Restrictions
-				case __( 'Restrictions', 'gravityforms' ) :
-
-					// Build settings field
-					ob_start(); ?>
-
-					<tr>
-						<th><?php _e( 'VGSR-only', 'vgsr' ); ?></th>
-						<td>
-							<input type="checkbox" id="vgsr_form_vgsr_only" name="vgsr_form_vgsr_only" value="1" <?php checked( $this->is_form_vgsr_only( $form ) ); ?> />
-							<label for="vgsr_form_vgsr_only"><?php _e( 'Mark this form as VGSR-only', 'vgsr' ); ?></label>
-						</td>
-					</tr>
-
-					<?php
-
-					// Append field
-					$settings[ $title ]['vgsrOnly'] = ob_get_contents();
-
-					// End object buffer
-					ob_end_clean();
-					break;
-			}
+		// Get form metadata
+		if ( ! is_array( $form ) && is_numeric( $form ) ) {
+			$form = RGFormsModel::get_form_meta( (int) $form );
+		} elseif ( ! is_array( $form ) ) {
+			return null;
 		}
 
-		return $settings;
-	}
-
-	/**
-	 * Return the sanitized form settings to save
-	 *
-	 * @since 0.0.6
-	 *
-	 * @param array $settings Settings to be updated
-	 * @return array Settings
-	 */
-	public function save_form_settings( $settings ) {
-
-		// Append vgsr-only setting
-		$settings['vgsrOnly'] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
-
-		return $settings;
+		// Get form setting
+		return isset( $form[ $meta_key ] ) ? $form[ $meta_key ] : null;
 	}
 
 	/**
@@ -174,22 +135,11 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 *
-	 * @param int|array $form Form ID or form meta array
+	 * @param array|int $form Form object or form ID
 	 * @return bool Form is marked vgsr-only
 	 */
-	public function is_form_vgsr_only( $form_id = 0 ) {
-
-		// Get form metadata
-		if ( is_array( $form_id ) ) {
-			$form    = $form_id;
-			$form_id = (int) rgget('id');
-		} else {
-			$form = RGFormsModel::get_form_meta( (int) $form_id );
-		}
-
-		$is = isset( $form['vgsrOnly'] ) && $form['vgsrOnly'];
-
-		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr_only', $is, $form_id, $form );
+	public function is_form_vgsr_only( $form ) {
+		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr_only', (bool) $this->get_form_meta( $form, 'vgsrOnly' ), $form );
 	}
 
 	/**
@@ -217,6 +167,72 @@ class VGSR_GravityForms {
 		return $form;
 	}
 
+	/**
+	 * Return a translated string with the 'gravityforms' context
+	 *
+	 * @since 0.0.7
+	 *
+	 * @uses call_user_func_array() To call __() indirectly
+	 * @param string $string String to be translated
+	 * @return string Translation
+	 */
+	public function get_gf_translation( $string ) {
+		return call_user_func_array( '__', array( $string, 'gravityforms' ) );
+	}
+
+	/** Admin Settings *****************************************************/
+
+	/**
+	 * Manipulate the form settings sections
+	 *
+	 * @since 0.0.6
+	 *
+	 * @param array $settings Form settings sections
+	 * @param object $form Form object
+	 */
+	public function register_form_setting( $settings, $form ) {
+
+		// Define local variable(s)
+		$checked = $this->get_form_meta( $form, $this->main_meta_key );
+
+		// Start output buffer and setup our settings field markup
+		ob_start(); ?>
+
+		<tr>
+			<th><?php _e( 'VGSR-only', 'vgsr' ); ?></th>
+			<td>
+				<input type="checkbox" id="vgsr_form_vgsr_only" name="vgsr_form_vgsr_only" value="1" <?php checked( $this->is_form_vgsr_only( $form ) ); ?> />
+				<label for="vgsr_form_vgsr_only"><?php _e( 'Mark this form as VGSR-only', 'vgsr' ); ?></label>
+			</td>
+		</tr>
+
+		<?php
+
+		// Settings sections are stored by their translatable title
+		$section = $this->get_gf_translation( 'Restrictions' );
+
+		// Append the field to the section and end the output buffer
+		$settings[ $section ][ 'vgsrOnly' ] = ob_get_clean();
+
+		return $settings;
+	}
+
+	/**
+	 * Run the update form setting logic
+	 *
+	 * @since 0.0.6
+	 *
+	 * @param array $settings Settings to be updated
+	 * @return array Settings
+	 */
+	public function update_form_settings( $settings ) {
+
+		// Sanitize form from $_POST var
+		$settings['vgsrOnly'] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
+
+		return $settings;
+	}
+
 	/** Form Fields ********************************************************/
 
 	/**
@@ -227,7 +243,7 @@ class VGSR_GravityForms {
 	 * @param int $position Settings position
 	 * @param int $form_id Form ID
 	 */
-	public function display_field_settings( $position, $form_id ) {
+	public function register_field_setting( $position, $form_id ) {
 
 		// Check settings position
 		switch ( $position ) {
@@ -238,7 +254,7 @@ class VGSR_GravityForms {
 
 				<li class="vgsr-only_setting field_setting">
 					<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" <?php checked( $this->is_form_vgsr_only( $form_id ) ); ?> />
-					<label for="vgsr_form_field_vgsr_only"><?php _e( 'Mark this form as VGSR-only', 'vgsr' ); ?></label>
+					<label for="vgsr_form_field_vgsr_only"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
 				</li>
 
 				<?php
@@ -255,7 +271,7 @@ class VGSR_GravityForms {
 	/**
 	 * Prepend to form actions whether the form is marked vgsr-only
 	 *
-	 * Title filters or appending actions are not available.
+	 * GF does not provide any title filters or title appending actions.
 	 *
 	 * @since 0.0.6
 	 *
