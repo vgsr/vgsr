@@ -142,7 +142,7 @@ class VGSR_GravityForms {
 					<?php
 
 					// Append field
-					$settings[ $title ]['vgsr-only'] = ob_get_contents();
+					$settings[ $title ]['vgsrOnly'] = ob_get_contents();
 
 					// End object buffer
 					ob_end_clean();
@@ -164,7 +164,7 @@ class VGSR_GravityForms {
 	public function save_form_settings( $settings ) {
 
 		// Append vgsr-only setting
-		$settings['vgsr-only'] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
+		$settings['vgsrOnly'] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
 
 		return $settings;
 	}
@@ -187,7 +187,7 @@ class VGSR_GravityForms {
 			$form = RGFormsModel::get_form_meta( (int) $form_id );
 		}
 
-		$is = isset( $form['vgsr-only'] ) && $form['vgsr-only'];
+		$is = isset( $form['vgsrOnly'] ) && $form['vgsrOnly'];
 
 		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr_only', $is, $form_id, $form );
 	}
@@ -269,7 +269,7 @@ class VGSR_GravityForms {
 		if ( $this->is_form_vgsr_only( $form_id ) ) {
 
 			// Prepend non-action
-			$actions['vgsr-only'] = array(
+			$actions['vgsrOnly'] = array(
 				'label'    => __( 'VGSR', 'vgsr' ),
 				'title'    => __( 'This form is marked VGSR-only', 'vgsr' ),
 				'url'      => '#',
