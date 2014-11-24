@@ -74,18 +74,17 @@ class VGSR_GravityForms {
 		// add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_gf_settings_fields'   );
 		// add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
-		// VGSR-only - Forms
+		// Forms
 		add_filter( 'gform_get_form_filter',        array( $this, 'handle_form_display'   ), 99, 2 );
 		add_filter( 'gform_form_settings',          array( $this, 'register_form_setting' ), 10, 2 );
 		add_filter( 'gform_pre_form_settings_save', array( $this, 'update_form_settings'  )        );
+		add_filter( 'gform_form_actions',           array( $this, 'admin_form_actions'    ), 10, 2 );
+		add_filter( 'admin_head',                   array( $this, 'admin_print_scripts'   )        );
 
-		// VGSR-only - Fields
+		// Fields
 		add_filter( 'gform_field_content',           array( $this, 'handle_field_display'   ), 10, 5 );
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
 		add_filter( 'gform_field_css_class',         array( $this, 'add_field_class'        ), 10, 3 );
-
-		// Admin
-		add_filter( 'gform_form_actions', array( $this, 'admin_form_actions' ), 10, 2 );
 
 		// GF-Pages
 		add_filter( 'gf_pages_hide_single_form', array( $this, 'gf_pages_hide_form_vgsr_only' ), 10, 2 );
@@ -255,7 +254,7 @@ class VGSR_GravityForms {
 		return call_user_func_array( '__', array( $string, 'gravityforms' ) );
 	}
 
-	/** Admin Settings *****************************************************/
+	/** Form Settings ******************************************************/
 
 	/**
 	 * Manipulate the form settings sections
@@ -310,7 +309,63 @@ class VGSR_GravityForms {
 		return $settings;
 	}
 
-	/** Fields *************************************************************/
+	/**
+	 * Mark the form vgsr-only in the forms list
+	 * 
+	 * @since 0.0.6
+	 * 
+	 * @param array $actions Form actions
+	 * @param int $form_id Form ID
+	 * @return array Form actions
+	 */
+	public function admin_form_actions( $actions, $form_id ) {
+
+		// Form is marked vgsr-only
+		if ( $this->is_form_vgsr_only( $form_id ) ) {
+
+			// Output hidden reference element. Used in JS
+			echo '<span class="form_is_vgsr_only hidden"></span>';
+		}
+
+		return $actions;
+	}
+
+	/**
+	 * Output custom scripts
+	 *
+	 * @since 0.0.7
+	 * 
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
+	 */
+	public function admin_print_scripts() {
+		global $hook_suffix;
+
+		// This is the forms listing page
+		if ( 'toplevel_page_gf_edit_forms' == $hook_suffix && ! isset( $_GET['id'] ) ) { ?>
+
+			<script type="text/javascript">
+				jQuery(document).ready( function($) {
+					// Find reference elements
+					$( 'span.form_is_vgsr_only' ).each( function() {
+						// Add class to row and remove reference element
+						$(this).parents('tr').addClass( 'vgsr_only' ).end().remove();
+					});
+				});
+			</script>
+
+			<style type="text/css">
+				tr.vgsr_only .column-title strong:after {
+					content: ' - <?php _e( 'vgsr', 'vgsr' ); ?>';
+					font-size: 14px !important;
+					text-transform: uppercase;
+				}
+			</style>
+
+			<?php
+		}
+	}
+
+	/** Field Settings *****************************************************/
 
 	/**
 	 * Display form field settings
@@ -341,7 +396,7 @@ class VGSR_GravityForms {
 					jQuery( '#vgsr_form_field_vgsr_only' ).on( 'change', function() {
 						jQuery( '.field_selected' ).removeClass( 'vgsr_only' ).filter( function() {
 							return ! GetSelectedField()[ '<?php echo $this->meta_key; ?>' ];
-						} ).addClass( 'vgsr_only');
+						} ).addClass( 'vgsr_only' );
 					});
 				</script>
 
@@ -377,33 +432,6 @@ class VGSR_GravityForms {
 		}
 
 		return $classes;
-	}
-
-	/** Admin **************************************************************/
-
-	/**
-	 * Prepend to form actions whether the form is marked vgsr-only
-	 *
-	 * GF does not provide any title filters or title appending actions.
-	 *
-	 * @since 0.0.6
-	 * 
-	 * @uses VGSR_GravityForms::is_form_vgsr_only()
-	 *
-	 * @param array $actions Form actions
-	 * @param int $form_id Form ID
-	 * @return array Form actions
-	 */
-	public function admin_form_actions( $actions, $form_id ) {
-
-		// Form is marked vgsr-only
-		if ( $this->is_form_vgsr_only( $form_id ) ) {
-
-			// Prepend non-action
-			$actions['vgsrOnly'] = __( 'VGSR', 'vgsr' );
-		}
-
-		return $actions;
 	}
 
 	/** GF-Pages ***********************************************************/
