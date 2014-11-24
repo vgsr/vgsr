@@ -73,6 +73,7 @@ class VGSR_GravityForms {
 
 		// VGSR-only - Fields
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
+		add_filter( 'gform_field_css_class',         array( $this, 'add_field_class'        ), 10, 3 );
 
 		// Admin
 		add_filter( 'gform_form_actions', array( $this, 'admin_form_actions' ), 10, 2 );
@@ -230,7 +231,7 @@ class VGSR_GravityForms {
 		return $settings;
 	}
 
-	/** Form Fields ********************************************************/
+	/** Fields *************************************************************/
 
 	/**
 	 * Display form field settings
@@ -244,23 +245,59 @@ class VGSR_GravityForms {
 	 */
 	public function register_field_setting( $position, $form_id ) {
 
-		// After Visibility settings
+		// After Visibility settings when form itself is not marked
 		if ( 450 == $position ) { ?>
 
 			<li class="vgsr-only_setting">
-				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" />
+				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" <?php disabled( $this->is_form_vgsr_only( $form_id ) ); ?> />
 				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
 
 				<script type="text/javascript">
 					// Hook to GF's field settings load trigger
-					jQuery(document).on( 'gform_load_field_settings', function( e, field, form ) {
+					jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
 						jQuery( '#vgsr_form_field_vgsr_only' ).attr( 'checked', typeof field.vgsrOnly === 'undefined' ? false : field.vgsrOnly );
 					});
+
+					// Mark selected field
+					jQuery( '#vgsr_form_field_vgsr_only' ).on( 'change', function() {
+						jQuery( '.field_selected' ).removeClass( 'vgsr_only' ).filter( function() {
+							return ! GetSelectedField()[ 'vgsrOnly' ];
+						} ).addClass( 'vgsr_only');
+					});
 				</script>
+
+				<style type="text/css">
+					.vgsr_only .gfield_label .gfield_required:before {
+						content: 'vgsr';
+						color: #aaa;
+						text-transform: uppercase;
+						margin-right: 5px;
+					}
+				</style>
 			</li>
 
 			<?php
 		}
+	}
+
+	/**
+	 * Modify the form field classes
+	 *
+	 * @since 0.0.7
+	 * 
+	 * @param string $classes Classes
+	 * @param array $field Field object
+	 * @param array $form Form object
+	 * @return string Classes
+	 */
+	public function add_field_class( $classes, $field, $form ) {
+
+		// Field is marked vgsr-only
+		if ( isset( $field['vgsrOnly'] ) && $field['vgsrOnly'] ) {
+			$classes .= ' vgsr_only';
+		}
+
+		return $classes;
 	}
 
 	/** Admin **************************************************************/
