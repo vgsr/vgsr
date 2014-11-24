@@ -18,6 +18,14 @@ if ( ! class_exists( 'VGSR_GravityForms' ) ) :
  */
 class VGSR_GravityForms {
 
+	/**
+	 * The plugin setting's meta key
+	 *
+	 * @since 0.0.7
+	 * @var string
+	 */
+	private $meta_key = 'vgsrOnly';
+
 	/** Setup Methods ******************************************************/
 
 	/**
@@ -171,7 +179,7 @@ class VGSR_GravityForms {
 	 * @return bool Form is marked vgsr-only
 	 */
 	public function is_form_vgsr_only( $form ) {
-		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr_only', (bool) $this->get_form_meta( $form, 'vgsrOnly' ), $form );
+		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr_only', (bool) $this->get_form_meta( $form, $this->meta_key ), $form );
 	}
 
 	/**
@@ -184,7 +192,7 @@ class VGSR_GravityForms {
 	 * @return bool Field is marked vgsr-only
 	 */
 	public function is_field_vgsr_only( $field, $form = '' ) {
-		return (bool) apply_filters( 'vgsr_gf_is_field_vgsr_only', (bool) $this->get_field_meta( $field, 'vgsrOnly', $form ), $field, $form );
+		return (bool) apply_filters( 'vgsr_gf_is_field_vgsr_only', (bool) $this->get_field_meta( $field, $this->meta_key, $form ), $field, $form );
 	}
 
 	/**
@@ -281,7 +289,7 @@ class VGSR_GravityForms {
 		$section = $this->get_gf_translation( 'Restrictions' );
 
 		// Append the field to the section and end the output buffer
-		$settings[ $section ][ 'vgsrOnly' ] = ob_get_clean();
+		$settings[ $section ][ $this->meta_key ] = ob_get_clean();
 
 		return $settings;
 	}
@@ -297,7 +305,7 @@ class VGSR_GravityForms {
 	public function update_form_settings( $settings ) {
 
 		// Sanitize form from $_POST var
-		$settings['vgsrOnly'] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
+		$settings[ $this->meta_key ] = isset( $_POST['vgsr_form_vgsr_only'] ) ? 1 : 0;
 
 		return $settings;
 	}
@@ -320,7 +328,7 @@ class VGSR_GravityForms {
 		if ( 450 == $position ) { ?>
 
 			<li class="vgsr_only_setting">
-				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" />
+				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( '<?php echo $this->meta_key; ?>', this.checked );" />
 				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
 
 				<script type="text/javascript">
@@ -332,14 +340,14 @@ class VGSR_GravityForms {
 					// Mark selected field
 					jQuery( '#vgsr_form_field_vgsr_only' ).on( 'change', function() {
 						jQuery( '.field_selected' ).removeClass( 'vgsr_only' ).filter( function() {
-							return ! GetSelectedField()[ 'vgsrOnly' ];
+							return ! GetSelectedField()[ '<?php echo $this->meta_key; ?>' ];
 						} ).addClass( 'vgsr_only');
 					});
 				</script>
 
 				<style type="text/css">
 					.vgsr_only .gfield_label .gfield_required:before {
-						content: 'vgsr';
+						content: '<?php _e( 'vgsr', 'vgsr' ); ?>';
 						color: #aaa;
 						text-transform: uppercase;
 						margin-right: 5px;
