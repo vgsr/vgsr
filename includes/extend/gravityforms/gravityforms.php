@@ -67,9 +67,9 @@ class VGSR_GravityForms {
 		// add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// VGSR-only - Forms
+		add_filter( 'gform_get_form_filter',        array( $this, 'handle_form_display'   ), 99, 2 );
 		add_filter( 'gform_form_settings',          array( $this, 'register_form_setting' ), 10, 2 );
 		add_filter( 'gform_pre_form_settings_save', array( $this, 'update_form_settings'  )        );
-		add_filter( 'gform_pre_render',             array( $this, 'hide_form_vgsr_only'   ), 10, 2 );
 
 		// VGSR-only - Fields
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
@@ -143,28 +143,22 @@ class VGSR_GravityForms {
 	}
 
 	/**
-	 * Prevent vgsr-only forms to display for non-vgsr users
+	 * Do not display vgsr-only marked forms to non-vgsr users
 	 *
-	 * Still results in an 'Oops! We could not locate your form.'
-	 * message, but it's the only way to hide before form process.
+	 * @since 0.0.7
 	 *
-	 * @since 0.0.6
-	 *
+	 * @param string $form_string The form response HTML
 	 * @param array $form Form meta data
-	 * @param bool $ajax Whether the form is AJAX based
-	 * @return null|array Form meta data
+	 * @return string Form HTML
 	 */
-	public function hide_form_vgsr_only( $form, $ajax ) {
+	public function handle_form_display( $form_string, $form ) {
 
-		// Bail if user _is_ VGSR
-		if ( is_user_vgsr() )
-			return $form;
+		// Return empty string when user is not VGSR
+		if ( ! empty( $form ) && $this->is_form_vgsr_only( $form ) && ! is_user_vgsr() ) {
+			$form_string = '';
+		}
 
-		// Set form to null to block display
-		if ( $this->is_form_vgsr_only( $form ) )
-			$form = null;
-
-		return $form;
+		return $form_string;
 	}
 
 	/**
