@@ -248,7 +248,7 @@ class VGSR_GravityForms {
 		if ( 450 == $position ) { ?>
 
 			<li class="vgsr-only_setting">
-				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onload="this.value = GetSelectedField()[ 'vgsrOnly' ];" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" />
+				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" />
 				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
 
 				<script type="text/javascript">
