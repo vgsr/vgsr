@@ -403,7 +403,7 @@ class VGSR_GravityForms {
 				<style type="text/css">
 					.vgsr_only .gfield_label .gfield_required:before {
 						content: '<?php _e( 'vgsr', 'vgsr' ); ?>';
-						color: #aaa;
+						color: #888;
 						text-transform: uppercase;
 						margin-right: 5px;
 					}
