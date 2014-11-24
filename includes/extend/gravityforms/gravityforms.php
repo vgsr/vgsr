@@ -392,12 +392,7 @@ class VGSR_GravityForms {
 		if ( $this->is_form_vgsr_only( $form_id ) ) {
 
 			// Prepend non-action
-			$actions['vgsrOnly'] = array(
-				'label'    => __( 'VGSR', 'vgsr' ),
-				'title'    => __( 'This form is marked VGSR-only', 'vgsr' ),
-				'url'      => '#',
-				'priority' => 1100,
-			);
+			$actions['vgsrOnly'] = __( 'VGSR', 'vgsr' );
 		}
 
 		return $actions;
@@ -411,6 +406,7 @@ class VGSR_GravityForms {
 	 * @since 0.0.6
 	 * 
 	 * @uses VGSR_GravityForms::is_form_vgsr_only()
+	 * @uses is_user_vgsr()
 	 *
 	 * @param bool $hide Whether to hide the form
 	 * @param object $form Form data
@@ -418,13 +414,10 @@ class VGSR_GravityForms {
 	 */
 	public function gf_pages_hide_form_vgsr_only( $hide, $form ) {
 
-		// Bail if user _is_ VGSR
-		if ( is_user_vgsr() )
-			return $hide;
-
-		// Set form to null to block display
-		if ( $this->is_form_vgsr_only( $form->id ) )
+		// Set form to hide when the current user is not VGSR
+		if ( $this->is_form_vgsr_only( $form->id ) && ! is_user_vgsr() ) {
 			$hide = true;
+		}
 
 		return $hide;
 	}
