@@ -73,7 +73,6 @@ class VGSR_GravityForms {
 
 		// VGSR-only - Fields
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
-		add_action( 'gform_after_save_form',         array( $this, 'save_field_settings'    ), 10, 2 );
 
 		// Admin
 		add_filter( 'gform_form_actions', array( $this, 'admin_form_actions' ), 10, 2 );
@@ -146,6 +145,8 @@ class VGSR_GravityForms {
 	 * Do not display vgsr-only marked forms to non-vgsr users
 	 *
 	 * @since 0.0.7
+	 * 
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 *
 	 * @param string $form_string The form response HTML
 	 * @param array $form Form meta data
@@ -180,6 +181,8 @@ class VGSR_GravityForms {
 	 * Manipulate the form settings sections
 	 *
 	 * @since 0.0.6
+	 * 
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 *
 	 * @param array $settings Form settings sections
 	 * @param object $form Form object
@@ -233,31 +236,31 @@ class VGSR_GravityForms {
 	 * Display form field settings
 	 *
 	 * @since 0.0.6
+	 * 
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 *
 	 * @param int $position Settings position
 	 * @param int $form_id Form ID
 	 */
 	public function register_field_setting( $position, $form_id ) {
 
-		// Check settings position
-		switch ( $position ) {
+		// After Visibility settings
+		if ( 450 == $position ) { ?>
 
-			// After Visibility settings
-			case 450 :
-			default : ?>
+			<li class="vgsr-only_setting">
+				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onload="this.value = GetSelectedField()[ 'vgsrOnly' ];" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" />
+				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
 
-				<li class="vgsr-only_setting field_setting">
-					<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" <?php checked( $this->is_form_vgsr_only( $form_id ) ); ?> />
-					<label for="vgsr_form_field_vgsr_only"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
-				</li>
+				<script type="text/javascript">
+					// Hook to GF's field settings load trigger
+					jQuery(document).on( 'gform_load_field_settings', function( e, field, form ) {
+						jQuery( '#vgsr_form_field_vgsr_only' ).attr( 'checked', typeof field.vgsrOnly === 'undefined' ? false : field.vgsrOnly );
+					});
+				</script>
+			</li>
 
-				<?php
-				break;
+			<?php
 		}
-	}
-
-	public function save_field_settings( $form_meta, $update ) {
-		var_dump( $form_meta );
 	}
 
 	/** Admin **************************************************************/
@@ -268,6 +271,8 @@ class VGSR_GravityForms {
 	 * GF does not provide any title filters or title appending actions.
 	 *
 	 * @since 0.0.6
+	 * 
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 *
 	 * @param array $actions Form actions
 	 * @param int $form_id Form ID
@@ -296,6 +301,8 @@ class VGSR_GravityForms {
 	 * Hide single form for GF-Pages plugin
 	 *
 	 * @since 0.0.6
+	 * 
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 *
 	 * @param bool $hide Whether to hide the form
 	 * @param object $form Form data
