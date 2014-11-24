@@ -72,6 +72,7 @@ class VGSR_GravityForms {
 		add_filter( 'gform_pre_form_settings_save', array( $this, 'update_form_settings'  )        );
 
 		// VGSR-only - Fields
+		add_filter( 'gform_field_content',           array( $this, 'handle_field_display'   ), 10, 5 );
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
 		add_filter( 'gform_field_css_class',         array( $this, 'add_field_class'        ), 10, 3 );
 
@@ -121,13 +122,44 @@ class VGSR_GravityForms {
 
 		// Get form metadata
 		if ( ! is_array( $form ) && is_numeric( $form ) ) {
-			$form = RGFormsModel::get_form_meta( (int) $form );
+			$form = GFFormsModel::get_form_meta( (int) $form );
 		} elseif ( ! is_array( $form ) ) {
 			return null;
 		}
 
 		// Get form setting
 		return isset( $form[ $meta_key ] ) ? $form[ $meta_key ] : null;
+	}
+
+	/**
+	 * Return the given field's meta value
+	 *
+	 * @since 0.0.7
+	 * 
+	 * @param array|int $field Field object or field ID
+	 * @param string $meta_key Field meta key
+	 * @param array|int $form Form object or form ID
+	 * @return mixed Field setting's value or NULL when not found
+	 */
+	public function get_field_meta( $field, $meta_key, $form = '' ) {
+
+		// Get field metadata
+		if ( ! is_array( $field ) && is_numeric( $field ) && ! empty( $form ) ) {
+
+			// Form ID provided
+			if ( is_numeric( $form ) ) {
+				$form = GFFormsModel::get_form_meta( (int) $form );
+			}
+
+			// Read the field from the form's data
+			$field = GFFormsModel::get_field( $form, $field );
+
+		} elseif ( ! is_array( $field ) ) {
+			return null;
+		}
+
+		// Get field setting
+		return isset( $field[ $meta_key ] ) ? $field[ $meta_key ] : null;
 	}
 
 	/**
@@ -143,24 +175,63 @@ class VGSR_GravityForms {
 	}
 
 	/**
+	 * Return whether the given field is marked vgsr-only
+	 *
+	 * @since 0.0.7
+	 *
+	 * @param array|int $field Field object or Field ID
+	 * @param array|int $form Form object or form ID
+	 * @return bool Field is marked vgsr-only
+	 */
+	public function is_field_vgsr_only( $field, $form = '' ) {
+		return (bool) apply_filters( 'vgsr_gf_is_field_vgsr_only', (bool) $this->get_field_meta( $field, 'vgsrOnly', $form ), $field, $form );
+	}
+
+	/**
 	 * Do not display vgsr-only marked forms to non-vgsr users
 	 *
 	 * @since 0.0.7
 	 * 
 	 * @uses VGSR_GravityForms::is_form_vgsr_only()
+	 * @uses is_user_vgsr()
 	 *
-	 * @param string $form_string The form response HTML
+	 * @param string $content The form HTML content
 	 * @param array $form Form meta data
 	 * @return string Form HTML
 	 */
-	public function handle_form_display( $form_string, $form ) {
+	public function handle_form_display( $content, $form ) {
 
-		// Return empty string when user is not VGSR
+		// Return empty content when user is not VGSR
 		if ( ! empty( $form ) && $this->is_form_vgsr_only( $form ) && ! is_user_vgsr() ) {
-			$form_string = '';
+			$content = '';
 		}
 
-		return $form_string;
+		return $content;
+	}
+
+	/**
+	 * Do not display vgsr-only marked fields to non-vgsr users
+	 *
+	 * @since 0.0.7
+	 * 
+	 * @uses VGSR_GravityForms::is_field_vgsr_only()
+	 * @uses is_user_vgsr()
+	 *
+	 * @param string $content The field HTML content
+	 * @param array $field Field meta data
+	 * @param mixed $value The field's value
+	 * @param int $empty 0
+	 * @param int $form_id The field's form ID
+	 * @return string Field HTML
+	 */
+	public function handle_field_display( $content, $field, $value, $empty, $form_id ) {
+
+		// On the front end, return empty content when user is not VGSR
+		if ( ! is_admin() && ! empty( $field ) && $this->is_field_vgsr_only( $field, $form_id ) && ! is_user_vgsr() ) {
+			$content = '';
+		}
+
+		return $content;
 	}
 
 	/**
@@ -248,8 +319,8 @@ class VGSR_GravityForms {
 		// After Visibility settings when form itself is not marked
 		if ( 450 == $position ) { ?>
 
-			<li class="vgsr-only_setting">
-				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" <?php disabled( $this->is_form_vgsr_only( $form_id ) ); ?> />
+			<li class="vgsr_only_setting">
+				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( 'vgsrOnly', this.checked );" />
 				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
 
 				<script type="text/javascript">
@@ -293,7 +364,7 @@ class VGSR_GravityForms {
 	public function add_field_class( $classes, $field, $form ) {
 
 		// Field is marked vgsr-only
-		if ( isset( $field['vgsrOnly'] ) && $field['vgsrOnly'] ) {
+		if ( $this->is_field_vgsr_only( $field, $form ) ) {
 			$classes .= ' vgsr_only';
 		}
 
