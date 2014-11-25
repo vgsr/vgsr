@@ -86,6 +86,9 @@ class VGSR_GravityForms {
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
 		add_filter( 'gform_field_css_class',         array( $this, 'add_field_class'        ), 10, 3 );
 
+		// Tooltips
+		add_filter( 'gform_tooltips', array( $this, 'tooltips' ) );
+
 		// GF-Pages
 		add_filter( 'gf_pages_hide_single_form', array( $this, 'gf_pages_hide_form_vgsr_only' ), 10, 2 );
 	}
@@ -272,7 +275,8 @@ class VGSR_GravityForms {
 	 * Manipulate the form settings sections
 	 *
 	 * @since 0.0.6
-	 * 
+	 *
+	 * @uses gform_tooltip()
 	 * @uses VGSR_GravityForms::get_form_meta()
 	 * @uses VGSR_GravityForms::get_gf_translation()
 	 *
@@ -285,7 +289,7 @@ class VGSR_GravityForms {
 		ob_start(); ?>
 
 		<tr>
-			<th><?php _e( 'VGSR-only', 'vgsr' ); ?></th>
+			<th><?php _e( 'VGSR-only', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_only_form_setting' ); ?></th>
 			<td>
 				<input type="checkbox" id="vgsr_form_vgsr_only" name="vgsr_form_vgsr_only" value="1" <?php checked( $this->get_form_meta( $form, $this->meta_key ) ); ?> />
 				<label for="vgsr_form_vgsr_only"><?php _e( 'Mark this form as VGSR-only', 'vgsr' ); ?></label>
@@ -384,6 +388,8 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 *
+	 * @uses gform_tooltip()
+	 *
 	 * @param int $position Settings position
 	 * @param int $form_id Form ID
 	 */
@@ -394,7 +400,7 @@ class VGSR_GravityForms {
 
 			<li class="vgsr_only_setting">
 				<input type="checkbox" id="vgsr_form_field_vgsr_only" name="vgsr_form_field_vgsr_only" value="1" onclick="SetFieldProperty( '<?php echo $this->meta_key; ?>', this.checked );" />
-				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?></label>
+				<label for="vgsr_form_field_vgsr_only" class="inline"><?php _e( 'Mark this field as VGSR-only', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_only_field_setting' ); ?></label>
 
 				<script type="text/javascript">
 					// Hook to GF's field settings load trigger
@@ -444,6 +450,32 @@ class VGSR_GravityForms {
 		}
 
 		return $classes;
+	}
+
+	/** Tooltips ***********************************************************/
+
+	/**
+	 * Append our custom tooltips to GF's tooltip collection
+	 *
+	 * @since 0.0.7
+	 *
+	 * @link gravityforms/tooltips.php
+	 * 
+	 * @param array $tips Tooltips
+	 * @return array Tooltips
+	 */
+	public function tooltips( $tips ) {
+
+		// Each tooltip consists of an <h6> header with a short description after it
+		$format = '<h6>%s</h6>%s';
+
+		// Append our tooltips
+		$tips = array_merge( $tips, array(
+			'vgsr_only_form_setting'  => sprintf( $format, __( 'VGSR-only', 'vgsr' ), __( 'Only show this form to members of the VGSR group(s).',  'vgsr' ) ),
+			'vgsr_only_field_setting' => sprintf( $format, __( 'VGSR-only', 'vgsr' ), __( 'Only show this field to members of the VGSR group(s).', 'vgsr' ) ),
+		) );
+
+		return $tips;
 	}
 
 	/** GF-Pages ***********************************************************/
