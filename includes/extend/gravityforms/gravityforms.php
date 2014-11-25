@@ -151,7 +151,7 @@ class VGSR_GravityForms {
 	public function get_field_meta( $field, $meta_key, $form = '' ) {
 
 		// Get field metadata
-		if ( ! is_array( $field ) && is_numeric( $field ) && ! empty( $form ) ) {
+		if ( is_numeric( $field ) && ! empty( $form ) ) {
 
 			// Form ID provided
 			if ( is_numeric( $form ) ) {
