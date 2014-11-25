@@ -379,7 +379,7 @@ class VGSR_GravityForms {
 	 */
 	public function register_field_setting( $position, $form_id ) {
 
-		// After Visibility settings when form itself is not marked
+		// After Visibility settings
 		if ( 450 == $position ) { ?>
 
 			<li class="vgsr_only_setting">
@@ -389,7 +389,7 @@ class VGSR_GravityForms {
 				<script type="text/javascript">
 					// Hook to GF's field settings load trigger
 					jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
-						jQuery( '#vgsr_form_field_vgsr_only' ).attr( 'checked', typeof field.vgsrOnly === 'undefined' ? false : field.vgsrOnly );
+						jQuery( '#vgsr_form_field_vgsr_only' ).attr( 'checked', typeof field.<?php echo $this->meta_key; ?> === 'undefined' ? false : field.<?php echo $this->meta_key; ?> );
 					});
 
 					// Mark selected field
