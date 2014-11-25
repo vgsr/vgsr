@@ -120,6 +120,8 @@ class VGSR_GravityForms {
 	 * Return the given form's meta value
 	 *
 	 * @since 0.0.7
+	 *
+	 * @uses GFFormsModel::get_form_meta()
 	 * 
 	 * @param array|int $form Form object or form ID
 	 * @param string $meta_key Form meta key
@@ -142,6 +144,9 @@ class VGSR_GravityForms {
 	 * Return the given field's meta value
 	 *
 	 * @since 0.0.7
+	 *
+	 * @uses GFFormsModel::get_form_meta()
+	 * @uses GFFormsModel::get_field()
 	 * 
 	 * @param array|int $field Field object or field ID
 	 * @param string $meta_key Field meta key
@@ -174,6 +179,9 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 *
+	 * @uses VGSR_GravityForms::get_form_meta()
+	 * @uses apply_filters() Calls 'vgsr_gf_is_form_vgsr_only'
+	 *
 	 * @param array|int $form Form object or form ID
 	 * @return bool Form is marked vgsr-only
 	 */
@@ -185,6 +193,9 @@ class VGSR_GravityForms {
 	 * Return whether the given field is marked vgsr-only
 	 *
 	 * @since 0.0.7
+	 *
+	 * @uses VGSR_GravityForms::get_field_meta()
+	 * @uses apply_filters() Calls 'vgsr_gf_is_field_vgsr_only'
 	 *
 	 * @param array|int $field Field object or Field ID
 	 * @param array|int $form Form object or form ID
@@ -220,7 +231,8 @@ class VGSR_GravityForms {
 	 * Do not display vgsr-only marked fields to non-vgsr users
 	 *
 	 * @since 0.0.7
-	 * 
+	 *
+	 * @uses is_admin()
 	 * @uses VGSR_GravityForms::is_field_vgsr_only()
 	 * @uses is_user_vgsr()
 	 *
@@ -261,15 +273,13 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 * 
-	 * @uses VGSR_GravityForms::is_form_vgsr_only()
+	 * @uses VGSR_GravityForms::get_form_meta()
+	 * @uses VGSR_GravityForms::get_gf_translation()
 	 *
 	 * @param array $settings Form settings sections
 	 * @param object $form Form object
 	 */
 	public function register_form_setting( $settings, $form ) {
-
-		// Define local variable(s)
-		$checked = $this->get_form_meta( $form, $this->main_meta_key );
 
 		// Start output buffer and setup our settings field markup
 		ob_start(); ?>
@@ -277,7 +287,7 @@ class VGSR_GravityForms {
 		<tr>
 			<th><?php _e( 'VGSR-only', 'vgsr' ); ?></th>
 			<td>
-				<input type="checkbox" id="vgsr_form_vgsr_only" name="vgsr_form_vgsr_only" value="1" <?php checked( $this->is_form_vgsr_only( $form ) ); ?> />
+				<input type="checkbox" id="vgsr_form_vgsr_only" name="vgsr_form_vgsr_only" value="1" <?php checked( $this->get_form_meta( $form, $this->meta_key ) ); ?> />
 				<label for="vgsr_form_vgsr_only"><?php _e( 'Mark this form as VGSR-only', 'vgsr' ); ?></label>
 			</td>
 		</tr>
@@ -313,6 +323,8 @@ class VGSR_GravityForms {
 	 * Mark the form vgsr-only in the forms list
 	 * 
 	 * @since 0.0.6
+	 *
+	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 * 
 	 * @param array $actions Form actions
 	 * @param int $form_id Form ID
@@ -334,8 +346,8 @@ class VGSR_GravityForms {
 	 * Output custom scripts
 	 *
 	 * @since 0.0.7
-	 * 
-	 * @uses VGSR_GravityForms::is_form_vgsr_only()
+	 *
+	 * @global string $hook_suffix
 	 */
 	public function admin_print_scripts() {
 		global $hook_suffix;
@@ -371,8 +383,6 @@ class VGSR_GravityForms {
 	 * Display form field settings
 	 *
 	 * @since 0.0.6
-	 * 
-	 * @uses VGSR_GravityForms::is_form_vgsr_only()
 	 *
 	 * @param int $position Settings position
 	 * @param int $form_id Form ID
@@ -418,6 +428,8 @@ class VGSR_GravityForms {
 	 * Modify the form field classes
 	 *
 	 * @since 0.0.7
+	 *
+	 * @uses VGSR_GravityForms::is_field_vgsr_only()
 	 * 
 	 * @param string $classes Classes
 	 * @param array $field Field object
