@@ -100,8 +100,12 @@ class VGSR_Admin {
 		/** General Actions ***************************************************/
 
 		add_action( 'vgsr_admin_menu',              array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
-		add_action( 'network_admin_menu',           array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
 		add_action( 'vgsr_register_admin_settings', array( $this, 'register_admin_settings' ) ); // Add settings
+
+		/** Network Actions ***************************************************/
+
+		add_action( 'network_admin_menu',           array( $this, 'admin_menus'             ) ); // Add menu item to settings menu
+		add_action( 'network_admin_edit_vgsr',      array( $this, 'handle_network_settings' ) ); // Update network settings
 
 		/** Filters ***********************************************************/
 
@@ -238,6 +242,95 @@ class VGSR_Admin {
 				// Register the setting
 				register_setting( $section['page'], $field_id, $field['sanitize_callback'] );
 			}
+		}
+	}
+
+	/**
+	 * Run our own Settings API for the network context
+	 *
+	 * This method follows the logic of the Settings API for single sites
+	 * very closely as it is in {@link wp-admin/options.php}
+	 *
+	 * @since 0.0.7
+	 * 
+	 * @link http://core.trac.wordpress.org/ticket/15691
+	 *
+	 * @uses wp_reset_vars()
+	 * @uses is_multisite()
+	 * @uses apply_filters() Calls 'option_page_capability_{$option_page}'
+	 * @uses current_user_can()
+	 * @uses is_super_admin()
+	 * @uses wp_die()
+	 * @uses check_admin_referer()
+	 * @uses apply_filters() Calls 'whitelist_options'
+	 * @uses update_site_option()
+	 * @uses get_settings_errors()
+	 * @uses add_settings_error()
+	 * @uses set_transient()
+	 * @uses add_query_arg()
+	 * @uses wp_get_referer()
+	 * @uses wp_redirect()
+	 */
+	public function handle_network_settings() {
+		global $action, $option_page;
+
+		// Redefine global variable(s)
+		wp_reset_vars( array( 'action', 'option_page' ) );
+
+		// Bail when not using within multisite
+		if ( ! is_multisite() )
+			return;
+
+		/* This filter is documented in wp-admin/options.php */
+		$capability = apply_filters( "option_page_capability_{$option_page}", 'manage_options' );
+
+		// Bail when current user is not allowed
+		if ( ! current_user_can( $capability ) || ( is_multisite() && ! is_super_admin() ) )
+			wp_die( __( 'Cheatin&#8217; uh?' ), 403 );
+
+		// We are saving settings sent from a settings page
+		if ( 'update' == $action ) {
+
+			// Check admin referer
+			check_admin_referer( $option_page . '-options' );
+
+			/* This filter is documented in wp-admin/options.php */
+			$whitelist_options = apply_filters( 'whitelist_options', '' );
+
+			// Bail when settings page is not registered
+			if ( ! isset( $whitelist_options[ $option_page ] ) )
+				wp_die( __( '<strong>ERROR</strong>: options page not found.' ) );
+
+			$options = $whitelist_options[ $option_page ];
+
+			if ( $options ) {
+				foreach ( $options as $option ) {
+					$option = trim( $option );
+					$value = null;
+					if ( isset( $_POST[ $option ] ) ) {
+						$value = $_POST[ $option ];
+						if ( ! is_array( $value ) )
+							$value = trim( $value );
+						$value = wp_unslash( $value );
+					}
+					update_site_option( $option, $value );					
+				}
+			}
+
+			/**
+			 * Handle settings errors and return to options page
+			 */
+			// If no settings errors were registered add a general 'updated' message.
+			if ( !count( get_settings_errors() ) )
+				add_settings_error('general', 'settings_updated', __('Settings saved.'), 'updated');
+			set_transient('settings_errors', get_settings_errors(), 30);
+
+			/**
+			 * Redirect back to the settings page that was submitted
+			 */
+			$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
+			wp_redirect( $goback );
+			exit;
 		}
 	}
 

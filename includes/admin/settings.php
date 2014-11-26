@@ -113,12 +113,11 @@ function vgsr_admin_setting_callback_main_section() {
  * 
  * @since 0.0.6
  */
-function vgsr_admin_setting_callback_access_section() {
-?>
+function vgsr_admin_setting_callback_access_section() { ?>
 
 	<p><?php esc_html_e( 'Tweak here the settings for accessing your site contents.', 'vgsr' ); ?></p>
 
-<?php
+	<?php
 }
 
 /**
@@ -135,16 +134,20 @@ function vgsr_setting_callback_private_reading_post_types() {
 	$option = vgsr_get_private_reading_post_types(); ?>
 
 	<p><?php _e( 'Select the post types of which users in VGSR groups will read posts that are privately published.', 'vgsr' ); ?></p>
-	<ul><?php foreach ( $wp_post_types as $post_type ) : ?>
+	<ul>
+		<?php foreach ( $wp_post_types as $post_type ) : ?>
 
-		<li><label>
-			<input type="checkbox" name="_vgsr_private_reading_post_types[]" value="<?php echo $post_type->name; ?>" <?php checked( in_array( $post_type->name, $option ) ); ?>/> 
-			<?php echo $post_type->labels->name; ?>
-		</label></li>
+		<li>
+			<label>
+				<input type="checkbox" name="_vgsr_private_reading_post_types[]" value="<?php echo $post_type->name; ?>" <?php checked( in_array( $post_type->name, $option ) ); ?>/> 
+				<?php echo $post_type->labels->name; ?>
+			</label>
+		</li>
 
-	<?php endforeach; ?></ul>
+		<?php endforeach; ?>
+	</ul>
 
-<?php
+	<?php
 }
 
 /** Settings Page *************************************************************/
@@ -159,14 +162,16 @@ function vgsr_setting_callback_private_reading_post_types() {
  * @uses do_settings_sections() To output the settings sections
  */
 function vgsr_admin_settings() {
-?>
+
+	// Define the form destination
+	$destination = is_multisite() ? 'edit.php?action=vgsr' : 'options.php'; ?>
 
 	<div class="wrap">
 		<?php screen_icon(); ?>
 
 		<h2><?php esc_html_e( 'VGSR Settings', 'vgsr' ); ?></h2>
 
-		<form action="options.php" method="post">
+		<form action="<?php echo $destination; ?>" method="post">
 
 			<?php settings_fields( 'vgsr' ); ?>
 			<?php do_settings_sections( 'vgsr' ); ?>
@@ -288,4 +293,3 @@ function vgsr_form_option( $option, $default = '' , $slug = false ) {
 		// Allow plugins to further filter the output
 		return apply_filters( 'vgsr_get_form_option', $value, $option );
 	}
-
