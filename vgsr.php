@@ -14,6 +14,7 @@
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
  * Version:           0.0.6
+ * Network:           true
  * Text Domain:       vgsr
  * Domain Path:       /languages/
  * GitHub Plugin URI: vgsr/vgsr
