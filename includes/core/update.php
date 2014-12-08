@@ -15,7 +15,6 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.0.1
  *
- * @uses get_option()
  * @uses vgsr_get_db_version() To get VGSR's database version
  * @return bool True if update, False if not
  */
@@ -28,7 +27,6 @@ function vgsr_is_install() {
  *
  * @since 0.0.1
  *
- * @uses get_option()
  * @uses vgsr_get_db_version_raw() To get VGSR's database version
  * @uses vgsr_get_db_version() To get VGSR's current database version
  * @return bool True if update, False if not
@@ -53,7 +51,7 @@ function vgsr_is_update() {
 function vgsr_is_activation( $basename = '' ) {
 	global $pagenow;
 
-	$vgsr     = vgsr();
+	$vgsr   = vgsr();
 	$action = false;
 
 	// Bail if not in admin/plugins
@@ -103,7 +101,7 @@ function vgsr_is_activation( $basename = '' ) {
 function vgsr_is_deactivation( $basename = '' ) {
 	global $pagenow;
 
-	$vgsr     = vgsr();
+	$vgsr   = vgsr();
 	$action = false;
 
 	// Bail if not in admin/plugins
@@ -152,7 +150,7 @@ function vgsr_is_deactivation( $basename = '' ) {
  * @uses vgsr_get_db_version() To get VGSR's database version
  */
 function vgsr_version_bump() {
-	update_option( 'vgsr_db_version', vgsr_get_db_version() );
+	update_site_option( 'vgsr_db_version', vgsr_get_db_version() );
 }
 
 /**
