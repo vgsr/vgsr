@@ -263,11 +263,11 @@ function vgsr_bp_setting_callback_remove_groups_admin_nav() {
  *
  * @since 0.0.1
  *
- * @uses get_option()
+ * @uses get_site_option()
  * @return bool Remove area
  */
 function vgsr_bp_remove_ab_my_account_root() {
-	return (bool) get_option( 'vgsr_bp_remove_ab_my_account_root', 0 );
+	return (bool) get_site_option( 'vgsr_bp_remove_ab_my_account_root', 0 );
 }
 
 /**
@@ -275,9 +275,9 @@ function vgsr_bp_remove_ab_my_account_root() {
  *
  * @since 0.0.1
  *
- * @uses get_option()
+ * @uses get_site_option()
  * @return bool Remove menu items
  */
 function vgsr_bp_remove_groups_admin_nav() {
-	return (bool) get_option( 'vgsr_bp_remove_groups_admin_nav', 0 );
+	return (bool) get_site_option( 'vgsr_bp_remove_groups_admin_nav', 0 );
 }

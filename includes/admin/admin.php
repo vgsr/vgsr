@@ -249,7 +249,7 @@ class VGSR_Admin {
 	 * Run our own Settings API for the network context
 	 *
 	 * This method follows the logic of the Settings API for single sites
-	 * very closely as it is in {@link wp-admin/options.php}
+	 * very closely as it is in {@link wp-admin/options.php}.
 	 *
 	 * @since 0.0.7
 	 * 
@@ -313,7 +313,7 @@ class VGSR_Admin {
 							$value = trim( $value );
 						$value = wp_unslash( $value );
 					}
-					update_site_option( $option, $value );					
+					update_site_option( $option, $value );
 				}
 			}
 

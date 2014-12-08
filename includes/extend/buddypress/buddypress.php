@@ -131,11 +131,11 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses get_option()
+	 * @uses get_site_option()
 	 * @return int VGSR group ID
 	 */
 	public function get_group_vgsr() {
-		return (int) get_option( 'vgsr_bp_group_vgsr', 0 );
+		return (int) get_site_option( 'vgsr_bp_group_vgsr', 0 );
 	}
 
 	/**
@@ -143,11 +143,11 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses get_option()
+	 * @uses get_site_option()
 	 * @return int Leden group ID
 	 */
 	public function get_group_leden() {
-		return (int) get_option( 'vgsr_bp_group_leden', 0 );
+		return (int) get_site_option( 'vgsr_bp_group_leden', 0 );
 	}
 
 	/**
@@ -155,11 +155,11 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses get_option()
+	 * @uses get_site_option()
 	 * @return int Oud-leden group ID
 	 */
 	public function get_group_oudleden() {
-		return (int) get_option( 'vgsr_bp_group_oudleden', 0 );
+		return (int) get_site_option( 'vgsr_bp_group_oudleden', 0 );
 	}
 
 	/**
