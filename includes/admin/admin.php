@@ -109,8 +109,9 @@ class VGSR_Admin {
 
 		/** Filters ***********************************************************/
 
-		// Modify VGSR's admin links
-		add_filter( 'plugin_action_links', array( $this, 'modify_plugin_action_links' ), 10, 2 );
+		// Plugin action links
+		add_filter( 'plugin_action_links',               array( $this, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'network_admin_plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 
 		// Map settings capabilities
 		add_filter( 'vgsr_map_meta_caps',  array( $this, 'map_settings_meta_caps'     ), 10, 4 );
@@ -335,24 +336,30 @@ class VGSR_Admin {
 	}
 
 	/**
-	 * Add Settings link to plugins area
+	 * Modify the plugin action links
 	 *
 	 * @since 0.0.1
 	 *
-	 * @param array $links Links array in which we would prepend our link
-	 * @param string $file Current plugin basename
-	 * @return array Processed links
+	 * @param array $links Plugin action links
+	 * @param string $file The plugin basename
+	 * @return array Plugin action links
 	 */
-	public static function modify_plugin_action_links( $links, $file ) {
+	public function plugin_action_links( $links, $file ) {
 
-		// Return normal links if not VGSR
-		if ( plugin_basename( vgsr()->basename ) !== $file )
-			return $links;
+		// Get VGSR
+		$vgsr = vgsr();
 
-		// Add a few links to the existing links array
-		return array_merge( $links, array(
-			'settings' => '<a href="' . add_query_arg( array( 'page' => 'vgsr' ), admin_url( 'options-general.php' ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>',
-		) );
+		// Append plugin links
+		if ( $file == $vgsr->basename ) {
+
+			// What do you see?.. Mindy from the Network
+			$menu = vgsr_is_network_context() ? 'settings.php' : 'options-general.php';
+
+			// Settings link
+			$links['settings'] = '<a href="' . add_query_arg( 'page', 'vgsr', self_admin_url( $menu ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>';
+		}
+
+		return $links;
 	}
 
 	/** Posts *****************************************************************/
