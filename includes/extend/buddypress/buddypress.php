@@ -37,6 +37,8 @@ class VGSR_BuddyPress {
 	 * @since 0.0.1
 	 */
 	private function setup_globals() {
+
+		// Get VGSR
 		$vgsr = vgsr();
 
 		/** Paths **********************************************************/
@@ -46,8 +48,8 @@ class VGSR_BuddyPress {
 
 		/** Supports *******************************************************/
 
-		// BP Group Hierarchy plugin
-		$this->hierarchy = defined( 'BP_GROUP_HIERARCHY_VERSION' );
+		// Support the BP Group Hierarchy plugin
+		$this->bp_group_hierarchy = defined( 'BP_GROUP_HIERARCHY_VERSION' );
 	}
 
 	/**
@@ -69,8 +71,8 @@ class VGSR_BuddyPress {
 	private function setup_actions() {
 
 		// Settings
-		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections'            );
-		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'              );
+		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
+		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'   );
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Remove BP's admin bar My Account area
@@ -114,7 +116,6 @@ class VGSR_BuddyPress {
 	public function map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 
 		switch ( $cap ) {
-
 			case 'vgsr_settings_bp_general' :
 			case 'vgsr_settings_bp_groups'  :
 				$caps = array( vgsr()->admin->minimum_capability );
@@ -167,29 +168,16 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.6
 	 *
-	 * @uses BP_Groups_Hierarchy::has_children()
+	 * @uses VGSR_BuddyPress:get_group_hierarchy()
+	 * @uses vgsr_get_group_vgsr_id()
+	 * 
 	 * @param array $groups VGSR groups
 	 * @return array VGSR groups
 	 */
 	public function get_vgsr_groups( $groups ) {
 
-		// Add hierarchical VGSR groups
-		if ( $this->hierarchy ) {
-
-			// Sub groups of the main basic group
-			$group_array = new ArrayIterator( array( vgsr_get_group_vgsr_id() ) );
-
-			// Find all subgroup ids
-			foreach ( $group_array as $gid ) {
-				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
-					foreach ( $children as $sub_group_id )
-						$group_array->append( (int) $sub_group_id );
-				}
-			}
-
-			// Append group hierarchy
-			$groups = array_unique( array_merge( $groups, $group_array->getArrayCopy() ) );
-		}
+		// Append VGSR group hierarchy
+		$groups = array_unique( array_merge( $groups, $this->get_group_hierarchy( vgsr_get_group_vgsr_id() ) ) );
 
 		return $groups;
 	}
@@ -201,7 +189,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses BP_Groups_Hierarchy::has_children()
+	 * @uses VGSR_BuddyPress::get_group_hierarchy()
 	 * @uses vgsr_get_group_vgsr_id()
 	 * @uses vgsr_get_vgsr_groups()
 	 * @uses groups_is_user_member()
@@ -214,69 +202,76 @@ class VGSR_BuddyPress {
 	public function user_in_group( $is_member, $group_id = 0, $user_id = 0 ) {
 		global $wpdb;
 
-		// Bail if no group provided
+		// Bail when no group provided
 		if ( empty( $group_id ) )
 			return false;
 
 		// Default to current user
-		if ( empty( $user_id ) )
+		if ( empty( $user_id ) ) {
 			$user_id = get_current_user_id();
+		}
 
-		$group_id  = (int) $group_id;
-		$user_id   = (int) $user_id;
+		$group_id = (int) $group_id;
+		$user_id  = (int) $user_id;
 
-		// Hierarchical group list
-		if ( $this->hierarchy ) {
+		// When querying for VGSR membership and using a flat group list
+		if ( vgsr_get_group_vgsr_id() == $group_id && ! $this->bp_group_hierarchy ) {
+
+			// Query for any VGSR-type group (leden, oud-leden etc.)
+			$group_id = vgsr_get_vgsr_groups();
+		}
+
+		// Find any group memberships
+		$groups = groups_get_groups( array( 
+			'user_id'         => $user_id,
+			'include'         => $this->get_group_hierarchy( $group_id ),
+			'show_hidden'     => true,
+			'per_page'        => false,
+			'populate_extras' => false
+		) );
+
+		// Return whether any membership was found
+		return ! empty( $groups['groups'] );
+	}
+
+	/**
+	 * Return all groups in the group hierarchy when it's active
+	 *
+	 * @since 0.0.7
+	 *
+	 * @uses BP_Groups_Hierarchy::has_children()
+	 * 
+	 * @param int|array $group_ids Group ID or ids
+	 * @return array Group ids
+	 */
+	public function get_group_hierarchy( $group_ids ) {
+
+		// Force array
+		$group_ids = (array) $group_ids;
+
+		// Account for group hierarchy
+		if ( $this->bp_group_hierarchy ) {
 
 			/**
-			 * Get all group ids in VGSR hierarchy
-			 * 
-			 * Use the ArrayIterator class to dynamically walk all 
-			 * array elements while simultaneously adding new items 
-			 * to that array for iteration.
+			 * Use the ArrayIterator class to dynamically walk all array elements 
+			 * while simultaneously adding new items to that array for iteration.
 			 */
-			$group_array = new ArrayIterator( array( $group_id ) );
-			foreach ( $group_array as $gid ) {
+			$hierarchy = new ArrayIterator( $group_ids );
+			foreach ( $hierarchy as $gid ) {
+
+				// Add child group ids when found
 				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
-					foreach ( $children as $sub_group_id )
-						$group_array->append( (int) $sub_group_id );
+					foreach ( $children as $child_id ) {
+						$hierarchy->append( (int) $child_id );
+					}
 				}
 			}
 
-			// Build the query
-			$bp     = buddypress();
-			$groups = implode( ',', $group_array->getArrayCopy() );
-			$sql    = $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name_members} WHERE user_id = %d AND group_id IN ($groups)", $user_id );
-			
-			// Run the query
-			$is_member = (bool) $wpdb->get_var( $sql );
-
-		// Flat group list
-		} else {
-
-			// Check the group ID
-			switch ( $group_id ) {
-
-				// Main VGSR group defaults to basic VGSR groups
-				case vgsr_get_group_vgsr_id() :
-
-					// Walk basic VGSR groups
-					foreach ( vgsr_get_vgsr_groups() as $group_id ) {
-
-						// Quit searching when user is member
-						if ( $is_member = groups_is_user_member( $user_id, $group_id ) )
-							break;
-					}
-					break;
-
-				// Look for user in provided group
-				default :
-					$is_member = groups_is_user_member( $user_id, $group_id );
-					break;
-			}
+			// Set hierarchy group id collection
+			$group_ids = $hierarchy->getArrayCopy();
 		}
 
-		return $is_member;
+		return array_unique( $group_ids );
 	}
 }
 

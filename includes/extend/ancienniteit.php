@@ -68,13 +68,12 @@ class VGSR_Ancienniteit {
 	 *
 	 * @uses get_site_option()
 	 */
-	public function the_settings_field() {
-	?>
+	public function the_settings_field() { ?>
 
 		<input id="vgsr_always_ancienniteit" name="vgsr_always_ancienniteit" type="checkbox" value="1" <?php checked( get_site_option( 'vgsr_always_ancienniteit' ) ); ?> />
 		<label for="vgsr_always_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR group members always in anci&#235;nniteit.', 'vgsr' ); ?></span></label>
 
-	<?php
+		<?php
 	}
 
 	/**
