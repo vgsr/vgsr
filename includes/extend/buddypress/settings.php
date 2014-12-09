@@ -23,8 +23,8 @@ defined( 'ABSPATH' ) || exit;
 function vgsr_bp_settings_sections( $sections = array() ) {
 
 	// General
-	$sections['vgsr_settings_bp_general'] = array(
-		'title'    => __( 'BuddyPress General', 'vgsr' ),
+	$sections['vgsr_settings_bp_main'] = array(
+		'title'    => __( 'BuddyPress Main', 'vgsr' ),
 		'callback' => 'vgsr_bp_setting_callback_general_section',
 		'page'     => 'vgsr'
 	);
@@ -52,11 +52,11 @@ function vgsr_bp_settings_sections( $sections = array() ) {
 function vgsr_bp_settings_fields( $fields = array() ) {
 
 	// General
-	$fields['vgsr_settings_bp_general'] = (array) apply_filters( 'vgsr_settings_fields_bp_general', array(
-	
+	$fields['vgsr_settings_bp_main'] = (array) apply_filters( 'vgsr_settings_fields_bp_main', array(
+
 		// Remove My Account area
 		'vgsr_bp_remove_ab_my_account_root' => array(
-			'title'             => __( 'Remove My Account area', 'vgsr' ),
+			'title'             => __( 'My Account', 'vgsr' ),
 			'callback'          => 'vgsr_bp_setting_callback_remove_ab_my_account_root',
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -93,7 +93,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 			),
 
 			'vgsr_bp_remove_groups_admin_nav' => array(
-				'title'             => __( 'Remove groups admin bar', 'vgsr' ),
+				'title'             => __( 'Admin bar', 'vgsr' ),
 				'callback'          => 'vgsr_bp_setting_callback_remove_groups_admin_nav',
 				'sanitize_callback' => 'intval',
 				'args'              => array()
@@ -101,7 +101,7 @@ function vgsr_bp_settings_fields( $fields = array() ) {
 		);
 
 		// Not using group hierarchy
-		if ( ! vgsr()->extend->bp->hierarchy ) {
+		if ( ! vgsr()->extend->bp->bp_group_hierarchy ) {
 			unset( $groups_settings['vgsr_bp_group_vgsr'] );
 		}
 
@@ -119,22 +119,14 @@ function vgsr_bp_settings_fields( $fields = array() ) {
  *
  * @since 0.0.1
  */
-function vgsr_bp_setting_callback_general_section() {
-?>
-
-	<p><?php esc_html_e( 'BuddyPress manipulations for VGSR.', 'vgsr' ); ?></p>
-
-<?php
-}
+function vgsr_bp_setting_callback_general_section() { /* Do nothing here */ }
 
 /**
  * BuddyPress Groups settings section description for the settings page
  *
  * @since 0.0.1
  */
-function vgsr_bp_setting_callback_groups_section() {
-	// Nothing to show
-}
+function vgsr_bp_setting_callback_groups_section() { /* Do nothing here */ }
 
 /** Settings General *******************************************************/
 
@@ -145,13 +137,12 @@ function vgsr_bp_setting_callback_groups_section() {
  *
  * @uses vgsr_bp_remove_ab_my_account_root()
  */
-function vgsr_bp_setting_callback_remove_ab_my_account_root() {
-?>
+function vgsr_bp_setting_callback_remove_ab_my_account_root() { ?>
 
-	<input id="vgsr_bp_remove_ab_my_account_root" name="vgsr_bp_remove_ab_my_account_root" type="checkbox" value="1" <?php checked( vgsr_bp_remove_ab_my_account_root() ); ?> />
-	<label for="vgsr_bp_remove_ab_my_account_root"><span class="description"><?php esc_html_e( 'Remove the BuddyPress My Account area in the admin bar.', 'vgsr' ); ?></span></label>
+	<input type="checkbox" id="vgsr_bp_remove_ab_my_account_root" name="vgsr_bp_remove_ab_my_account_root" value="1" <?php checked( vgsr_bp_remove_ab_my_account_root() ); ?> />
+	<label for="vgsr_bp_remove_ab_my_account_root"><?php esc_html_e( 'Remove the BuddyPress My Account area in the admin bar', 'vgsr' ); ?></label>
 
-<?php
+	<?php
 }
 
 /** Settings Groups ********************************************************/
@@ -174,14 +165,11 @@ function vgsr_bp_setting_callback_group_vgsr() {
 		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( $groups as $group ) : ?>
-
-		<option value="<?php echo $group->id; ?>" <?php selected( vgsr_get_group_vgsr_id(), $group->id ); ?>><?php echo $group->name; ?></option>
-
+			<option value="<?php echo $group->id; ?>" <?php selected( vgsr_get_group_vgsr_id(), $group->id ); ?>><?php echo $group->name; ?></option>
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_bp_group_vgsr"><span class="description"><?php esc_html_e( 'The main VGSR group.', 'vgsr' ); ?></span></label>
 
-<?php
+	<?php
 }
 
 /**
@@ -202,14 +190,11 @@ function vgsr_bp_setting_callback_group_leden() {
 		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( $groups as $group ) : ?>
-
-		<option value="<?php echo $group->id; ?>" <?php selected( vgsr_get_group_leden_id(), $group->id ); ?>><?php echo $group->name; ?></option>
-
+			<option value="<?php echo $group->id; ?>" <?php selected( vgsr_get_group_leden_id(), $group->id ); ?>><?php echo $group->name; ?></option>
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_bp_group_leden"><span class="description"><?php esc_html_e( 'The leden VGSR group.', 'vgsr' ); ?></span></label>
 
-<?php
+	<?php
 }
 
 /**
@@ -230,14 +215,11 @@ function vgsr_bp_setting_callback_group_oudleden() {
 		<option><?php _e( 'Select a group', 'vgsr' ); ?></option>
 
 		<?php foreach ( $groups as $group ) : ?>
-
-		<option value="<?php echo $group->id; ?>" <?php selected( vgsr_get_group_oudleden_id(), $group->id ); ?>><?php echo $group->name; ?></option>
-
+			<option value="<?php echo $group->id; ?>" <?php selected( vgsr_get_group_oudleden_id(), $group->id ); ?>><?php echo $group->name; ?></option>
 		<?php endforeach; ?>
 	</select>
-	<label for="vgsr_bp_group_oudleden"><span class="description"><?php esc_html_e( 'The oud-leden VGSR group.', 'vgsr' ); ?></span></label>
 
-<?php
+	<?php
 }
 
 /**
@@ -247,13 +229,12 @@ function vgsr_bp_setting_callback_group_oudleden() {
  *
  * @uses vgsr_bp_remove_groups_admin_nav()
  */
-function vgsr_bp_setting_callback_remove_groups_admin_nav() {
-?>
+function vgsr_bp_setting_callback_remove_groups_admin_nav() { ?>
 
 	<input id="vgsr_bp_remove_groups_admin_nav" name="vgsr_bp_remove_groups_admin_nav" type="checkbox" value="1" <?php checked( vgsr_bp_remove_groups_admin_nav() ); ?> />
-	<label for="vgsr_bp_remove_groups_admin_nav"><span class="description"><?php esc_html_e( 'Remove the groups admin bar menu items.', 'vgsr' ); ?></span></label>
+	<label for="vgsr_bp_remove_groups_admin_nav"><?php esc_html_e( 'Remove the groups admin bar menu items', 'vgsr' ); ?></label>
 
-<?php
+	<?php
 }
 
 /** Options ***************************************************************/
