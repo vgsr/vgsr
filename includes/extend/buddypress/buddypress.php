@@ -185,14 +185,13 @@ class VGSR_BuddyPress {
 	/** Groups *************************************************************/
 
 	/**
-	 * Map user group membership checks to BP function
+	 * Return whether the given user is member of (a) BuddyPress group(s)
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses VGSR_BuddyPress::get_group_hierarchy()
 	 * @uses vgsr_get_group_vgsr_id()
 	 * @uses vgsr_get_vgsr_groups()
-	 * @uses groups_is_user_member()
+	 * @uses VGSR_BuddyPress::get_group_hierarchy()
 	 *
 	 * @param bool $is_member Whether the user is a valid member
 	 * @param int $group_id Group ID
