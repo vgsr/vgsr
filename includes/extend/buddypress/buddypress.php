@@ -80,7 +80,7 @@ class VGSR_BuddyPress {
 			remove_action( 'admin_bar_menu', 'bp_admin_bar_my_account_root', 100 );
 		}
 
-		// Groups
+		// Groups Component
 		if ( bp_is_active( 'groups' ) ) {
 			$groups = buddypress()->groups;
 
@@ -90,7 +90,7 @@ class VGSR_BuddyPress {
 			add_filter( 'vgsr_get_group_oudleden_id', array( $this, 'get_group_oudleden' ) );
 			add_filter( 'vgsr_get_vgsr_groups',       array( $this, 'get_vgsr_groups'    ) );
 
-			// User in group
+			// Check membership
 			add_filter( 'vgsr_user_in_group', array( $this, 'user_in_group' ), 10, 3 );
 
 			// Remove groups admin bar menu items
@@ -170,14 +170,20 @@ class VGSR_BuddyPress {
 	 *
 	 * @uses VGSR_BuddyPress:get_group_hierarchy()
 	 * @uses vgsr_get_group_vgsr_id()
+	 * @uses vgsr_get_group_leden_id()
+	 * @uses vgsr_get_group_oudleden_id()
 	 * 
 	 * @param array $groups VGSR groups
 	 * @return array VGSR groups
 	 */
 	public function get_vgsr_groups( $groups ) {
 
-		// Append VGSR group hierarchy
-		$groups = array_unique( array_merge( $groups, $this->get_group_hierarchy( vgsr_get_group_vgsr_id() ) ) );
+		// Append full VGSR group hierarchy
+		$groups = array_unique( array_merge( $groups, $this->get_group_hierarchy( array( 
+			vgsr_get_group_vgsr_id(), 
+			vgsr_get_group_leden_id(), 
+			vgsr_get_group_oudleden_id() 
+		) ) ) );
 
 		return $groups;
 	}
@@ -194,14 +200,14 @@ class VGSR_BuddyPress {
 	 * @uses VGSR_BuddyPress::get_group_hierarchy()
 	 *
 	 * @param bool $is_member Whether the user is a valid member
-	 * @param int $group_id Group ID
+	 * @param int|array $group_id Group ID or ids
 	 * @param int $user_id User ID
 	 * @return bool User is group member
 	 */
 	public function user_in_group( $is_member, $group_id = 0, $user_id = 0 ) {
 		global $wpdb;
 
-		// Bail when no group provided
+		// Bail when no group was provided
 		if ( empty( $group_id ) )
 			return false;
 
@@ -210,15 +216,8 @@ class VGSR_BuddyPress {
 			$user_id = get_current_user_id();
 		}
 
-		$group_id = (int) $group_id;
+		$group_id = array_map( 'intval', (array) $group_id );
 		$user_id  = (int) $user_id;
-
-		// When querying for VGSR membership and using a flat group list
-		if ( vgsr_get_group_vgsr_id() == $group_id && ! $this->bp_group_hierarchy ) {
-
-			// Query for any VGSR-type group (leden, oud-leden etc.)
-			$group_id = vgsr_get_vgsr_groups();
-		}
 
 		// Find any group memberships
 		$groups = groups_get_groups( array( 
