@@ -57,7 +57,7 @@ function vgsr_get_group_oudleden_id() {
  * @return array VGSR groups IDs
  */
 function vgsr_get_vgsr_groups() {
-	return (array) array_map( 'intval', apply_filters( 'vgsr_get_vgsr_groups', array(
+	return array_map( 'intval', (array) apply_filters( 'vgsr_get_vgsr_groups', array(
 		vgsr_get_group_vgsr_id(),
 		vgsr_get_group_leden_id(),
 		vgsr_get_group_oudleden_id(),
@@ -135,9 +135,8 @@ function is_user_oudlid( $user_id = 0 ) {
 /**
  * Abstraction function to check user group membership
  *
- * Group plugins hook in here to verify group membership
- * of the given user. When no external filters are added,
- * this function assumes no membership, returning False.
+ * Group plugins hook in here to verify group membership of the given user. 
+ * When no external filters hook in, this function assumes no membership.
  *
  * @since 0.0.1
  *
@@ -163,13 +162,16 @@ function vgsr_user_in_group( $group_id = 0, $user_id = 0 ) {
  * @since 0.0.3
  *
  * @uses vgsr_get_vgsr_groups()
+ * @uses apply_filters() Calls 'vgsr_is_vgsr_group'
+ * 
  * @param int $group_id Group ID
  * @return bool Group is VGSR group
  */
 function vgsr_is_vgsr_group( $group_id = 0 ) {
 
-	// Does group id match any?
-	$is = ! empty( $group_id ) && in_array( (int) $group_id, vgsr_get_vgsr_groups() );
+	// Bail when group was not provided
+	if ( empty( $group_id ) )
+		return false;
 
-	return apply_filters( 'vgsr_is_vgsr_group', $is, $group_id );
+	return (bool) apply_filters( 'vgsr_is_vgsr_group', in_array( (int) $group_id, vgsr_get_vgsr_groups() ), $group_id );
 }
