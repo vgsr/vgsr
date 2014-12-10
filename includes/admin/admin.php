@@ -345,15 +345,13 @@ class VGSR_Admin {
 	 * @return array Plugin action links
 	 */
 	public function plugin_action_links( $links, $file ) {
-
-		// Get VGSR
 		$vgsr = vgsr();
 
 		// Append plugin links
 		if ( $file == $vgsr->basename ) {
 
 			// What do you see?.. Mindy from the Network
-			$menu = vgsr_is_network_context() ? 'settings.php' : 'options-general.php';
+			$menu = is_multisite() ? 'settings.php' : 'options-general.php';
 
 			// Settings link
 			$links['settings'] = '<a href="' . add_query_arg( 'page', 'vgsr', self_admin_url( $menu ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>';
