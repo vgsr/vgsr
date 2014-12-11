@@ -37,8 +37,9 @@ defined( 'ABSPATH' ) || exit;
  *
  *           v--WordPress Actions    v--VGSR Sub-actions
  */
-add_action( 'plugins_loaded',        'vgsr_loaded',       10 );
-add_action( 'init',                  'vgsr_init',         0  ); // Early for vgsr_register
+add_action( 'plugins_loaded',        'vgsr_loaded',         10 );
+add_action( 'init',                  'vgsr_init',           0  ); // Early for vgsr_register
+add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menu'     );
 
 /**
  * vgsr_loaded - Attached to 'plugins_loaded' above

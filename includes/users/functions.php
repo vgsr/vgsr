@@ -175,3 +175,49 @@ function vgsr_is_vgsr_group( $group_id = 0 ) {
 
 	return (bool) apply_filters( 'vgsr_is_vgsr_group', in_array( (int) $group_id, vgsr_get_vgsr_groups() ), $group_id );
 }
+
+/** Admin Bar *************************************************************/
+
+/**
+ * Hook various filters to modify the admin bar
+ *
+ * @since 0.0.7
+ *
+ * @uses add_action()
+ */
+function vgsr_admin_bar_menu() {
+
+	// Modify My Sites nodes
+	add_action( 'admin_bar_menu', 'vgsr_admin_bar_my_sites_menu', 20 );
+}
+
+/**
+ * Modify the My Sites admin bar menu
+ *
+ * @since 0.0.7
+ * 
+ * @param WP_Admin_Bar $wp_admin_bar
+ */
+function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
+
+	// Network context specifically
+	if ( is_multisite() ) {
+
+		// Walk user blogs under My Sites
+		foreach ( $wp_admin_bar->user->blogs as $blog ) {
+			switch_to_blog( $blog->userblog_id );
+
+			// Node exists
+			if ( $node = $wp_admin_bar->get_node( 'blog-' . $blog->userblog_id ) ) {
+
+				// Change node link to the front page instead of the admin page
+				$node->href = home_url( '/' );
+
+				// Overwrite node
+				$wp_admin_bar->add_node( $node );
+			}
+
+			restore_current_blog();
+		}
+	}
+}
