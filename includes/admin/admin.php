@@ -156,7 +156,7 @@ class VGSR_Admin {
 						__( 'VGSR', 'vgsr' ),
 						'manage_network',
 						'vgsr',
-						'vgsr_admin_settings'
+						'vgsr_admin_page'
 					);
 				}
 
@@ -167,7 +167,7 @@ class VGSR_Admin {
 					__( 'VGSR',  'vgsr' ),
 					$this->minimum_capability,
 					'vgsr',
-					'vgsr_admin_settings'
+					'vgsr_admin_page'
 				);
 			}
 		}

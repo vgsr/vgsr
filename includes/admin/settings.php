@@ -157,30 +157,67 @@ function vgsr_setting_callback_private_reading_post_types() {
  *
  * @since 0.0.1
  *
- * @uses screen_icon() To display the screen icon
+ * @uses is_multisite()
+ * @uses vgsr_admin_page_tabs()
  * @uses settings_fields() To output the hidden fields for the form
  * @uses do_settings_sections() To output the settings sections
+ * @uses submit_button()
+ * @uses do_action() Calls 'vgsr_admin_page_{$tab}'
  */
-function vgsr_admin_settings() {
+function vgsr_admin_page() {
 
 	// Define the form destination
-	$destination = is_multisite() ? 'edit.php?action=vgsr' : 'options.php'; ?>
+	$destination = is_multisite() ? 'edit.php?action=vgsr' : 'options.php';
+
+	// Get admin page tabs
+	$tabs = vgsr_admin_page_tabs();
+	$tab  = isset( $_GET['tab'] ) && in_array( $_GET['tab'], array_keys( $tabs ) ) ? $_GET['tab'] : 'main'; ?>
 
 	<div class="wrap">
 		<?php screen_icon(); ?>
 
-		<h2><?php esc_html_e( 'VGSR Settings', 'vgsr' ); ?></h2>
+		<h2 class="nav-tab-wrapper">
+			<?php esc_html_e( 'VGSR Settings', 'vgsr' ); ?>
+			<?php foreach ( $tabs as $slug => $label ) :
+				printf( '<a class="nav-tab%s" href="%s">%s</a>',
+					( $tab == $slug ) ? ' nav-tab-active' : '',
+					add_query_arg( array( 'page' => 'vgsr', 'tab' => $slug ), self_admin_url( is_multisite() ? 'settings.php' : 'options-general.php' ) ),
+					$label
+				);
+			endforeach; ?>
+		</h2>
+
+		<?php // The main admin page ?>
+		<?php if ( 'main' == $tab ) : ?>
 
 		<form action="<?php echo $destination; ?>" method="post">
-
 			<?php settings_fields( 'vgsr' ); ?>
 			<?php do_settings_sections( 'vgsr' ); ?>
 			<?php submit_button(); ?>
-
 		</form>
+
+		<?php else :
+			do_action( "vgsr_admin_page_{$tab}" );
+		endif; ?>
+
 	</div>
 
-<?php
+	<?php
+}
+
+/**
+ * Return the admin page tabs
+ *
+ * @since 0.0.7
+ *
+ * @uses apply_filters() Calls 'vgsr_admin_page_tabs'
+ * 
+ * @return array Tabs as $slug => $label
+ */
+function vgsr_admin_page_tabs() {
+	return apply_filters( 'vgsr_admin_page_tabs', array(
+		'main' => __( 'Main', 'vgsr' ),
+	) );
 }
 
 /** Helpers *******************************************************************/
@@ -192,7 +229,7 @@ function vgsr_admin_settings() {
  * 
  * @uses get_current_screen()
  */
-function vgsr_admin_settings_help() {
+function vgsr_admin_page_help() {
 
 	$current_screen = get_current_screen();
 
