@@ -27,7 +27,7 @@ class VGSR_Ancienniteit {
 	 */
 	public function __construct() {
 
-		// Bail if BP Groups component is not active
+		// Bail when BP Groups component is not active
 		if ( ! function_exists( 'buddypress' ) || ! bp_is_active( 'groups' ) )
 			return;
 
@@ -51,7 +51,7 @@ class VGSR_Ancienniteit {
 	public function add_settings_field( $settings ) {
 
 		// Add setting
-		$settings['vgsr_always_ancienniteit'] = array(
+		$settings['vgsr_force_ancienniteit'] = array(
 			'title'             => __( 'Always anci&#235;nniteit', 'vgsr' ),
 			'callback'          => array( $this, 'the_settings_field' ),
 			'sanitize_callback' => 'intval',
@@ -70,8 +70,8 @@ class VGSR_Ancienniteit {
 	 */
 	public function the_settings_field() { ?>
 
-		<input id="vgsr_always_ancienniteit" name="vgsr_always_ancienniteit" type="checkbox" value="1" <?php checked( get_site_option( 'vgsr_always_ancienniteit' ) ); ?> />
-		<label for="vgsr_always_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR group members always in anci&#235;nniteit.', 'vgsr' ); ?></span></label>
+		<input id="vgsr_force_ancienniteit" name="vgsr_force_ancienniteit" type="checkbox" value="1" <?php checked( get_site_option( 'vgsr_force_ancienniteit' ) ); ?> />
+		<label for="vgsr_force_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR group members always in anci&#235;nniteit.', 'vgsr' ); ?></span></label>
 
 		<?php
 	}
@@ -86,7 +86,7 @@ class VGSR_Ancienniteit {
 	public function user_query_orderby( $query ) {
 
 		// Bail if not always required
-		if ( ! get_site_option( 'vgsr_always_ancienniteit' ) )
+		if ( ! get_site_option( 'vgsr_force_ancienniteit' ) )
 			return;
 
 		$qv = $query->query_vars;

@@ -75,20 +75,21 @@ function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
 		</div>
 	</div></fieldset>
 
-    <script type="text/javascript">
-    jQuery(document).ready( function( $ ) {
+	<script type="text/javascript">
+		jQuery(document).ready( function( $ ) {
 
-    	// When selecting new post to edit inline
-        $('#the-list').on('click', 'a.editinline', function() {
-			var id    = inlineEditPost.getId( this ),
-			    input = $('#inline-edit input[name="vgsr_post_vgsr_only"]').attr('checked', false);
+		// When selecting new post to edit inline
+			$('#the-list').on('click', 'a.editinline', function() {
+				var id    = inlineEditPost.getId( this ),
+				    input = $('#inline-edit input[name="vgsr_post_vgsr_only"]').attr('checked', false);
 
-			// Mark checked if vgsr-only. Value is in hidden input field in vgsr-only column
-			if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) )
-				input.attr('checked', 'checked');
-        });
-    });
-    </script>
+				// Mark checked if vgsr-only. Value is in hidden input field in vgsr-only column
+				if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) ) {
+					input.attr('checked', 'checked');
+				}
+			});
+		});
+	</script>
 
 	<?php
 }
