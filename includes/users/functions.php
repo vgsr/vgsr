@@ -195,6 +195,8 @@ function vgsr_admin_bar_menu() {
  * Modify the My Sites admin bar menu
  *
  * @since 0.0.7
+ *
+ * @see wp_admin_bar_my_sites_menu()
  * 
  * @param WP_Admin_Bar $wp_admin_bar
  */
@@ -209,6 +211,9 @@ function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
 
 			// Node exists
 			if ( $node = $wp_admin_bar->get_node( 'blog-' . $blog->userblog_id ) ) {
+
+				// Remove the wp-logo icon
+				$node->title = str_replace( '<div class="blavatar"></div>', '', $node->title );
 
 				// Change node link to the front page instead of the admin page
 				$node->href = home_url( '/' );
