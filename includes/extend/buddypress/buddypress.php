@@ -37,8 +37,6 @@ class VGSR_BuddyPress {
 	 * @since 0.0.1
 	 */
 	private function setup_globals() {
-
-		// Get VGSR
 		$vgsr = vgsr();
 
 		/** Paths **********************************************************/
@@ -73,12 +71,9 @@ class VGSR_BuddyPress {
 		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
 		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'   );
-		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
-		// Remove BP's admin bar My Account area
-		if ( vgsr_bp_remove_ab_my_account_root() ) {
-			remove_action( 'admin_bar_menu', 'bp_admin_bar_my_account_root', 100 );
-		}
+		// Caps
+		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Groups Component
 		if ( bp_is_active( 'groups' ) ) {

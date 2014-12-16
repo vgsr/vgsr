@@ -177,7 +177,7 @@ function vgsr_admin_page() {
 		<?php screen_icon(); ?>
 
 		<h2 class="nav-tab-wrapper">
-			<?php esc_html_e( 'VGSR Settings', 'vgsr' ); ?>
+			<?php esc_html_e( 'VGSR', 'vgsr' ); ?>
 			<?php foreach ( $tabs as $slug => $label ) :
 				printf( '<a class="nav-tab%s" href="%s">%s</a>',
 					( $tab == $slug ) ? ' nav-tab-active' : '',
