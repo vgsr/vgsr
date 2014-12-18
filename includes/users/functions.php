@@ -181,48 +181,80 @@ function vgsr_is_vgsr_group( $group_id = 0 ) {
 /**
  * Hook various filters to modify the admin bar
  *
- * @since 0.0.7
+ * @since 0.1.0
  *
  * @uses add_action()
+ * @uses is_multisite()
  */
 function vgsr_admin_bar_menu() {
 
-	// Modify My Sites nodes
-	add_action( 'admin_bar_menu', 'vgsr_admin_bar_my_sites_menu', 20 );
+	// Modify WP Logo menu
+	add_action( 'admin_bar_menu', 'vgsr_admin_bar_wp_menu', 10 );
+
+	// Network context specifically
+	if ( is_multisite() ) {
+
+		// Modify My Sites nodes
+		add_action( 'admin_bar_menu', 'vgsr_admin_bar_my_sites_menu', 20 );
+	}
+}
+
+/**
+ * Modify the WP Logo admin bar menu
+ *
+ * @since 0.1.0
+ *
+ * @see wp_admin_bar_wp_menu()
+ * 
+ * @uses current_user_can()
+ * @uses WP_Admin_Bar::remove_node()
+ * 
+ * @param WP_Admin_Bar $wp_admin_bar
+ */
+function vgsr_admin_bar_wp_menu( $wp_admin_bar ) {
+
+	// Hide WP menu for non-admins
+	if ( ! current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->remove_node( 'wp-logo' );
+	}
+
+	// @todo Add WP-like VGSR menu
 }
 
 /**
  * Modify the My Sites admin bar menu
  *
- * @since 0.0.7
+ * @since 0.1.0
  *
  * @see wp_admin_bar_my_sites_menu()
+ *
+ * @uses switch_to_blog()
+ * @uses WP_Admin_Bar::get_node()
+ * @uses home_url()
+ * @uses WP_Admin_Bar::add_node()
+ * @uses restore_current_blog()
  * 
  * @param WP_Admin_Bar $wp_admin_bar
  */
 function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
 
-	// Network context specifically
-	if ( is_multisite() ) {
+	// Walk user blogs under My Sites
+	foreach ( $wp_admin_bar->user->blogs as $blog ) {
+		switch_to_blog( $blog->userblog_id );
 
-		// Walk user blogs under My Sites
-		foreach ( $wp_admin_bar->user->blogs as $blog ) {
-			switch_to_blog( $blog->userblog_id );
+		// Node exists
+		if ( $node = $wp_admin_bar->get_node( 'blog-' . $blog->userblog_id ) ) {
 
-			// Node exists
-			if ( $node = $wp_admin_bar->get_node( 'blog-' . $blog->userblog_id ) ) {
+			// Remove the site's wp-logo icon
+			$node->title = str_replace( '<div class="blavatar"></div>', '', $node->title );
 
-				// Remove the wp-logo icon
-				$node->title = str_replace( '<div class="blavatar"></div>', '', $node->title );
+			// Change node link to the front page instead of the admin page
+			$node->href = home_url( '/' );
 
-				// Change node link to the front page instead of the admin page
-				$node->href = home_url( '/' );
-
-				// Overwrite node
-				$wp_admin_bar->add_node( $node );
-			}
-
-			restore_current_blog();
+			// Overwrite node
+			$wp_admin_bar->add_node( $node );
 		}
+
+		restore_current_blog();
 	}
 }
