@@ -214,6 +214,11 @@ class VGSR_BuddyPress {
 		$group_id = array_map( 'intval', (array) $group_id );
 		$user_id  = (int) $user_id;
 
+		// Ensure BP is setup to use its logic
+		if ( ! did_action( 'bp_init' ) ) {
+			bp_init();
+		}
+
 		// Find any group memberships
 		$groups = groups_get_groups( array( 
 			'user_id'         => $user_id,
