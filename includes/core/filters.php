@@ -40,6 +40,10 @@ defined( 'ABSPATH' ) || exit;
 add_filter( 'request',                 'vgsr_request',                 10    );
 add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
 
+// Login Page
+add_filter( 'login_headerurl',   'vgsr_login_header_url'   );
+add_filter( 'login_headertitle', 'vgsr_login_header_title' );
+
 // Posts
 // wp-includes/class-wp.php
 add_filter( 'vgsr_request',            '_vgsr_only_post_query'               );

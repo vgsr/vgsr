@@ -185,6 +185,10 @@ final class VGSR {
 		$this->includes_dir = apply_filters( 'vgsr_includes_dir', trailingslashit( $this->plugin_dir . 'includes'  ) );
 		$this->includes_url = apply_filters( 'vgsr_includes_url', trailingslashit( $this->plugin_url . 'includes'  ) );
 
+		// Assets
+		$this->assets_dir   = apply_filters( 'vgsr_assets_dir',   trailingslashit( $this->includes_dir . 'assets'  ) );
+		$this->assets_url   = apply_filters( 'vgsr_assets_url',   trailingslashit( $this->includes_url . 'assets'  ) );
+
 		// Languages
 		$this->lang_dir     = apply_filters( 'vgsr_lang_dir',     trailingslashit( $this->plugin_dir . 'languages' ) );
 
@@ -221,6 +225,10 @@ final class VGSR {
 		require( $this->includes_dir . 'core/update.php'        );
 
 		/** Components ********************************************************/
+
+		// Common
+		require( $this->includes_dir . 'common/functions.php'   );
+		require( $this->includes_dir . 'common/template.php'    );
 
 		// Posts
 		require( $this->includes_dir . 'posts/functions.php'    );

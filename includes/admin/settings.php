@@ -261,8 +261,8 @@ function vgsr_admin_page_help() {
 							'<li>' . __( 'The Fancy Editor brings the luxury of the Visual editor and HTML editor from the traditional WordPress dashboard into your theme.',                                                  'vgsr' ) . '</li>' .
 							'<li>' . __( 'Auto-embed will embed the media content from a URL directly into the replies. For example: links to Flickr and YouTube.',                                                            'vgsr' ) . '</li>' .
 						'</ul>' .
-					'</p>' .
-					'<p>' . __( 'You must click the Save Changes button at the bottom of the screen for new settings to take effect.', 'vgsr' ) . '</p>'
+					 '</p>' .
+					 '<p>' . __( 'You must click the Save Changes button at the bottom of the screen for new settings to take effect.', 'vgsr' ) . '</p>'
 	) );
 
 	// Groupz Settings
