@@ -3,15 +3,24 @@
   <style type="text/css"><![CDATA[
     #logo-text {
       font-family: Perpetua, Times, serif;
+      font-size: 25px;
       font-variant: small-caps;
-      font-size: 26px;
       letter-spacing: 7.5px;
       word-spacing: 5px;
       font-weight: bold;
-      color: #000;
     }
+
     .logo-style {
       /*fill: #fff;*/
+    }
+
+    /**
+     * IE9+ renders the font differently, so correct it for the most part
+     */
+    @media screen and (min-width:0\0) and (min-resolution: +72dpi) {
+      #logo-text {
+        font-size: 24px;
+      }
     }
   ]]></style>
 
@@ -56,18 +65,15 @@
 
   <!-- Text path circle -->
   <path id="logo-text-path" class="logo-style" style="fill:none;"
-        d="M 0,-1
-           C 0.5523, -1   1, -0.5523    1,0
-           C 1, 0.5523    0.5523, 1     0,1
-           C -0.5523, 1   -1, 0.5523    -1,0
-           C -1, -0.5523  -0.5523, -1   0,-1"
-        transform="translate(100,100) scale(100,100)">
+        d="M 100,0
+           C 155.22847, 0    200, 45.22847   200,100
+           C 200, 155.22847  155.22847, 200  100,200
+           C 45.22847, 200   0, 155.22847    0,100
+           C 0, 45.22847     45.22847, 0     100,0">
   </path>
 
   <!-- Circling text -->
-  <text id="logo-text" text-anchor="middle" class="logo-style">
-    <textPath startOffset="50%" xlink:href="#logo-text-path" >
-      <tspan dy="0.5em">Victi Gratia Semper Reformandi</tspan>
-    </textPath>
+  <text id="logo-text" text-anchor="middle" class="logo-style" dy="0.5em">
+    <textPath startOffset="50%" xlink:href="#logo-text-path">Victi Gratia Semper Reformandi</textPath>
   </text>
 </svg>
