@@ -248,7 +248,7 @@ function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
 			// Remove the site's wp-logo icon
 			$node->title = str_replace( '<div class="blavatar"></div>', '', $node->title );
 
-			// Change node link to the front page instead of the admin page
+			// Change node link to the site's front page instead of its admin page
 			$node->href = home_url( '/' );
 
 			// Overwrite node

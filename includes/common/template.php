@@ -60,7 +60,7 @@ function vgsr_login_enqueue_scripts() {
 		@-moz-document url-prefix() {
 			/**
 			 * Firefox does not render letter-spacing and word-spacing correctly
-			 * in the svg, so fall back to an image.
+			 * on svg textpaths, so fall back to an image.
 			 * 
 			 * @link https://bugzilla.mozilla.org/show_bug.cgi?id=371787
 			 */
