@@ -155,7 +155,7 @@ class VGSR_Admin {
 			is_multisite() ? 'settings.php' : 'options-general.php',
 			__( 'VGSR', 'vgsr' ),
 			__( 'VGSR', 'vgsr' ),
-			'manage_network',
+			$this->minimum_capability,
 			'vgsr',
 			'vgsr_admin_page'
 		);
