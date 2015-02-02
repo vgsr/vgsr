@@ -174,11 +174,11 @@ class VGSR_BuddyPress {
 	public function get_vgsr_groups( $groups ) {
 
 		// Append full VGSR group hierarchy
-		$groups = array_unique( array_merge( $groups, $this->get_group_hierarchy( array( 
+		$groups = array_filter( array_unique( array_merge( $groups, $this->get_group_hierarchy( array( 
 			vgsr_get_group_vgsr_id(), 
 			vgsr_get_group_leden_id(), 
 			vgsr_get_group_oudleden_id() 
-		) ) ) );
+		) ) ) ) );
 
 		return $groups;
 	}
@@ -252,13 +252,13 @@ class VGSR_BuddyPress {
 
 			/**
 			 * Use the ArrayIterator class to dynamically walk all array elements 
-			 * while simultaneously adding new items to that array for iteration.
+			 * while adding new items to that array for continued iteration.
 			 */
 			$hierarchy = new ArrayIterator( $group_ids );
 			foreach ( $hierarchy as $gid ) {
 
 				// Add child group ids when found
-				if ( $children = BP_Groups_Hierarchy::has_children( $gid ) ) {
+				if ( ! empty( $gid ) && ( $children = @BP_Groups_Hierarchy::has_children( $gid ) ) ) {
 					foreach ( $children as $child_id ) {
 						$hierarchy->append( (int) $child_id );
 					}
