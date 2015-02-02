@@ -142,35 +142,61 @@ class VGSR_Admin {
 	 */
 	public function admin_menus() {
 
-		// Are settings enabled?
-		if ( current_user_can( 'vgsr_settings_page' ) ) {
+		// Bail when settings are not enabled
+		if ( ! current_user_can( 'vgsr_settings_page' ) )
+			return;
 
-			// When the plugin is network activated
-			if ( is_plugin_active_for_network( vgsr()->basename ) ) {
+		// Do not register admin page for single sites on the network
+		if ( is_multisite() && doing_action( 'admin_menu' ) )
+			return;
 
-				// Create a menu page in the network admin
-				if ( is_network_admin() ) {
-					add_submenu_page(
-						'settings.php',
-						__( 'VGSR', 'vgsr' ),
-						__( 'VGSR', 'vgsr' ),
-						'manage_network',
-						'vgsr',
-						'vgsr_admin_page'
-					);
-				}
+		// Register admin page
+		$hook = add_submenu_page(
+			is_multisite() ? 'settings.php' : 'options-general.php',
+			__( 'VGSR', 'vgsr' ),
+			__( 'VGSR', 'vgsr' ),
+			'manage_network',
+			'vgsr',
+			'vgsr_admin_page'
+		);
 
-			// Single site menu
-			} else {
-				add_options_page(
-					__( 'VGSR',  'vgsr' ),
-					__( 'VGSR',  'vgsr' ),
-					$this->minimum_capability,
-					'vgsr',
-					'vgsr_admin_page'
-				);
-			}
-		}
+		// Register admin page hooks
+		add_action( "load-$hook",         array( $this, 'load_admin_page'   ) );
+		add_action( "admin_head-$hook",   array( $this, 'admin_page_head'   ) );
+		add_action( "admin_footer-$hook", array( $this, 'admin_page_footer' ) );
+	}
+
+	/**
+	 * Register a dedicated hook on admin page load
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses do_action() Calls 'vgsr_load_admin_page'
+	 */
+	public function load_admin_page() {
+		do_action( 'vgsr_load_admin_page' );
+	}
+
+	/**
+	 * Register a dedicated hook in the admin page head
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses do_action() Calls 'vgsr_admin_page_head'
+	 */
+	public function admin_page_head() {
+		do_action( 'vgsr_admin_page_head' );
+	}
+
+	/**
+	 * Register a dedicated hook in the admin page footer
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses do_action() Calls 'vgsr_admin_page_footer'
+	 */
+	public function admin_page_footer() {
+		do_action( 'vgsr_admin_page_footer' );
 	}
 
 	/**
@@ -350,7 +376,7 @@ class VGSR_Admin {
 		// Append plugin links
 		if ( $file == $vgsr->basename ) {
 
-			// What do you see?.. Mindy from the Network
+			// What do you see, Mindy from the Network?
 			$menu = is_multisite() ? 'settings.php' : 'options-general.php';
 
 			// Settings link
