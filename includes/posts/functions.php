@@ -158,15 +158,23 @@ function _vgsr_only_post_query( $query ) {
 		return $query;
 
 	// Logic to work with 'pre_get_posts' filter
-	if ( 'pre_get_posts' === current_filter() ) {
+	if ( doing_filter( 'pre_get_posts' ) ) {
 
 		// Bail if editing main query, since that was done through
-		// the 'vgsr_request' filter
+		// the 'request' filter
 		if ( $query->is_main_query() )
 			return;
 
 		// Setup query vars
 		$query = &$query->query_vars;
+
+	// Logic to work with 'pre_get_posts' filter
+	} elseif ( doing_filter( 'request' ) ) {
+
+		// Bail when no specific page was queried: the front page
+		if ( empty( $query ) && 'page' == get_option( 'show_on_front' ) && get_option( 'page_on_front' ) ) {
+			return $query;
+		}
 	}
 
 	// Setup meta query
@@ -185,11 +193,12 @@ function _vgsr_only_post_query( $query ) {
 	// Post Hierarchy
 	//
 
-	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
-		if ( isset( $query['post__not_in'] ) )
+	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( array_filter( $post__not_in ) ) ) {
+		if ( isset( $query['post__not_in'] ) ) {
 			$post__not_in = array_merge( (array) $query['post__not_in'], $post__not_in );
+		}
 
-		$query['post__not_in'] = $post__not_in;
+		$query['post__not_in'] = array_unique( array_filter( $post__not_in ) );
 	}
 
 	return apply_filters( 'vgsr_only_posts', $query );
@@ -211,12 +220,13 @@ function _vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
 	if ( is_user_vgsr() )
 		return $nav_menu_items;
 
-	// Do stuff...
+	// Walk this menu's items
 	foreach ( $nav_menu_items as $k => $item ) {
 
-		// Remove vgsr-only nav menu post items
-		if ( 'post_type' == $item->type && vgsr_is_post_vgsr_only( $item->object_id, true ) )
+		// Remove vgsr-only nav menu post type items
+		if ( 'post_type' === $item->type && vgsr_is_post_vgsr_only( $item->object_id, true ) ) {
 			unset( $nav_menu_items[$k] );
+		}
 	}
 
 	return apply_filters( 'vgsr_only_nav_menu_objects', $nav_menu_items, $args );
@@ -238,12 +248,13 @@ function _vgsr_only_get_pages( $pages, $args ) {
 	if ( is_user_vgsr() )
 		return $pages;
 
-	// Do stuff...
+	// Walk pages
 	foreach ( $pages as $k => $page ) {
 
 		// Remove vgsr-only pages
-		if ( vgsr_is_post_vgsr_only( $page->ID, true ) )
+		if ( vgsr_is_post_vgsr_only( $page->ID, true ) ) {
 			unset( $pages[$k] );
+		}
 	}
 
 	return apply_filters( 'vgsr_only_get_pages', $pages, $args );
@@ -266,8 +277,9 @@ function _vgsr_only_list_pages( $title, $page ) {
 		return $title;
 
 	// Mark vgsr-only pages
-	if ( vgsr_is_post_vgsr_only( $page->ID, true ) )
+	if ( vgsr_is_post_vgsr_only( $page->ID, true ) ) {
 		$title .= '*'; // Make marking optional?
+	}
 
 	return apply_filters( 'vgsr_only_list_pages', $title, $page );
 }
@@ -406,7 +418,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	if ( empty( $post_id ) && ( ! $rebuild || get_option( '_vgsr_only_post_hierarchy' ) ) )
 		return;
 
-	// Un-hook query filter
+	// Unhook query filter
 	remove_filter( 'pre_get_posts', '_vgsr_only_post_query' );
 
 	// Define vgsr-only post types
@@ -472,7 +484,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	// Update option
 	update_option( '_vgsr_only_post_hierarchy', $hierarchy );
 
-	// Re-hook query filter
+	// Rehook query filter
 	add_filter( 'pre_get_posts', '_vgsr_only_post_query' );
 }
 

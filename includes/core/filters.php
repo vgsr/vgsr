@@ -44,7 +44,10 @@ add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
 add_filter( 'login_headerurl',   'vgsr_login_header_url'   );
 add_filter( 'login_headertitle', 'vgsr_login_header_title' );
 
-// Posts
+/**
+ * VGSR-only posts
+ */
+
 // wp-includes/class-wp.php
 add_filter( 'vgsr_request',            '_vgsr_only_post_query'               );
 // wp-includes/comment.php
@@ -61,5 +64,4 @@ add_filter( 'get_pages',               '_vgsr_only_get_pages',         10, 2 );
 // wp-includes/nav-menu-template.php
 add_filter( 'wp_nav_menu_objects',     '_vgsr_only_nav_menu_objects',  10, 2 );
 // wp-includes/query.php
-add_filter( 'pre_get_posts',           '_vgsr_only_post_query'               );
 add_filter( 'comment_feed_where',      '_vgsr_only_comment_query',     10, 2 );
