@@ -168,10 +168,10 @@ function _vgsr_only_post_query( $query ) {
 		// Setup query vars
 		$query = &$query->query_vars;
 
-	// Logic to work with 'pre_get_posts' filter
+	// Logic to work with 'request' filter
 	} elseif ( doing_filter( 'request' ) ) {
 
-		// Bail when no specific page was queried: the front page
+		// Bail when no specific page was queried, being the front page. Continue for blog posts on front
 		if ( empty( $query ) && 'page' == get_option( 'show_on_front' ) && get_option( 'page_on_front' ) ) {
 			return $query;
 		}
