@@ -89,6 +89,9 @@ class VGSR_GravityForms {
 		// Tooltips
 		add_filter( 'gform_tooltips', array( $this, 'tooltips' ) );
 
+		// Export
+		add_filter( 'gform_export_separator', array( $this, 'export_separator' ) );
+
 		// GF-Pages
 		add_filter( 'gf_pages_hide_single_form', array( $this, 'gf_pages_hide_form_vgsr_only' ), 10, 2 );
 	}
@@ -476,6 +479,24 @@ class VGSR_GravityForms {
 		) );
 
 		return $tips;
+	}
+
+	/** Misc ***************************************************************/
+
+	/**
+	 * Modify the csv separator for exported GF data
+	 *
+	 * When using a semicolon as separator, Excel somehow interpretes
+	 * cells with line breaks (/n,/r) correctly. This prevents values
+	 * with line breaks to be parsed as separate rows.
+	 *
+	 * @since 0.0.8
+	 *
+	 * @param string $sep CSV separator
+	 * @return string CSV separator
+	 */
+	public function export_separator( $sep ) {
+		return ';';
 	}
 
 	/** GF-Pages ***********************************************************/
