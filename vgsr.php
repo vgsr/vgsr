@@ -274,7 +274,7 @@ final class VGSR {
 		$actions = array(
 			// 'setup_current_user',       // Setup currently logged in user
 			// 'register_shortcodes',      // Register shortcodes (vgsr-login)
-			// 'load_textdomain',          // Load textdomain (vgsr)
+			'load_textdomain',          // Load textdomain (vgsr)
 		);
 
 		// Add the actions
