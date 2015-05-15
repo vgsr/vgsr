@@ -26,7 +26,7 @@ function vgsr_setup_ancienniteit() {
 		return;
 
 	// Include the Ancienniteit component
-	require( vgsr()->includes_dir . 'extend/ancienniteit.php' );
+	require( vgsr()->extend_dir . 'ancienniteit.php' );
 
 	// Instantiate Ancienniteit for VGSR
 	vgsr()->extend->ancienniteit = new VGSR_Ancienniteit;
@@ -46,7 +46,7 @@ function vgsr_setup_bbpress() {
 		return;
 
 	// Include the bbPress component
-	require( vgsr()->includes_dir . 'extend/bbpress/bbpress.php' );
+	require( vgsr()->extend_dir . 'bbpress/bbpress.php' );
 
 	// Instantiate bbPress for VGSR
 	vgsr()->extend->bbp = new VGSR_BBPress;
@@ -66,7 +66,7 @@ function vgsr_setup_buddypress() {
 		return;
 
 	// Include the BuddyPress component
-	require( vgsr()->includes_dir . 'extend/buddypress/buddypress.php' );
+	require( vgsr()->extend_dir . 'buddypress/buddypress.php' );
 
 	// Instantiate BuddyPress for VGSR
 	vgsr()->extend->bp = new VGSR_BuddyPress;
@@ -86,28 +86,8 @@ function vgsr_setup_gravityforms() {
 		return;
 
 	// Include the Gravity Forms component
-	require( vgsr()->includes_dir . 'extend/gravityforms/gravityforms.php' );
+	require( vgsr()->extend_dir . 'gravityforms/gravityforms.php' );
 
 	// Instantiate Gravity Forms for VGSR
 	vgsr()->extend->gf = new VGSR_GravityForms;
-}
-
-/**
- * Loads the Groupz component
- * 
- * @since 0.0.1
- *
- * @return If Groupz is not active
- */
-function vgsr_setup_groupz() {
-
-	// Bail if no Groupz
-	if ( ! function_exists( 'groupz' ) )
-		return;
-
-	// Include the Groupz component
-	require( vgsr()->includes_dir . 'extend/groupz/groupz.php' );
-
-	// Instantiate Groupz for VGSR
-	vgsr()->extend->groupz = new VGSR_Groupz;
 }

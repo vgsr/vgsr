@@ -27,12 +27,8 @@ class VGSR_Ancienniteit {
 	 */
 	public function __construct() {
 
-		// Bail when BP Groups component is not active
-		if ( ! function_exists( 'buddypress' ) || ! bp_is_active( 'groups' ) )
-			return;
-
 		// Hook settings
-		add_filter( 'vgsr_settings_fields_bp_groups', array( $this, 'add_settings_field' ) );
+		add_filter( 'vgsr_settings_fields_members', array( $this, 'add_settings_field' ) );
 
 		// User queries
 		add_filter( 'pre_user_query', array( $this, 'user_query_orderby' ), 9 );
@@ -52,7 +48,7 @@ class VGSR_Ancienniteit {
 
 		// Add setting
 		$settings['vgsr_force_ancienniteit'] = array(
-			'title'             => __( 'Always anci&#235;nniteit', 'vgsr' ),
+			'title'             => __( 'Force seniority', 'vgsr' ),
 			'callback'          => array( $this, 'the_settings_field' ),
 			'sanitize_callback' => 'intval',
 			'args'              => array()
@@ -71,7 +67,7 @@ class VGSR_Ancienniteit {
 	public function the_settings_field() { ?>
 
 		<input id="vgsr_force_ancienniteit" name="vgsr_force_ancienniteit" type="checkbox" value="1" <?php checked( get_site_option( 'vgsr_force_ancienniteit' ) ); ?> />
-		<label for="vgsr_force_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR group members always in anci&#235;nniteit.', 'vgsr' ); ?></span></label>
+		<label for="vgsr_force_ancienniteit"><span class="description"><?php esc_html_e( 'Return VGSR members always sorted by seniority.', 'vgsr' ); ?></span></label>
 
 		<?php
 	}
@@ -80,19 +76,20 @@ class VGSR_Ancienniteit {
 	 * Amend user query for always ancienniteit
 	 *
 	 * @since 0.0.3
+	 *
+	 * @uses get_site_option()
+	 * @uses vgsr_has_query_var()
 	 * 
 	 * @param WP_User_Query $query
 	 */
 	public function user_query_orderby( $query ) {
 
-		// Bail if not always required
+		// Bail when not forcing ancienniteit
 		if ( ! get_site_option( 'vgsr_force_ancienniteit' ) )
 			return;
 
-		$qv = $query->query_vars;
-
-		// Bail if not querying a VGSR group
-		if ( ! isset( $qv['group_id'] ) || ! vgsr_is_vgsr_group( $qv['group_id'] ) )
+		// Bail when not querying for VGSR
+		if ( ! vgsr_has_query_var( $query ) )
 			return;
 
 		// @todo Unless explicitly set elsewhere

@@ -49,8 +49,8 @@ class VGSR_GravityForms {
 
 		/** Paths **********************************************************/
 
-		$this->includes_dir = trailingslashit( $vgsr->includes_dir . 'extend/gravityforms' );
-		$this->includes_url = trailingslashit( $vgsr->includes_url . 'extend/gravityforms' );
+		$this->includes_dir = trailingslashit( $vgsr->extend_dir . 'gravityforms' );
+		$this->includes_url = trailingslashit( $vgsr->extend_url . 'gravityforms' );
 	}
 
 	/**

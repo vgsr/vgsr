@@ -189,6 +189,10 @@ final class VGSR {
 		$this->assets_dir   = apply_filters( 'vgsr_assets_dir',   trailingslashit( $this->includes_dir . 'assets'  ) );
 		$this->assets_url   = apply_filters( 'vgsr_assets_url',   trailingslashit( $this->includes_url . 'assets'  ) );
 
+		// Extenders
+		$this->extend_dir   = apply_filters( 'vgsr_extend_dir',   trailingslashit( $this->includes_dir . 'extend'  ) );
+		$this->extend_url   = apply_filters( 'vgsr_extend_url',   trailingslashit( $this->includes_url . 'extend'  ) );
+
 		// Languages
 		$this->lang_dir     = apply_filters( 'vgsr_lang_dir',     trailingslashit( $this->plugin_dir . 'languages' ) );
 

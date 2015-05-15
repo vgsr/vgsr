@@ -10,58 +10,19 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/** Groups ****************************************************************/
-
 /**
- * Return the vgsr group ID
+ * Return the current user ID even when it isn't set yet
  *
- * @since 0.0.1
+ * @since 0.1.0
  *
- * @uses apply_filters() Calls 'vgsr_get_group_vgsr_id'
- * @return int VGSR group ID
+ * @uses did_action()
+ * @uses get_current_user_id()
+ * @uses apply_filters() Calls 'determine_current_user'
+ * 
+ * @return int User ID
  */
-function vgsr_get_group_vgsr_id() {
-	return (int) apply_filters( 'vgsr_get_group_vgsr_id', 0 );
-}
-
-/**
- * Return the leden group ID
- *
- * @since 0.0.1
- *
- * @uses apply_filters() Calls 'vgsr_get_group_leden_id'
- * @return int Leden group ID
- */
-function vgsr_get_group_leden_id() {
-	return (int) apply_filters( 'vgsr_get_group_leden_id', 0 );
-}
-
-/**
- * Return the oud-leden group ID
- *
- * @since 0.0.1
- *
- * @uses apply_filters() Calls 'vgsr_get_group_oudleden_id'
- * @return int Oud-leden group ID
- */
-function vgsr_get_group_oudleden_id() {
-	return (int) apply_filters( 'vgsr_get_group_oudleden_id', 0 );
-}
-
-/**
- * Return IDs of all VGSR groups
- *
- * @since 0.0.6
- *
- * @uses apply_filters() Calls 'vgsr_get_vgsr_groups'
- * @return array VGSR groups IDs
- */
-function vgsr_get_vgsr_groups() {
-	return array_map( 'intval', (array) apply_filters( 'vgsr_get_vgsr_groups', array(
-		vgsr_get_group_vgsr_id(),
-		vgsr_get_group_leden_id(),
-		vgsr_get_group_oudleden_id(),
-	) ) );
+function vgsr_get_current_user_id() {
+	return did_action( 'set_current_user' ) ? get_current_user_id() : apply_filters( 'determine_current_user', 0 );
 }
 
 /** Is Functions **********************************************************/
@@ -71,8 +32,6 @@ function vgsr_get_vgsr_groups() {
  *
  * @since 0.0.1
  *
- * @uses vgsr_user_in_group()
- * @uses vgsr_get_vgsr_groups()
  * @uses apply_filters() Calls 'is_user_vgsr'
  * 
  * @param int $user_id User ID. Defaults to current user
@@ -82,10 +41,10 @@ function is_user_vgsr( $user_id = 0 ) {
 
 	// Default to current user
 	if ( empty( $user_id ) ) {
-		$user_id = get_current_user_id();
+		$user_id = vgsr_get_current_user_id();
 	}
 
-	return (bool) apply_filters( 'is_user_vgsr', vgsr_user_in_group( vgsr_get_vgsr_groups(), $user_id ), $user_id );
+	return (bool) apply_filters( 'is_user_vgsr', false, $user_id );
 }
 
 /**
@@ -93,8 +52,6 @@ function is_user_vgsr( $user_id = 0 ) {
  *
  * @since 0.0.1
  *
- * @uses vgsr_user_in_group()
- * @uses vgsr_get_group_leden_id()
  * @uses apply_filters() Calls 'is_user_lid'
  * 
  * @param int $user_id User ID. Defaults to current user
@@ -104,10 +61,10 @@ function is_user_lid( $user_id = 0 ) {
 
 	// Default to current user
 	if ( empty( $user_id ) ) {
-		$user_id = get_current_user_id();
+		$user_id = vgsr_get_current_user_id();
 	}
 
-	return (bool) apply_filters( 'is_user_lid', vgsr_user_in_group( vgsr_get_group_leden_id(), $user_id ), $user_id );
+	return (bool) apply_filters( 'is_user_lid', false, $user_id );
 }
 
 /**
@@ -115,8 +72,6 @@ function is_user_lid( $user_id = 0 ) {
  *
  * @since 0.0.1
  *
- * @uses vgsr_user_in_group()
- * @uses vgsr_get_group_oudleden_id()
  * @uses apply_filters() Calls 'is_user_oudlid'
  * 
  * @param int $user_id User ID. Defaults to current user
@@ -126,54 +81,10 @@ function is_user_oudlid( $user_id = 0 ) {
 
 	// Default to current user
 	if ( empty( $user_id ) ) {
-		$user_id = get_current_user_id();
+		$user_id = vgsr_get_current_user_id();
 	}
 
-	return (bool) apply_filters( 'is_user_oudlid', vgsr_user_in_group( vgsr_get_group_oudleden_id(), $user_id ), $user_id );
-}
-
-/**
- * Abstraction function to check user group membership
- *
- * Group plugins hook in here to verify group membership of the given user. 
- * When no external filters hook in, this function assumes no membership.
- *
- * @since 0.0.1
- *
- * @uses apply_filters() Calls 'vgsr_user_in_group'
- *
- * @param int|array $group_id Group ID or ids
- * @param int $user_id User ID. Defaults to current user
- * @return bool User is in group
- */
-function vgsr_user_in_group( $group_id = 0, $user_id = 0 ) {
-
-	// Default to current user
-	if ( empty( $user_id ) ) {
-		$user_id = get_current_user_id();
-	}
-
-	return (bool) apply_filters( 'vgsr_user_in_group', false, $group_id, $user_id );
-}
-
-/**
- * Return whether the given group is a VGSR group
- *
- * @since 0.0.3
- *
- * @uses vgsr_get_vgsr_groups()
- * @uses apply_filters() Calls 'vgsr_is_vgsr_group'
- * 
- * @param int $group_id Group ID
- * @return bool Group is VGSR group
- */
-function vgsr_is_vgsr_group( $group_id = 0 ) {
-
-	// Bail when group was not provided
-	if ( empty( $group_id ) )
-		return false;
-
-	return (bool) apply_filters( 'vgsr_is_vgsr_group', in_array( (int) $group_id, vgsr_get_vgsr_groups() ), $group_id );
+	return (bool) apply_filters( 'is_user_oudlid', false, $user_id );
 }
 
 /** Admin Bar *************************************************************/

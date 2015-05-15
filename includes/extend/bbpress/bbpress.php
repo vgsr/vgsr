@@ -41,8 +41,8 @@ class VGSR_BBPress {
 
 		/** Paths **********************************************************/
 
-		$this->includes_dir = trailingslashit( $vgsr->includes_dir . 'extend/bbpress' );
-		$this->includes_url = trailingslashit( $vgsr->includes_url . 'extend/bbpress' );
+		$this->includes_dir = trailingslashit( $vgsr->extend_dir . 'bbpress' );
+		$this->includes_url = trailingslashit( $vgsr->extend_url . 'bbpress' );
 	}
 
 	/**
