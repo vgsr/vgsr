@@ -468,7 +468,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	$hierarchy = _vgsr_only_get_post_hierarchy();
 	$collected = $_posts->getArrayCopy();
 
-	// Manipulate global
+	// Modify global
 	if ( null !== $add ) {
 
 		// Add to hierarchy
@@ -482,7 +482,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	}
 
 	// Update option
-	update_option( '_vgsr_only_post_hierarchy', $hierarchy );
+	update_option( '_vgsr_only_post_hierarchy', array_filter( $hierarchy ) );
 
 	// Rehook query filter
 	add_filter( 'pre_get_posts', '_vgsr_only_post_query' );
