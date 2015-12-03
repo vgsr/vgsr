@@ -69,12 +69,13 @@ add_action( 'vgsr_init', 'vgsr_ready',             999 );
  *
  * Attach actions to the ready action after VGSR has fully initialized.
  * The load order helps to execute code at the correct time.
- *                                                    v---Load order
+ *                                                     v---Load order
  */
-add_action( 'vgsr_ready', 'vgsr_setup_ancienniteit', 10 ); // Ancienniteit for groups
-add_action( 'bbp_loaded', 'vgsr_setup_bbpress',      0  ); // Forum integration
-add_action( 'bp_loaded',  'vgsr_setup_buddypress',   0  ); // Social network integration
-add_action( 'vgsr_ready', 'vgsr_setup_gravityforms', 10 ); // Forms integration
+add_action( 'vgsr_ready', 'vgsr_setup_ancienniteit',   10 ); // Ancienniteit for groups
+add_action( 'bbp_loaded', 'vgsr_setup_bbpress',        0  ); // Forum integration
+add_action( 'bp_loaded',  'vgsr_setup_buddypress',     0  ); // Social network integration
+add_action( 'vgsr_ready', 'vgsr_setup_eventorganiser', 10 ); // Events integration
+add_action( 'vgsr_ready', 'vgsr_setup_gravityforms',   10 ); // Forms integration
 
 // Login page
 add_action( 'login_enqueue_scripts', 'vgsr_login_enqueue_scripts' );

@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * 
  * @since 0.0.3
  *
- * @return If Ancienniteit is not active
+ * @return When Ancienniteit is not active
  */
 function vgsr_setup_ancienniteit() {
 
@@ -37,7 +37,7 @@ function vgsr_setup_ancienniteit() {
  * 
  * @since 0.0.1
  *
- * @return If bbPress is not active
+ * @return When bbPress is not active
  */
 function vgsr_setup_bbpress() {
 
@@ -57,7 +57,7 @@ function vgsr_setup_bbpress() {
  * 
  * @since 0.0.2
  *
- * @return If BuddyPress is not active
+ * @return When BuddyPress is not active
  */
 function vgsr_setup_buddypress() {
 
@@ -73,11 +73,31 @@ function vgsr_setup_buddypress() {
 }
 
 /**
+ * Loads the Event Organiser component
+ * 
+ * @since 1.0.0
+ *
+ * @return When Event Organiser is not active
+ */
+function vgsr_setup_event_organiser() {
+
+	// Bail if no Event Organiser
+	if ( ! defined( 'EVENT_ORGANISER_VER' ) )
+		return;
+
+	// Include the Event Organiser component
+	require( vgsr()->extend_dir . 'event-organiser/event-organiser.php' );
+
+	// Instantiate Event Organiser for VGSR
+	vgsr()->extend->event_organiser = new VGSR_BuddyPress;
+}
+
+/**
  * Loads the Gravity Forms component
  * 
  * @since 0.0.6
  *
- * @return If Gravity Forms is not active
+ * @return When Gravity Forms is not active
  */
 function vgsr_setup_gravityforms() {
 
