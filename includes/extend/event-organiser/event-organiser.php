@@ -40,12 +40,12 @@ class VGSR_Event_Organiser {
 		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ), 15 );
 
 		// Adjacent events
-		add_filter( 'get_next_post_join',      'adjacent_post_join',  10, 5 );
-		add_filter( 'get_previous_post_join',  'adjacent_post_join',  10, 5 );
-		add_filter( 'get_next_post_where',     'adjacent_post_where', 10, 5 );
-		add_filter( 'get_previous_post_where', 'adjacent_post_where', 10, 5 );
-		add_filter( 'get_next_post_sort',      'adjacent_post_sort',  10, 2 );
-		add_filter( 'get_previous_post_sort',  'adjacent_post_sort',  10, 2 );
+		add_filter( 'get_next_post_join',      array( $this, 'adjacent_post_join'  ), 10, 5 );
+		add_filter( 'get_previous_post_join',  array( $this, 'adjacent_post_join'  ), 10, 5 );
+		add_filter( 'get_next_post_where',     array( $this, 'adjacent_post_where' ), 10, 5 );
+		add_filter( 'get_previous_post_where', array( $this, 'adjacent_post_where' ), 10, 5 );
+		add_filter( 'get_next_post_sort',      array( $this, 'adjacent_post_sort'  ), 10, 2 );
+		add_filter( 'get_previous_post_sort',  array( $this, 'adjacent_post_sort'  ), 10, 2 );
 	}
 
 	/**

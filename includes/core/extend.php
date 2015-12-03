@@ -89,7 +89,7 @@ function vgsr_setup_event_organiser() {
 	require( vgsr()->extend_dir . 'event-organiser/event-organiser.php' );
 
 	// Instantiate Event Organiser for VGSR
-	vgsr()->extend->event_organiser = new VGSR_BuddyPress;
+	vgsr()->extend->event_organiser = new VGSR_Event_Organiser;
 }
 
 /**
