@@ -12,17 +12,25 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_BuddyPress' ) ) :
 /**
- * Loads BuddyPress Extension
+ * VGSR BuddyPress extension
  *
  * @since 0.0.1
  */
 class VGSR_BuddyPress {
 
+	/**
+	 * Holds the components that are exlusive for VGSR users.
+	 *
+	 * @since 0.1.0
+	 * @var array
+	 */
+	protected $components;
+
 	/** Setup Methods ******************************************************/
 
 	/**
 	 * The main VGSR BuddyPress loader
-	 * 
+	 *
 	 * @since 0.0.1
 	 */
 	public function __construct() {
@@ -33,8 +41,10 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Define default class globals
-	 * 
+	 *
 	 * @since 0.0.1
+	 * 
+	 * @uses apply_filters() Calls 'vgsr_bp_components'
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
@@ -43,6 +53,16 @@ class VGSR_BuddyPress {
 
 		$this->includes_dir = trailingslashit( $vgsr->extend_dir . 'buddypress' );
 		$this->includes_url = trailingslashit( $vgsr->extend_url . 'buddypress' );
+
+		/** Identifiers ****************************************************/
+
+		$this->components   = apply_filters( 'vgsr_bp_components', array(
+			'activity',
+			'friends',
+			'groups',
+			'messages',
+			'notifications'
+		) );
 
 		/** Supports *******************************************************/
 
@@ -64,15 +84,26 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses bp_is_active() To enable hooks for active BP components
+	 * @uses bp_is_active() To check for active components
+	 * @uses add_action()
+	 * @uses add_filter()
 	 */
 	private function setup_actions() {
 
+		// Define member types. Dedicated hook per BP 2.3+
+		$member_type_hook = function_exists( 'bp_has_member_type' ) ? 'bp_register_member_types' : 'bp_loaded';
+		add_action( $member_type_hook, array( $this, 'register_member_types' ) );
+
+		// Define vgsr membership by member type
+		add_filter( 'is_user_vgsr',   array( $this, 'is_user_vgsr'   ), 10, 2 );
+		add_filter( 'is_user_lid',    array( $this, 'is_user_lid'    ), 10, 2 );
+		add_filter( 'is_user_oudlid', array( $this, 'is_user_oudlid' ), 10, 2 );
+
 		// Hide most of BP for non-vgsr
-		add_action( 'bp_template_redirect',     array( $this, 'bp_pages_404'             ), 0 );
+		add_action( 'bp_template_redirect',     array( $this, 'bp_pages_set_404'         ), 0 );
+		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ), 5 ); // After members component setup
 		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )    );
 		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ), 5 ); // Before default priority
-		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ), 5 ); // After members component setup
 
 		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
@@ -80,27 +111,9 @@ class VGSR_BuddyPress {
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
-
-		// Member Types. Dedicated hook per BP 2.3+
-		if ( function_exists( 'bp_has_member_type' ) ) {
-			add_action( 'bp_register_member_types', array( $this, 'register_member_types' ) );
-		} else {
-			add_action( 'bp_loaded', array( $this, 'register_member_types' ) );
-		}
-
-		add_filter( 'is_user_vgsr',   array( $this, 'is_user_vgsr'   ), 10, 2 );
-		add_filter( 'is_user_lid',    array( $this, 'is_user_lid'    ), 10, 2 );
-		add_filter( 'is_user_oudlid', array( $this, 'is_user_oudlid' ), 10, 2 );
-
-		// Groups Component
-		if ( bp_is_active( 'groups' ) ) {
-			// add_filter( 'is_user_vgsr',   array( $this, 'in_vgsr_group'     ), 10, 2 );
-			// add_filter( 'is_user_lid',    array( $this, 'in_leden_group'    ), 10, 2 );
-			// add_filter( 'is_user_oudlid', array( $this, 'in_oudleden_group' ), 10, 2 );
-		}
 	}
 
-	/** General ************************************************************/
+	/** Hide BP ************************************************************/
 
 	/**
 	 * Hide nearly all BuddyPress pages for guests and non-vgsr users
@@ -116,7 +129,7 @@ class VGSR_BuddyPress {
 	 * @uses remove_all_actions()
 	 * @uses bp_do_404()
 	 */
-	public function bp_pages_404() {
+	public function bp_pages_set_404() {
 
 		// Set the page to 404 when:
 		// ... this is a BP page
@@ -135,7 +148,6 @@ class VGSR_BuddyPress {
 
 			// Make the page 404
 			bp_do_404();
-			return;
 		}
 	}
 
@@ -144,16 +156,19 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @uses is_page()
 	 * @uses get_queried_object_id()
 	 * @uses bp_core_get_directory_page_ids()
-	 * 
+	 *
 	 * @param bool $is Is this a BuddyPress page?
 	 * @return boolean Is BuddyPress
 	 */
 	public function is_buddypress( $is ) {
 
-		// Set true for all directory pages, with active components or not
-		if ( ! $is ) {
+		if ( ! $is && is_page() ) {
+			// Define true for all directory pages, whether their component
+			// is active or not. By default, an inactive component's directory
+			// page has no content, but continues to live as an ordinary page.
 			$is = in_array( get_queried_object_id(), (array) bp_core_get_directory_page_ids( 'all' ) );
 		}
 
@@ -165,17 +180,10 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses apply_filters() Calls 'vgsr_only_bp_components'
 	 * @return array VGSR-only BP components
 	 */
-	public function vgsr_only_bp_components() {
-		return apply_filters( 'vgsr_only_bp_components', array(
-			'activity',
-			'friends',
-			'groups',
-			'messages',
-			'notifications'
-		) );
+	public function vgsr_bp_components() {
+		return $this->components;
 	}
 
 	/**
@@ -184,8 +192,8 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @uses bp_current_component()
-	 * @uses VGSR_BuddyPress::vgsr_only_bp_components()
-	 * 
+	 * @uses VGSR_BuddyPress::vgsr_bp_components()
+	 *
 	 * @param string $component Optional. Defaults to current component
 	 * @return bool Component is vgsr-only
 	 */
@@ -196,37 +204,37 @@ class VGSR_BuddyPress {
 			$component = bp_current_component();
 		}
 
-		$is = in_array( $component, $this->vgsr_only_bp_components() );
+		$is = in_array( $component, $this->vgsr_bp_components() );
 
 		return $is;
 	}
 
 	/**
-	 * Define the default component for non-vgsr users
+	 * Define the default component for non-vgsr displayed users
 	 *
-	 * When active, the activity component is set as the default component 
-	 * in BP_Members_Component::setup_canonical_stack(). For non-vgsr
-	 * displayed users, this results in a 404 when visiting members/<user>.
-	 * This is solved by making the profile component default for this situation.
+	 * When active, the activity component is set as the default component in
+	 * BP_Members_Component::setup_canonical_stack(). For non-vgsr displayed
+	 * users, with the activity component as vgsr-only, this results in a 404
+	 * when visiting 'members/<non-vgsr-user>'. This is solved by making the
+	 * profile component default for this situation.
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::vgsr_only_bp_components()
+	 * @uses VGSR_BuddyPress::vgsr_bp_components()
 	 * @uses bp_is_active()
 	 * @uses is_user_vgsr()
 	 */
 	public function define_default_component() {
-		$bp         = buddypress();
-		$components = $this->vgsr_only_bp_components();
+		$bp = buddypress();
 
 		// Define the default component when
 		// ... the activity component is active
 		// ... AND the activity component is vgsr-only
 		// ... AND the displayed user is non-vgsr
-		if ( bp_is_active( 'activity' ) && in_array( 'activity', $components ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
-			if ( ! defined( 'BP_DEFAULT_COMPONENT' ) ) {
+		if ( bp_is_active( 'activity' ) && in_array( 'activity', $this->vgsr_bp_components() ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
 
-				// Make the default component 'profile'
+			// Set the default component to XProfile
+			if ( ! defined( 'BP_DEFAULT_COMPONENT' ) ) {
 				define( 'BP_DEFAULT_COMPONENT', ( 'xprofile' === $bp->profile->id ) ? 'profile' : $bp->profile->id );
 			}
 		}
@@ -235,29 +243,27 @@ class VGSR_BuddyPress {
 	/**
 	 * Deactivate selected components for non-vgsr users
 	 *
-	 * Removes all important (visual) BP elements for non-vgsr users.
-	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::vgsr_only_bp_components()
+	 * @uses VGSR_BuddyPress::vgsr_bp_components()
 	 * @uses bp_is_active()
 	 * @uses is_user_vgsr()
 	 * @uses remove_action()
 	 * @uses bp_is_user()
-	 * @uses do_action() Calls 'vgsr_bp_deactivate_component'
+	 * @uses do_action() Calls 'vgsr_bp_deactivated_component'
 	 * @uses add_filter()
 	 */
 	public function deactivate_components() {
 		$bp = buddypress();
 
 		// Unhook selected components' elements
-		foreach ( $this->vgsr_only_bp_components() as $component ) {
+		foreach ( $this->vgsr_bp_components() as $component ) {
 
 			// Skip logic when component is not active
 			if ( ! bp_is_active( $component ) )
 				continue;
 
-			$the_component = $bp->$component;
+			$class = $bp->{$component};
 
 			// Unhook default added component actions
 			// Keep component globals and included files
@@ -265,30 +271,30 @@ class VGSR_BuddyPress {
 
 			// Remove core component hooks for current user
 			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
-				remove_action( 'bp_setup_canonical_stack',  array( $the_component, 'setup_canonical_stack'  ), 10 );
-				remove_action( 'bp_setup_admin_bar',        array( $the_component, 'setup_admin_bar'        ), $the_component->adminbar_myaccount_order );
-				remove_action( 'bp_setup_cache_groups',     array( $the_component, 'setup_cache_groups'     ), 10 );
-				remove_action( 'bp_register_post_types',    array( $the_component, 'register_post_types'    ), 10 );
-				remove_action( 'bp_register_taxonomies',    array( $the_component, 'register_taxonomies'    ), 10 );
-				remove_action( 'bp_add_rewrite_tags',       array( $the_component, 'add_rewrite_tags'       ), 10 );
-				remove_action( 'bp_add_rewrite_rules',      array( $the_component, 'add_rewrite_rules'      ), 10 );
-				remove_action( 'bp_add_permastructs',       array( $the_component, 'add_permastructs'       ), 10 );
-				remove_action( 'bp_parse_query',            array( $the_component, 'parse_query'            ), 10 );
-				remove_action( 'bp_generate_rewrite_rules', array( $the_component, 'generate_rewrite_rules' ), 10 );
+				remove_action( 'bp_setup_canonical_stack',  array( $class, 'setup_canonical_stack'  ), 10 );
+				remove_action( 'bp_setup_admin_bar',        array( $class, 'setup_admin_bar'        ), $class->adminbar_myaccount_order );
+				remove_action( 'bp_setup_cache_groups',     array( $class, 'setup_cache_groups'     ), 10 );
+				remove_action( 'bp_register_post_types',    array( $class, 'register_post_types'    ), 10 );
+				remove_action( 'bp_register_taxonomies',    array( $class, 'register_taxonomies'    ), 10 );
+				remove_action( 'bp_add_rewrite_tags',       array( $class, 'add_rewrite_tags'       ), 10 );
+				remove_action( 'bp_add_rewrite_rules',      array( $class, 'add_rewrite_rules'      ), 10 );
+				remove_action( 'bp_add_permastructs',       array( $class, 'add_permastructs'       ), 10 );
+				remove_action( 'bp_parse_query',            array( $class, 'parse_query'            ), 10 );
+				remove_action( 'bp_generate_rewrite_rules', array( $class, 'generate_rewrite_rules' ), 10 );
 			}
 
 			// Remove display component hooks for displayed user
 			if ( bp_is_user() && ! is_user_vgsr( bp_displayed_user_id() ) ) {
-				remove_action( 'bp_setup_nav',              array( $the_component, 'setup_nav'              ), 10 );
-				remove_action( 'bp_setup_title',            array( $the_component, 'setup_title'            ), 10 );
+				remove_action( 'bp_setup_nav',   array( $class, 'setup_nav'   ), 10 );
+				remove_action( 'bp_setup_title', array( $class, 'setup_title' ), 10 );
 			}
 
 			// Provide hook for further unhooking
-			do_action( 'vgsr_bp_deactivate_component', $the_component, $component );
+			do_action( 'vgsr_bp_deactivated_component', $class, $component );
 		}
 
-		// Deactivate (but not remove) the component under certain conditions
-		// for component checks after this point
+		// Mark the component as inactive (but do not remove) under certain
+		// conditions for component checks after this point.
 		add_filter( 'bp_is_active', array( $this, 'bp_is_active' ), 10, 2 );
 	}
 
@@ -297,20 +303,20 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress:vgsr_only_bp_components()
+	 * @uses VGSR_BuddyPress:vgsr_bp_components()
 	 * @uses is_user_vgsr()
 	 * @uses in_the_loop()
 	 * @uses bp_loggedin_user_id()
 	 * @uses bp_displayed_user_id()
-	 * 
+	 *
 	 * @param bool $retval Component is active
 	 * @param string $component Component name
 	 * @return bool Component is active
 	 */
 	public function bp_is_active( $retval, $component ) {
 
-		// Component is non-vgsr
-		if ( in_array( $component, $this->vgsr_only_bp_components() ) ) {
+		// Component is vgsr specific
+		if ( in_array( $component, $this->vgsr_bp_components() ) ) {
 
 			// Check the current user
 			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
@@ -331,7 +337,7 @@ class VGSR_BuddyPress {
 	 * Map VGSR BuddyPress settings capabilities
 	 *
 	 * @since 0.0.1
-	 * 
+	 *
 	 * @param  array   $caps    Required capabilities
 	 * @param  string  $cap     Requested capability
 	 * @param  integer $user_id User ID
@@ -353,12 +359,26 @@ class VGSR_BuddyPress {
 	/** Groups *************************************************************/
 
 	/**
+	 * The following code in this section is legacy stuff since the
+	 * introduction and use of the Member Type API. Though the logic
+	 * will remain here for a while for it may be considered valuable
+	 * in future projects.
+	 *
+	 *  // Groups Component
+	 *  if ( bp_is_active( 'groups' ) ) {
+	 *  	add_filter( 'is_user_vgsr',   array( $this, 'in_vgsr_group'     ), 10, 2 );
+	 *  	add_filter( 'is_user_lid',    array( $this, 'in_leden_group'    ), 10, 2 );
+	 *  	add_filter( 'is_user_oudlid', array( $this, 'in_oudleden_group' ), 10, 2 );
+	 *  }
+	 */
+
+	/**
 	 * Return the oud-leden group ID
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses get_site_option()
-	 * 
+	 *
 	 * @return int Oud-leden group ID
 	 */
 	public function vgsr_group_id() {
@@ -367,11 +387,11 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Return the oud-leden group ID
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses get_site_option()
-	 * 
+	 *
 	 * @return int Oud-leden group ID
 	 */
 	public function leden_group_id() {
@@ -380,11 +400,11 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Return the oud-leden group ID
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses get_site_option()
-	 * 
+	 *
 	 * @return int Oud-leden group ID
 	 */
 	public function oudleden_group_id() {
@@ -445,7 +465,7 @@ class VGSR_BuddyPress {
 	 * @uses VGSR_BuddyPress::vgsr_group_id()
 	 * @uses VGSR_BuddyPress::leden_group_id()
 	 * @uses VGSR_BuddyPress::oudleden_group_id()
-	 * 
+	 *
 	 * @param int|array $group_ids Group ID or ids
 	 * @return array Group ids
 	 */
@@ -491,7 +511,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @uses VGSR_BuddyPress::user_in_group()
 	 * @uses VGSR_BuddyPress::vgsr_group_id()
-	 * 
+	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return int User is member of VGSR group
@@ -507,7 +527,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @uses VGSR_BuddyPress::user_in_group()
 	 * @uses VGSR_BuddyPress::leden_group_id()
-	 * 
+	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return int User is member of Leden group
@@ -523,7 +543,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @uses VGSR_BuddyPress::user_in_group()
 	 * @uses VGSR_BuddyPress::oudleden_group_id()
-	 * 
+	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return int User is member of Oud-leden group
@@ -535,12 +555,52 @@ class VGSR_BuddyPress {
 	/** Member Types *******************************************************/
 
 	/**
+	 * Return the collection of VGSR member types
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses apply_filters() Calls 'vgsr_bp_member_types'
+	 * @return array Member type data
+	 */
+	public function vgsr_member_types() {
+		return (array) apply_filters( 'vgsr_bp_member_types', array(
+
+			// Lid
+			$this->lid_member_type() => array(
+				'labels' => array(
+					'name'          => __( 'Leden', 'vgsr' ),
+					'singular_name' => __( 'Lid',   'vgsr' ),
+					'plural_name'   => __( 'Leden', 'vgsr' ),
+				)
+			),
+
+			// Oud-lid
+			$this->oudlid_member_type() => array(
+				'labels' => array(
+					'name'          => __( 'Oud-leden', 'vgsr' ),
+					'singular_name' => __( 'Oud-lid',   'vgsr' ),
+					'plural_name'   => __( 'Oud-leden', 'vgsr' ),
+				)
+			),
+
+			// Ex-lid
+			$this->exlid_member_type() => array(
+				'labels' => array(
+					'name'          => __( 'Ex-leden', 'vgsr' ),
+					'singular_name' => __( 'Ex-lid',   'vgsr' ),
+					'plural_name'   => __( 'Ex-leden', 'vgsr' ),
+				)
+			),
+		) );
+	}
+
+	/**
 	 * Return the member type for lid
 	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses apply_filters() Calls 'vgsr_bp_lid_member_type'
-	 * 
+	 *
 	 * @return string Lid member type name
 	 */
 	public function lid_member_type() {
@@ -549,15 +609,28 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Return the member type for oud-lid
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses apply_filters() Calls 'vgsr_bp_oudlid_member_type'
-	 * 
+	 *
 	 * @return string Oud-lid member type name
 	 */
 	public function oudlid_member_type() {
 		return apply_filters( 'vgsr_bp_oudlid_member_type', 'oud-lid' );
+	}
+
+	/**
+	 * Return the member type for ex-lid
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses apply_filters() Calls 'vgsr_bp_exlid_member_type'
+	 *
+	 * @return string Oud-lid member type name
+	 */
+	public function exlid_member_type() {
+		return apply_filters( 'vgsr_bp_exlid_member_type', 'ex-lid' );
 	}
 
 	/**
@@ -567,27 +640,17 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @uses VGSR_BuddyPress:vgsr_member_types()
 	 * @uses bp_register_member_type()
 	 */
 	public function register_member_types() {
 
-		// Lid
-		bp_register_member_type( $this->lid_member_type(), array(
-			'labels' => array(
-				'name'          => __( 'Lid',   'vgsr' ),
-				'singular_name' => __( 'Lid',   'vgsr' ),
-				'plural_name'   => __( 'Leden', 'vgsr' ),
-			)
-		) );
+		// Walk our member types
+		foreach ( $this->vgsr_member_types() as $type => $data ) {
 
-		// Oud-lid
-		bp_register_member_type( $this->oudlid_member_type(), array(
-			'labels' => array(
-				'name'          => __( 'Oud-lid',   'vgsr' ),
-				'singular_name' => __( 'Oud-lid',   'vgsr' ),
-				'plural_name'   => __( 'Oud-leden', 'vgsr' ),
-			)
-		) );
+			// Register the member type
+			bp_register_member_type( $type, $data );
+		}
 	}
 
 	/**
@@ -598,9 +661,9 @@ class VGSR_BuddyPress {
 	 * @uses bp_has_member_type()
 	 * @uses bp_get_member_type_object()
 	 * @uses bp_get_member_type()
-	 * 
+	 *
 	 * @param string $member_type Member type name
-	 * @param int $user_id User ID
+	 * @param int $user_id Optional. User ID. Defaults to current user.
 	 * @return boolean User has member type
 	 */
 	public function has_member_type( $member_type, $user_id = null ) {
@@ -636,12 +699,12 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Filter whether the given user is VGSR.
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses VGSR_BuddyPress::is_user_lid()
 	 * @uses VGSR_BuddyPress::is_user_oudlid()
-	 * 
+	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return boolean User is VGSR
@@ -652,11 +715,12 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Filter whether the given user is lid.
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses VGSR_BuddyPress::has_member_type()
-	 * 
+	 * @uses VGSR_BuddyPress::lid_member_type()
+	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return boolean User is lid
@@ -667,17 +731,129 @@ class VGSR_BuddyPress {
 
 	/**
 	 * Filter whether the given user is oud-lid.
-	 * 
+	 *
 	 * @since 0.1.0
-	 * 
+	 *
 	 * @uses VGSR_BuddyPress::has_member_type()
-	 * 
+	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return boolean User is oud-lid
 	 */
 	public function is_user_oudlid( $is, $user_id = null ) {
 		return ( $is ? $is : $this->has_member_type( $this->oudlid_member_type(), $user_id ) );
+	}
+
+	/**
+	 * Modify the user query SQL to query by all vgsr member types
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses VGSR_BuddyPress::query_users_by_member_type()
+	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @param array $sql User query SQL
+	 */
+	public function query_is_user_vgsr( $sql ) {
+
+		// Define SQL clauses for member types
+		$this->query_user_by_member_type( $sql, array( $this->lid_member_type(), $this->oudlid_member_type() ) );
+	}
+
+	/**
+	 * Modify the user query SQL to query by lid member type
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses VGSR_BuddyPress::query_users_by_member_type()
+	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @param array $sql User query SQL
+	 */
+	public function query_is_user_lid( $sql ) {
+
+		// Define SQL clauses for member types
+		$this->query_user_by_member_type( $sql, $this->lid_member_type() );
+	}
+
+	/**
+	 * Modify the user query SQL to query by oudlid member type
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses VGSR_BuddyPress::query_users_by_member_type()
+	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @param array $sql User query SQL
+	 */
+	public function query_is_user_oudlid( $sql ) {
+
+		// Define SQL clauses for member types
+		$this->query_users_by_member_type( $sql, $this->oudlid_member_type() );
+	}
+
+	/**
+	 * @todo Modify the SQL of WP_User_Query to query by member type
+	 *
+	 * @since 0.1.0
+	 *
+	 * @see BP_User_Query::prepare_user_ids_query()
+	 *
+	 * @uses VGSR_BuddyPress::query_users_by_member_type()
+	 * @uses bp_get_member_type_object()
+	 * @uses switch_to_blog()
+	 * @uses restore_current_blog()
+	 *
+	 * @param array $sql User query SQL, modified by reference
+	 * @param string|array Member type name(s)
+	 */
+	private function query_user_by_member_type( &$sql, $member_type = '' ) {
+		global $wpdb;
+
+		$member_types = array();
+
+		if ( ! is_array( $member_type ) ) {
+			$member_type = preg_split( '/[,\s+]/', $member_type );
+		}
+
+		foreach ( $member_type as $type ) {
+			if ( ! bp_get_member_type_object( $type ) ) {
+				continue;
+			}
+			$member_types[] = $type;
+		}
+
+		// Bail when no valid member types provided
+		if ( empty( $member_types ) )
+			return;
+
+		// Define member type tax query
+		$tax_query = new WP_Tax_Query( array(
+			array(
+				'taxonomy' => 'bp_member_type',
+				'field'    => 'name',
+				'operator' => 'IN',
+				'terms'    => $member_types,
+			),
+		) );
+
+		// Switch to the root blog, where member type taxonomies live.
+		if ( ! $root = bp_is_root_blog() ) {
+			switch_to_blog( bp_get_root_blog_id() );
+		}
+
+		// Generete SQL clause
+		$tq_sql_clauses = $tax_query->get_sql( 'u', 'ID' );
+
+		if ( ! $root ) {
+			restore_current_blog();
+		}
+
+		// Grab the first term_relationships clause and convert to a subquery.
+		if ( preg_match( '/' . $wpdb->term_relationships . '\.term_taxonomy_id IN \([0-9, ]+\)/', $tq_sql_clauses['where'], $matches ) ) {
+			$sql['where']['member_type'] = "u.ID IN ( SELECT object_id FROM $wpdb->term_relationships WHERE {$matches[0]} )";
+		} elseif ( false !== strpos( $tq_sql_clauses['where'], '0 = 1' ) ) {
+			$sql['where']['member_type'] = $this->no_results['where'];
+		}
 	}
 }
 
