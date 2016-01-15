@@ -253,6 +253,10 @@ class VGSR_GravityForms {
 	 */
 	public function handle_field_display( $content, $field, $value, $empty, $form_id ) {
 
+		// Bail when form is already exclusive
+		if ( $this->is_form_vgsr( $form_id ) )
+			return $content;
+
 		// On the front end, return empty content when user is not VGSR
 		if ( ! is_admin() && ! empty( $field ) && $this->is_field_vgsr( $field, $form_id ) && ! is_user_vgsr() ) {
 			$content = '';
@@ -270,7 +274,7 @@ class VGSR_GravityForms {
 	 * @param string $string String to be translated
 	 * @return string Translation
 	 */
-	public function i18n_gf( $string ) {
+	public function i18n( $string ) {
 		return call_user_func_array( '__', array( $string, 'gravityforms' ) );
 	}
 
@@ -283,7 +287,7 @@ class VGSR_GravityForms {
 	 *
 	 * @uses gform_tooltip()
 	 * @uses VGSR_GravityForms::get_form_meta()
-	 * @uses VGSR_GravityForms::i18n_gf()
+	 * @uses VGSR_GravityForms::i18n()
 	 *
 	 * @param array $settings Form settings sections
 	 * @param object $form Form object
@@ -304,7 +308,7 @@ class VGSR_GravityForms {
 		<?php
 
 		// Settings sections are stored by their translatable title
-		$section = $this->i18n_gf( 'Restrictions' );
+		$section = $this->i18n( 'Restrictions' );
 
 		// Append the field to the section and end the output buffer
 		$settings[ $section ][ $this->meta_key ] = ob_get_clean();
@@ -368,20 +372,20 @@ class VGSR_GravityForms {
 		?>
 
 		<script type="text/javascript">
-			jQuery(document).ready( function($) {
+			jQuery( document ).ready( function( $ ) {
 				// Find reference elements
 				$( 'span.form_is_vgsr' ).each( function() {
 					// Add class to row and remove reference element
-					$(this).parents('tr').addClass( 'vgsr' ).end().remove();
+					$( this ).closest( 'tr' ).addClass( 'vgsr' ).end().remove();
 				});
 			});
 		</script>
 
 		<style type="text/css">
 			tr.vgsr .column-title strong:after {
-				content: ' - <?php _e( 'vgsr', 'vgsr' ); ?>';
-				font-size: 14px !important;
+				content: '\2014  <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
 				text-transform: uppercase;
+				margin-left: 4px;
 			}
 		</style>
 
@@ -395,6 +399,7 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 *
+	 * @uses VGSR_GravityForms::is_form_vgsr()
 	 * @uses gform_tooltip()
 	 *
 	 * @param int $position Settings position
@@ -402,8 +407,8 @@ class VGSR_GravityForms {
 	 */
 	public function register_field_setting( $position, $form_id ) {
 
-		// Bail when not after the Visibility settings
-		if ( 450 != $position )
+		// Bail when not after the Visibility settings or the form is already exclusive
+		if ( 450 != $position || $this->is_form_vgsr( $form_id ) )
 			return;
 
 		?>
@@ -421,14 +426,14 @@ class VGSR_GravityForms {
 				// Mark selected field
 				jQuery( '#vgsr_form_field_vgsr' ).on( 'change', function() {
 					jQuery( '.field_selected' ).removeClass( 'vgsr' ).filter( function() {
-						return ! GetSelectedField()[ '<?php echo $this->meta_key; ?>' ];
+						return !! GetSelectedField()[ '<?php echo $this->meta_key; ?>' ];
 					} ).addClass( 'vgsr' );
 				});
 			</script>
 
 			<style type="text/css">
 				.vgsr .gfield_label .gfield_required:before {
-					content: '<?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
+					content: '\2014  <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
 					color: #888;
 					text-transform: uppercase;
 					margin-right: 5px;
@@ -444,6 +449,7 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 *
+	 * @uses VGSR_GravityForms::is_form_vgsr()
 	 * @uses VGSR_GravityForms::is_field_vgsr()
 	 * 
 	 * @param string $classes Classes
@@ -453,8 +459,8 @@ class VGSR_GravityForms {
 	 */
 	public function add_field_class( $classes, $field, $form ) {
 
-		// Field is exclusive
-		if ( $this->is_field_vgsr( $field, $form ) ) {
+		// Field is exclusive, not the form
+		if ( ! $this->is_form_vgsr( $form ) && $this->is_field_vgsr( $field, $form ) ) {
 			$classes .= ' vgsr';
 		}
 
