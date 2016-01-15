@@ -45,7 +45,7 @@ function vgsr_bp_settings_sections( $sections = array() ) {
 function vgsr_bp_settings_fields( $fields = array() ) {
 
 	// Groups component
-	if ( bp_is_active( 'groups' ) ) {
+	if ( false && bp_is_active( 'groups' ) ) {
 		$groups_settings = array();
 
 		// VGSR main group
