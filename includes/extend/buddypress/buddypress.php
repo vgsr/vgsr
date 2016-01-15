@@ -14,7 +14,7 @@ if ( ! class_exists( 'VGSR_BuddyPress' ) ) :
 /**
  * VGSR BuddyPress extension
  *
- * @since 0.0.1
+ * @since 0.1.0
  */
 class VGSR_BuddyPress {
 
@@ -31,7 +31,7 @@ class VGSR_BuddyPress {
 	/**
 	 * The main VGSR BuddyPress loader
 	 *
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	public function __construct() {
 		$this->setup_globals();
@@ -42,7 +42,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Define default class globals
 	 *
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 * 
 	 * @uses apply_filters() Calls 'vgsr_bp_components'
 	 */
@@ -73,7 +73,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Include the required files
 	 *
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 */
 	private function includes() {
 		require( $this->includes_dir . 'settings.php' );
@@ -82,7 +82,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Setup default actions and filters
 	 *
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 *
 	 * @uses bp_is_active() To check for active components
 	 * @uses add_action()
@@ -123,7 +123,7 @@ class VGSR_BuddyPress {
 	 * @uses is_buddypress()
 	 * @uses is_user_vgsr()
 	 * @uses bp_is_my_profile()
-	 * @uses VGSR_BuddyPress::is_vgsr_only_component()
+	 * @uses VGSR_BuddyPress::is_vgsr_bp_component()
 	 * @uses bp_is_register_page()
 	 * @uses bp_is_activation_page()
 	 * @uses remove_all_actions()
@@ -140,7 +140,7 @@ class VGSR_BuddyPress {
 			// ... this is the user's own profile AND this is a common component
 			// ... OR this is the registration page
 			// ... OR this is the activation page
-			if ( ( bp_is_my_profile() && ! $this->is_vgsr_only_component() ) || bp_is_register_page() || bp_is_activation_page() )
+			if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
 				return;
 
 			// Remove all other BP template routers when 404-ing
@@ -197,7 +197,7 @@ class VGSR_BuddyPress {
 	 * @param string $component Optional. Defaults to current component
 	 * @return bool Component is vgsr-only
 	 */
-	public function is_vgsr_only_component( $component = '' ) {
+	public function is_vgsr_bp_component( $component = '' ) {
 
 		// Default to the current component
 		if ( empty( $component ) ) {
@@ -336,7 +336,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Map VGSR BuddyPress settings capabilities
 	 *
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 *
 	 * @param  array   $caps    Required capabilities
 	 * @param  string  $cap     Requested capability
@@ -414,7 +414,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Return whether the given user is member of (a) BuddyPress group(s)
 	 *
-	 * @since 0.0.1
+	 * @since 0.1.0
 	 *
 	 * @uses groups_get_groups()
 	 * @uses VGSR_BuddyPress::get_group_hierarchy()
