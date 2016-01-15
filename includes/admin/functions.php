@@ -13,28 +13,31 @@ defined( 'ABSPATH' ) || exit;
 /** Posts *****************************************************************/
 
 /**
- * Display the vgsr-only post meta field
+ * Display the Exclusivity post meta field
  *
  * @since 0.0.6
  *
- * @uses is_vgsr_only_post_type()
+ * @uses is_vgsr_post_type()
  * @uses get_post_type_object()
- * @uses vgsr_is_post_vgsr_only()
+ * @uses vgsr_is_post_vgsr()
  */
-function vgsr_post_vgsr_only_meta() {
-	global $post;
+function vgsr_is_post_vgsr_meta() {
 
-	// Bail if this post cannot be marked vgsr-only
-	if ( ! is_vgsr_only_post_type( $post->post_type ) )
+	// Bail when the post is invalid
+	if ( ! $post = get_post() )
 		return;
 
-	// Bail if user is not capable
+	// Bail when this post cannot be exclusive
+	if ( ! is_vgsr_post_type( $post->post_type ) )
+		return;
+
+	// Bail when user is not capable
 	if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->publish_posts ) )
 		return; ?>
 
-	<div class="misc-pub-section misc-pub-vgsr-only dashicons-before dashicons-flag">
+	<div class="misc-pub-section misc-pub-vgsr dashicons-before dashicons-flag">
 		<style>
-			.misc-pub-vgsr-only:before {
+			.misc-pub-vgsr:before {
 				position: relative;
 				top: 0;
 				left: -1px;
@@ -43,59 +46,61 @@ function vgsr_post_vgsr_only_meta() {
 			}
 		</style>
 
-		<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
-		<label for="post_vgsr_only"><?php _e( 'VGSR only', 'vgsr' ); ?>:</label>
-		<input type="checkbox" id="post_vgsr_only" name="vgsr_post_vgsr_only" value="1" <?php checked( vgsr_is_post_vgsr_only( $post->ID ) ); ?>/>
+		<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
+		<label for="post_vgsr"><?php _ex( 'VGSR', 'exclusivity label', 'vgsr' ); ?>:</label>
+		<input type="checkbox" id="post_vgsr" name="vgsr_post_vgsr" value="1" <?php checked( vgsr_is_post_vgsr( $post->ID ) ); ?>/>
 	</div>
 
 	<?php
 }
 
 /**
- * Output quick edit vgsr-only post fields
+ * Output quick edit Exclusivity post fields
  *
  * @since 0.0.6
  *
- * @uses is_vgsr_only_post_type()
+ * @uses is_vgsr_post_type()
  * @uses wp_nonce_field()
  */
-function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
+function vgsr_post_vgsr_quick_edit( $column_name, $post_type ) {
 
-	// Bail if this is not our column or post cannot be marked
-	if ( 'vgsr-only' != $column_name || ! is_vgsr_only_post_type( $post_type ) )
-		return; ?>
+	// Bail when this is not our column or post cannot be exclusive
+	if ( 'vgsr' !== $column_name || ! is_vgsr_post_type( $post_type ) )
+		return;
+
+	?>
 
 	<fieldset class="inline-edit-col-right"><div class="inline-edit-col">
 		<div class="inline-edit-group">
 			<label class="alignleft">
-				<?php wp_nonce_field( 'vgsr_post_vgsr_only_save', 'vgsr_post_vgsr_only_nonce' ); ?>
-				<input type="checkbox" name="vgsr_post_vgsr_only" value="1" />
-				<span class="checkbox-title"><?php _e( 'VGSR only', 'vgsr' ); ?></span>
+				<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
+				<input type="checkbox" name="vgsr_post_vgsr" value="1" />
+				<span class="checkbox-title"><?php _ex( 'VGSR', 'exclusivity label', 'vgsr' ); ?></span>
 			</label>
 		</div>
 	</div></fieldset>
 
 	<script type="text/javascript">
-		jQuery(document).ready( function( $ ) {
+		jQuery( document ).ready( function( $ ) {
 
-		// When selecting new post to edit inline
-			$('#the-list').on('click', 'a.editinline', function() {
+			// When selecting new post to edit inline
+			$( '#the-list' ).on( 'click', 'a.editinline', function() {
 				var id    = inlineEditPost.getId( this ),
-				    input = $('#inline-edit input[name="vgsr_post_vgsr_only"]').attr('checked', false);
+				    input = $( '#inline-edit input[name="vgsr_post_vgsr"]' ).attr( 'checked', false );
 
-				// Mark checked if vgsr-only. Value is in hidden input field in vgsr-only column
-				if ( 1 == parseInt( $('#post-' + id + ' td.column-vgsr-only input').val() ) ) {
-					input.attr('checked', 'checked');
+				// Check an exlusive post. Value is in hidden input field in vgsr column
+				if ( 1 == parseInt( $( '#post-' + id + ' td.column-vgsr input' ).val() ) ) {
+					input.attr( 'checked', 'checked' );
 				}
-			});
-		});
+			} );
+		} );
 	</script>
 
 	<?php
 }
 
 /**
- * Save the vgsr-only post meta field
+ * Save the Exclusivity post meta field
  *
  * Handles saving from metabox as well as from quick edit.
  *
@@ -105,13 +110,13 @@ function vgsr_post_vgsr_only_quick_edit( $column_name, $post_type ) {
  * @uses update_post_meta()
  * @uses delete_post_meta()
  */
-function vgsr_post_vgsr_only_meta_save( $post_id ) {
+function vgsr_is_post_vgsr_meta_save( $post_id ) {
 
-	// Bail if doing an autosave
+	// Bail when doing an autosave
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 		return $post_id;
 
-	// Bail if not a post request
+	// Bail when not a post request
 	if ( 'POST' != strtoupper( $_SERVER['REQUEST_METHOD'] ) )
 		return $post_id;
 
@@ -120,7 +125,7 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 		return $post_id;
 
 	// Nonce check
-	if ( ! isset( $_POST['vgsr_post_vgsr_only_nonce'] ) || ! wp_verify_nonce( $_POST['vgsr_post_vgsr_only_nonce'], 'vgsr_post_vgsr_only_save' ) )
+	if ( ! isset( $_POST['vgsr_post_vgsr_nonce'] ) || ! wp_verify_nonce( $_POST['vgsr_post_vgsr_nonce'], 'vgsr_post_vgsr_save' ) )
 		return $post_id;
 
 	$post_type_object = get_post_type_object( get_post_type( $post_id ) );
@@ -134,7 +139,7 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 		return $post_id;
 
 	// Field selected
-	if ( isset( $_POST['vgsr_post_vgsr_only'] ) && ! empty( $_POST['vgsr_post_vgsr_only'] ) ) {
+	if ( isset( $_POST['vgsr_post_vgsr'] ) && ! empty( $_POST['vgsr_post_vgsr'] ) ) {
 		update_post_meta( $post_id, '_vgsr_post_vgsr_only', 1 );
 
 	// Not selected
@@ -143,7 +148,7 @@ function vgsr_post_vgsr_only_meta_save( $post_id ) {
 	}
 
 	// Update hierarchy
-	_vgsr_only_update_post_hierarchy( $post_id );
+	_vgsr_post_update_hierarchy( $post_id );
 
 	return $post_id;
 }

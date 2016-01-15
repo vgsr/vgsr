@@ -81,12 +81,8 @@ add_action( 'vgsr_ready', 'vgsr_setup_gravityforms',    10 ); // Forms integrati
 add_action( 'login_enqueue_scripts', 'vgsr_login_enqueue_scripts' );
 
 /**
- * VGSR-only posts
+ * Posts Exclusivity
  */
-
-// wp-includes/query.php
-add_action( 'pre_get_posts', '_vgsr_only_post_query' );
-
-// Set vgsr-only posts global. For now
-add_action( 'vgsr_register', '_vgsr_only_update_post_hierarchy', 0 );
-add_action( 'save_post',     '_vgsr_only_update_post_hierarchy'    );
+add_action( 'pre_get_posts', '_vgsr_post_query'               );
+add_action( 'vgsr_register', '_vgsr_post_update_hierarchy', 0 );
+add_action( 'save_post',     '_vgsr_post_update_hierarchy'    );

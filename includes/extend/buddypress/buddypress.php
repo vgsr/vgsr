@@ -176,18 +176,18 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Return selected BP components that are vgsr-only
+	 * Return exclusive BP components
 	 *
 	 * @since 0.1.0
 	 *
-	 * @return array VGSR-only BP components
+	 * @return array Exclusive BP components
 	 */
 	public function vgsr_bp_components() {
 		return $this->components;
 	}
 
 	/**
-	 * Return whether the given component is vgsr-only
+	 * Return whether the given component is exclusive
 	 *
 	 * @since 0.1.0
 	 *
@@ -195,7 +195,7 @@ class VGSR_BuddyPress {
 	 * @uses VGSR_BuddyPress::vgsr_bp_components()
 	 *
 	 * @param string $component Optional. Defaults to current component
-	 * @return bool Component is vgsr-only
+	 * @return bool Component is exclusive
 	 */
 	public function is_vgsr_bp_component( $component = '' ) {
 
@@ -214,9 +214,9 @@ class VGSR_BuddyPress {
 	 *
 	 * When active, the activity component is set as the default component in
 	 * BP_Members_Component::setup_canonical_stack(). For non-vgsr displayed
-	 * users, with the activity component as vgsr-only, this results in a 404
-	 * when visiting 'members/<non-vgsr-user>'. This is solved by making the
-	 * profile component default for this situation.
+	 * users, with the activity component being exclusive, this results in a
+	 * 404 when visiting 'members/<non-vgsr-user>'. This is solved by making
+	 * the profile component default for this situation.
 	 *
 	 * @since 0.1.0
 	 *
@@ -229,7 +229,7 @@ class VGSR_BuddyPress {
 
 		// Define the default component when
 		// ... the activity component is active
-		// ... AND the activity component is vgsr-only
+		// ... AND the activity component is exclusive
 		// ... AND the displayed user is non-vgsr
 		if ( bp_is_active( 'activity' ) && in_array( 'activity', $this->vgsr_bp_components() ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
 

@@ -4,75 +4,73 @@
  * VGSR Post Functions
  *
  * @package VGSR
- * @subpackage Post
+ * @subpackage Posts
  */
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
 /**
- * VGSR-only: Post access
+ * Exclusivity: Post access
  *
- * This is a simple in-or-out structure, which is based on
- * user group membership within the VGSR groups. Posts are
- * marked 'vgsr-only' which makes the post only accessible
- * for the mentioned users. Ultimately this system divides
- * site users in two camps, so nothing fancy besides that.
+ * This is a simple in-or-out structure, which is based on VGSR membership,
+ * determined trough {@see is_user_vgsr()}. Posts are marked 'vgsr' which
+ * makes the post only accessible for the mentioned users.
  */
 
-/** VGSR-only: Checks ***********************************************************/
+/** Exclusivity: Checks *********************************************************/
 
 /**
- * Return whether the given post is marked vgsr-only
+ * Return whether the given post is exclusive
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls 'vgsr_is_post_vgsr_only'
+ * @uses apply_filters() Calls 'vgsr_is_post_vgsr'
  * @param int $post_id Optional. Post ID. Defaults to global post
  * @param bool $check_ancestors Optional. Whether to walk post hierarchy
- * @return bool Post is marked vgsr-only
+ * @return bool Post is exclusive
  */
-function vgsr_is_post_vgsr_only( $post_id = 0, $check_ancestors = false ) {
+function vgsr_is_post_vgsr( $post_id = 0, $check_ancestors = false ) {
 
-	// Default to global post
-	if ( empty( $post_id ) ) {
-		global $post;
-		$post_id = $post->ID;
-	}
+	// Bail when post is invalid
+	if ( ! $post = get_post( $post_id ) )
+		return false;
+
+	// Bail when this post cannot be exclusive
+	if ( ! is_vgsr_post_type( $post->post_type ) )
+		return false;
 
 	// Get post meta
-	$is = (bool) get_post_meta( $post_id, '_vgsr_post_vgsr_only', true );
+	$is = (bool) get_post_meta( $post->ID, '_vgsr_post_vgsr_only', true );
 
 	// Check ancestors
 	if ( ! $is && $check_ancestors ) {
-		$is = vgsr_only_check_post_ancestors( $post_id );
+		$is = vgsr_post_check_ancestors( $post->ID );
 	}
 
-	return (bool) apply_filters( 'vgsr_is_post_vgsr_only', $is, $post_id, $check_ancestors );
+	return (bool) apply_filters( 'vgsr_is_post_vgsr', $is, $post->ID, $check_ancestors );
 }
 
 /**
- * Walk the post hierarchy for a vgsr-only marked parent
+ * Walk the post hierarchy upwards to find an exclusive parent
  *
  * @since 0.0.6
+ *
  * @see get_post_ancestors()
  *
- * @uses vgsr_is_post_vgsr_only()
- * @param bool $only Post is marked vgsr-only
+ * @uses vgsr_is_post_vgsr()
+ *
  * @param int $post_id Post ID
- * @return bool Post is marekd vgsr-only
+ * @return bool A parent post is exclusive
  */
-function vgsr_only_check_post_ancestors( $post_id = 0 ) {
+function vgsr_post_check_ancestors( $post_id = 0 ) {
 
-	// Get post object. Default to global post
-	if ( ! empty( $post_id ) ) {
-		$post = get_post( $post_id );
-	} else {
-		global $post;
-	}
+	// Bail when post is invalid
+	if ( ! $post = get_post( $post_id ) )
+		return false;
 
-	// Assume no marking
-	$only = false;
+	// Define local variable
+	$excl = false;
 
 	// Only when post has hierarchy
 	if ( ! empty( $post->post_parent ) && $post->post_parent != $post->ID ) {
@@ -80,8 +78,9 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 		$ancestors[] = $id = $post->post_parent;
 
 		while ( $ancestor = get_post( $id ) ) {
-			// Find marking: If the ancestor is marked, break.
-			if ( $only = vgsr_is_post_vgsr_only( $ancestor->ID ) )
+
+			// Break when the parent is exclusive
+			if ( $excl = vgsr_is_post_vgsr( $ancestor->ID ) )
 				break;
 
 			// Loop detection: If the ancestor has been seen before, break.
@@ -92,75 +91,71 @@ function vgsr_only_check_post_ancestors( $post_id = 0 ) {
 		}
 	}
 
-	return $only;
+	return $excl;
 }
 
 /**
- * Return whether the given post type allows for vgsr-only marking
+ * Return whether posts of the given post type can be made exclusive
  *
  * @since 0.0.7
  *
- * @param string|int $post_type Post type name or post ID
- * @return bool Post type allows for vgsr-only marking
+ * @uses vgsr_post_types()
+ *
+ * @param string|WP_Post|int $post_type Post type name or Post object or ID
+ * @return bool Post type can be made exclusive
  */
-function is_vgsr_only_post_type( $post_type = '' ) {
+function is_vgsr_post_type( $post_type = '' ) {
 
-	// Post ID was provided
-	if ( is_numeric( $post_type ) ) {
-		$post_type = get_post_type( $post_type );
-
-	// Default to global post type
-	} elseif ( empty( $post_type ) ) {
-		global $post;
-		if ( ! isset( $post ) ) {
-			return false;
-		} else {
+	// Default to the post's post type
+	if ( ! post_type_exists( $post_type ) ) {
+		if ( $post = get_post( $post_type ) ) {
 			$post_type = $post->post_type;
+		} else {
+			return false;
 		}
 	}
 
-	// Post type can be marked vgsr-only
-	$retval = in_array( $post_type, vgsr_only_post_types() );
+	// Posts can be exclusive
+	$retval = in_array( $post_type, vgsr_post_types() );
 
 	return $retval;
 }
 
 /**
- * Return the post types that allow for vgsr-only marking
+ * Return the post types that can be made exclusive
  *
  * Defaults to all public registered post types.
  *
  * @since 0.0.7
  *
- * @uses apply_filters() Calls 'vgsr_only_post_types'
+ * @uses apply_filters() Calls 'vgsr_post_types'
  * @return array Post types
  */
-function vgsr_only_post_types() {
-	return apply_filters( 'vgsr_only_post_types', get_post_types( array( 'public' => true ) ) );
+function vgsr_post_types() {
+	return apply_filters( 'vgsr_post_types', get_post_types( array( 'public' => true ) ) );
 }
 
-/** VGSR-only: Query Filters ****************************************************/
+/** Exclusivity: Query Filters **************************************************/
 
 /**
  * Manipulate query clauses for WP_Query to exclude posts
- * that are marked as VGSR-only for non-VGSR users
+ * that are exclusive, for non-VGSR users
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls 'vgsr_only_posts'
+ * @uses apply_filters() Calls 'vgsr_post_query'
  * @param WP_Query|array $query Query (vars)
- * @return int VGSR group ID
  */
-function _vgsr_only_post_query( $query ) {
+function _vgsr_post_query( $query ) {
 
-	// Bail if current user _is_ VGSR
+	// Bail when current user _is_ VGSR
 	if ( is_user_vgsr() )
 		return $query;
 
 	// Logic to work with 'pre_get_posts' filter
 	if ( doing_filter( 'pre_get_posts' ) ) {
 
-		// Bail if editing main query, since that was done through
+		// Bail when editing main query, since that was done through
 		// the 'request' filter
 		if ( $query->is_main_query() )
 			return;
@@ -193,7 +188,7 @@ function _vgsr_only_post_query( $query ) {
 	// Post Hierarchy
 	//
 
-	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( array_filter( $post__not_in ) ) ) {
+	if ( ( $post__not_in = _vgsr_post_get_hierarchy() ) && ! empty( array_filter( $post__not_in ) ) ) {
 		if ( isset( $query['post__not_in'] ) ) {
 			$post__not_in = array_merge( (array) $query['post__not_in'], $post__not_in );
 		}
@@ -201,107 +196,108 @@ function _vgsr_only_post_query( $query ) {
 		$query['post__not_in'] = array_unique( array_filter( $post__not_in ) );
 	}
 
-	return apply_filters( 'vgsr_only_posts', $query );
+	return apply_filters( 'vgsr_post_query', $query );
 }
 
 /**
- * Filter nav menu items marked as VGSR-only for non-VGSR users
+ * Filter nav menu items exclusive, for non-VGSR users
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls 'vgsr_only_nav_menu_objects'
+ * @uses apply_filters() Calls 'vgsr_post_nav_menu_objects'
  * @param array $nav_menu_items Nav menu items
  * @param array $args Query arguments
  * @return array Nav menu items
  */
-function _vgsr_only_nav_menu_objects( $nav_menu_items, $args ) {
+function _vgsr_post_nav_menu_objects( $nav_menu_items, $args ) {
 
-	// Bail if current user _is_ VGSR
+	// Bail when current user _is_ VGSR
 	if ( is_user_vgsr() )
 		return $nav_menu_items;
 
 	// Walk this menu's items
 	foreach ( $nav_menu_items as $k => $item ) {
 
-		// Remove vgsr-only nav menu post type items
-		if ( 'post_type' === $item->type && vgsr_is_post_vgsr_only( $item->object_id, true ) ) {
+		// Remove exclusive nav menu post type items
+		if ( 'post_type' === $item->type && vgsr_is_post_vgsr( $item->object_id, true ) ) {
 			unset( $nav_menu_items[$k] );
 		}
 	}
 
-	return apply_filters( 'vgsr_only_nav_menu_objects', $nav_menu_items, $args );
+	return apply_filters( 'vgsr_post_nav_menu_objects', $nav_menu_items, $args );
 }
 
 /**
- * Filter pages marked as VGSR-only for non-VGSR users
+ * Filter pages exclusive, for non-VGSR users
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls 'vgsr_only_get_pages'
+ * @uses apply_filters() Calls 'vgsr_post_get_pages'
  * @param array $pages Pages
  * @param array $args Query arguments
  * @return array Pages
  */
-function _vgsr_only_get_pages( $pages, $args ) {
+function _vgsr_post_get_pages( $pages, $args ) {
 
-	// Bail if current user _is_ VGSR
+	// Bail when current user _is_ VGSR
 	if ( is_user_vgsr() )
 		return $pages;
 
 	// Walk pages
 	foreach ( $pages as $k => $page ) {
 
-		// Remove vgsr-only pages
-		if ( vgsr_is_post_vgsr_only( $page->ID, true ) ) {
+		// Remove exclusive pages
+		if ( vgsr_is_post_vgsr( $page->ID, true ) ) {
 			unset( $pages[$k] );
 		}
 	}
 
-	return apply_filters( 'vgsr_only_get_pages', $pages, $args );
+	return apply_filters( 'vgsr_post_get_pages', $pages, $args );
 }
 
 /**
- * Mark a single page as VGSR-only for VGSR users in page list
+ * Mark a single page as exclusive in the page list
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls 'vgsr_only_list_pages'
+ * @uses apply_filters() Calls 'vgsr_post_list_pages'
  * @param string $title Page title
  * @param WP_Post $args Page object
  * @return string Page title
  */
-function _vgsr_only_list_pages( $title, $page ) {
+function _vgsr_post_list_pages( $title, $page ) {
 
-	// Bail if current user _is_ not VGSR
+	// Bail when current user _is_ not VGSR
 	if ( ! is_user_vgsr() )
 		return $title;
 
-	// Mark vgsr-only pages
-	if ( vgsr_is_post_vgsr_only( $page->ID, true ) ) {
-		$title .= '*'; // Make marking optional?
+	// Mark exclusive pages
+	if ( vgsr_is_post_vgsr( $page->ID, true ) ) {
+		$title .= '*'; // Make marking optional
 	}
 
-	return apply_filters( 'vgsr_only_list_pages', $title, $page );
+	return apply_filters( 'vgsr_post_list_pages', $title, $page );
 }
 
 /**
- * Manipulate WHERE clause for {@link get_adjacent_post()}
- * to exclude VGSR-only posts for non-VGSR users
+ * Manipulate WHERE clause for {@link get_adjacent_post()} to
+ * exclude exclusive posts for non-VGSR users
  *
  * @since 0.0.6
  *
- * @uses _vgsr_only_get_post_hierarchy()
- * @param string $where Where clause
- * @return string Where clause
+ * @uses _vgsr_post_get_hierarchy()
+ *
+ * @param string $where Adjacent where clause
+ * @return string Adjacent where clause
  */
-function _vgsr_only_get_adjacent_post( $where ) {
+function _vgsr_post_get_adjacent_post( $where ) {
 
-	// Bail if current user _is_ VGSR
+	// Bail when current user _is_ VGSR
 	if ( is_user_vgsr() )
 		return $where;
 
-	// Exclude posts
-	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
+	// Exclude exclusive posts
+	if ( ( $post__not_in = _vgsr_post_get_hierarchy() ) && ! empty( $post__not_in ) ) {
 		$where .= sprintf( ' AND p.ID NOT IN (%s)', implode( ',', $post__not_in ) );
 	}
 
@@ -309,25 +305,26 @@ function _vgsr_only_get_adjacent_post( $where ) {
 }
 
 /**
- * Manipulate WHERE clause for {@link wp_get_archives()}
- * to exclude VGSR-only posts for non-VGSR users
+ * Manipulate WHERE clause for {@link wp_get_archives()} to
+ * exclude exclusive posts for non-VGSR users
  *
  * @since 0.0.6
  *
- * @uses _vgsr_only_get_post_hierarchy()
+ * @uses _vgsr_post_get_hierarchy()
+ *
  * @param string $where Where clause
  * @param array $args Query args
  * @return string Where clause
  */
-function _vgsr_only_get_archives( $where, $args = array() ) {
+function _vgsr_post_get_archives( $where, $args = array() ) {
 	global $wpdb;
 
-	// Bail if current user _is_ VGSR
+	// Bail when current user _is_ VGSR
 	if ( is_user_vgsr() )
 		return $where;
 
 	// Exclude posts
-	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
+	if ( ( $post__not_in = _vgsr_post_get_hierarchy() ) && ! empty( $post__not_in ) ) {
 		$where .= sprintf( " AND {$wpdb->posts}.ID NOT IN (%s)", implode( ',', $post__not_in ) );
 	}
 
@@ -336,7 +333,7 @@ function _vgsr_only_get_archives( $where, $args = array() ) {
 
 /**
  * Manipulate query clauses for WP_Query (comment feed) or
- * WP_Comment_Query to exclude comments of VGSR-only posts
+ * WP_Comment_Query to exclude comments of exclusive posts
  * for non-VGSR users
  *
  * @since 0.0.6
@@ -345,14 +342,14 @@ function _vgsr_only_get_archives( $where, $args = array() ) {
  * @param WP_QueryWP_Comment_Query $query The query object
  * @return string|array Clauses
  */
-function _vgsr_only_comment_query( $clause, $query ) {
+function _vgsr_post_comment_query( $clause, $query ) {
 
-	// Bail if current user _is_ VGSR
+	// Bail when current user _is_ VGSR
 	if ( is_user_vgsr() || ( is_a( $query, 'WP_Query' ) && $query->is_singular ) )
 		return $clause;
 
 	// Exclude posts
-	if ( ( $post__not_in = _vgsr_only_get_post_hierarchy() ) && ! empty( $post__not_in ) ) {
+	if ( ( $post__not_in = _vgsr_post_get_hierarchy() ) && ! empty( $post__not_in ) ) {
 
 		// Logic to work with collection of clauses
 		if ( is_array( $clause ) ) {
@@ -385,12 +382,12 @@ function _vgsr_only_comment_query( $clause, $query ) {
 // - wp_count_attachments() - no query filter
 //
 
-/** VGSR-only: Hierarchy ********************************************************/
+/** Exclusivity: Hierarchy ******************************************************/
 
 /**
  * Update the post hierarchy option
  *
- * A single option holds the full vgsr-only post hierarchy
+ * A single option holds the full exclusive posts hierarchy
  * which is used for excluding posts in WP_Query and other
  * situations. This function creates that array of posts.
  *
@@ -401,10 +398,10 @@ function _vgsr_only_comment_query( $clause, $query ) {
  *
  * @uses remove_filter()
  * @uses add_filter()
- * @uses apply_filters() Calls 'vgsr_only_post_types'
+ * @uses apply_filters() Calls 'vgsr_post_types'
  * @uses get_post_types()
  * @uses get_posts()
- * @uses vgsr_is_post_vgsr_only()
+ * @uses vgsr_is_post_vgsr()
  * @uses get_children()
  * @uses get_option()
  * @uses update_option()
@@ -412,18 +409,23 @@ function _vgsr_only_comment_query( $clause, $query ) {
  * @param int $post_id Post ID
  * @param bool $rebuild Optional. Whether to fully rebuild the post hierarchy
  */
-function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
+function _vgsr_post_update_hierarchy( $post_id = 0, $rebuild = false ) {
 
-	// Bail if no post is provided, while not resetting and already collected
-	if ( empty( $post_id ) && ( ! $rebuild || get_option( '_vgsr_only_post_hierarchy' ) ) )
+	// Force rebuild the hierarchy once a day
+	if ( ! $rebuild ) {
+		$rebuild = ! (bool) get_transient( '_vgsr_post_rebuild_hierarchy' );
+	}
+
+	// Bail when no post is provided and not rebuilding
+	if ( empty( $post_id ) && ! $rebuild )
 		return;
 
 	// Unhook query filter
-	remove_filter( 'pre_get_posts', '_vgsr_only_post_query' );
+	remove_filter( 'pre_get_posts', '_vgsr_post_query' );
 
-	// Define vgsr-only post types
-	$post_types = vgsr_only_post_types();
-	$only_posts = get_posts( array(
+	// Query all exclusive posts
+	$post_types = vgsr_post_types();
+	$excl_posts = get_posts( array(
 		'numberposts' => -1,
 		'post_type'   => $post_types,
 		'post_status' => 'any',
@@ -435,15 +437,15 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	// Process a single post
 	if ( ! empty( $post_id ) ) {
 
-		// According to current vgsr-only ancestry
+		// According to current exclusive ancestry
 		// @todo Sort this out: how to explicitly mark children of marked posts?
-		$add   = vgsr_is_post_vgsr_only( $post_id, true );
-		$posts = array( $post_id );
+		$append = vgsr_is_post_vgsr( $post_id, true );
+		$posts  = array( $post_id );
 
-	// Do full rebuild if explicitly requested. NOTE: this may take a while.
+	// Do full rebuild when explicitly requested. NOTE: this may take a while.
 	} elseif ( $rebuild ) {
-		$add   = null;
-		$posts = $only_posts;
+		$append = null;
+		$posts  = $excl_posts;
 
 	// Nothing to do here
 	} else {
@@ -456,7 +458,7 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 			'post_type'    => $post_types,
 			'post_parent'  => $post_id,
 			'fields'       => 'ids',
-			'post__not_in' => $only_posts, // Exclude marked posts and their children
+			'post__not_in' => $excl_posts, // Exclude exclusive posts and their children
 		) ) ) {
 			foreach ( $children as $child_id ) {
 				$_posts->append( (int) $child_id );
@@ -465,37 +467,35 @@ function _vgsr_only_update_post_hierarchy( $post_id = 0, $rebuild = false ) {
 	}
 
 	// Get the post hierarchy
-	$hierarchy = _vgsr_only_get_post_hierarchy();
+	$hierarchy = _vgsr_post_get_hierarchy();
 	$collected = $_posts->getArrayCopy();
 
 	// Modify global
-	if ( null !== $add ) {
-
-		// Add to hierarchy
-		if ( $add ) {
-			$hierarchy = array_unique( array_merge( $hierarchy, $collected ) );
-
-		// Remove from hierarchy
-		} else {
-			$hierarchy = array_diff( $hierarchy, $collected );
-		}
+	if ( null !== $append ) {
+		// Append to or remove from the hierarchy
+		$hierarchy = $append ? array_unique( array_merge( $hierarchy, $collected ) ) : array_diff( $hierarchy, $collected );
+	} else {
+		$hierarchy = $collected;
 	}
 
 	// Update option
 	update_option( '_vgsr_only_post_hierarchy', array_filter( $hierarchy ) );
 
+	// Don't force rebuild for another day
+	set_transient( '_vgsr_post_rebuild_hierarchy', true, DAY_IN_SECONDS );
+
 	// Rehook query filter
-	add_filter( 'pre_get_posts', '_vgsr_only_post_query' );
+	add_filter( 'pre_get_posts', '_vgsr_post_query' );
 }
 
 /**
- * Return the array of the entire vgsr-only post hierarchy
+ * Return the array of the entire exclusive posts hierarchy
  *
  * @since 0.0.6
  *
- * @uses apply_filters() Calls '_vgsr_only_get_post_hierarchy'
- * @return array Post ids in vgsr-only post hierarchy
+ * @uses apply_filters() Calls 'vgsr_post_get_hierarchy'
+ * @return array Post ids in exclusive posts hierarchy
  */
-function _vgsr_only_get_post_hierarchy() {
-	return (array) apply_filters( 'vgsr_only_get_post_hierarchy', get_option( '_vgsr_only_post_hierarchy' ) );
+function _vgsr_post_get_hierarchy() {
+	return (array) apply_filters( 'vgsr_post_get_hierarchy', get_option( '_vgsr_only_post_hierarchy' ) );
 }

@@ -47,10 +47,10 @@ add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings' );
 // Initialize the admin area
 add_action( 'vgsr_init', 'vgsr_admin' );
 
-// Posts - vgsr-only
-add_action( 'post_submitbox_misc_actions', 'vgsr_post_vgsr_only_meta'              );
-add_action( 'quick_edit_custom_box',       'vgsr_post_vgsr_only_quick_edit', 10, 2 );
-add_action( 'save_post',                   'vgsr_post_vgsr_only_meta_save'         );
+// Posts - Exclusivity
+add_action( 'post_submitbox_misc_actions', 'vgsr_is_post_vgsr_meta'             );
+add_action( 'save_post',                   'vgsr_is_post_vgsr_meta_save'        );
+add_action( 'quick_edit_custom_box',       'vgsr_post_vgsr_quick_edit',   10, 2 );
 
 /** Sub-Actions ***************************************************************/
 

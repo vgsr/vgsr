@@ -116,7 +116,7 @@ class VGSR_Admin {
 		// Map settings capabilities
 		add_filter( 'vgsr_map_meta_caps',  array( $this, 'map_settings_meta_caps'     ), 10, 4 );
 
-		// VGSR-only columns
+		// Post exclusivity
 		add_filter( 'display_post_states',        array( $this, 'display_post_states'  ), 10, 2 );
 		add_filter( 'manage_posts_columns',       array( $this, 'get_post_columns'     )        );
 		add_filter( 'manage_pages_columns',       array( $this, 'get_post_columns'     )        );
@@ -153,8 +153,8 @@ class VGSR_Admin {
 		// Register admin page
 		$hook = add_submenu_page(
 			is_multisite() ? 'settings.php' : 'options-general.php',
-			__( 'VGSR', 'vgsr' ),
-			__( 'VGSR', 'vgsr' ),
+			_x( 'VGSR', 'settings page title', 'vgsr' ),
+			_x( 'VGSR', 'settings menu title', 'vgsr' ),
 			$this->minimum_capability,
 			'vgsr',
 			'vgsr_admin_page'
@@ -367,20 +367,19 @@ class VGSR_Admin {
 	 * @since 0.0.1
 	 *
 	 * @param array $links Plugin action links
-	 * @param string $file The plugin basename
+	 * @param string $basename The plugin basename
 	 * @return array Plugin action links
 	 */
-	public function plugin_action_links( $links, $file ) {
-		$vgsr = vgsr();
+	public function plugin_action_links( $links, $basename ) {
 
 		// Append plugin links
-		if ( $file == $vgsr->basename ) {
+		if ( $basename === vgsr()->basename ) {
 
 			// What do you see, Mindy from the Network?
 			$menu = is_multisite() ? 'settings.php' : 'options-general.php';
 
 			// Settings link
-			$links['settings'] = '<a href="' . add_query_arg( 'page', 'vgsr', self_admin_url( $menu ) ) . '">' . esc_html__( 'Settings', 'vgsr' ) . '</a>';
+			$links['settings'] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( 'page', 'vgsr', self_admin_url( $menu ) ) ), esc_html__( 'Settings', 'vgsr' ) );
 		}
 
 		return $links;
@@ -402,10 +401,10 @@ class VGSR_Admin {
 		$screen = get_current_screen();
 
 		// Only if this post type applies
-		if ( isset( $screen->post_type ) && is_vgsr_only_post_type( $screen->post_type ) ) {
+		if ( isset( $screen->post_type ) && is_vgsr_post_type( $screen->post_type ) ) {
 
 			// Dummy column to enable quick edit
-			$columns['vgsr-only'] = __( 'VGSR Only', 'vgsr' );
+			$columns['vgsr'] = _x( 'VGSR', 'exclusivity title', 'vgsr' );
 
 			// Hide dummy column by default
 			add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
@@ -424,8 +423,8 @@ class VGSR_Admin {
 	 */
 	public function get_post_columns_hidden( $columns ) {
 
-		// Hide vgsr-only dummy column by default
-		$columns[] = 'vgsr-only';
+		// Hide vgsr dummy column by default
+		$columns[] = 'vgsr';
 
 		return $columns;
 	}
@@ -435,17 +434,20 @@ class VGSR_Admin {
 	 *
 	 * @since 0.0.6
 	 *
-	 * @uses vgsr_is_post_vgsr_only()
+	 * @uses vgsr_is_post_vgsr()
+	 *
+	 * @param string $column Column name
+	 * @param int $post_id Post ID
 	 */
 	public function post_columns_content( $column, $post_id ) {
 
 		// Check column name
 		switch ( $column ) {
-			case 'vgsr-only' :
+			case 'vgsr' :
 
 				// Output quick edit value reference
 				// @todo Display check mark. It's existence will do for quick edit data finding.
-				echo '<input type="hidden" value="' . (int) vgsr_is_post_vgsr_only( $post_id ) . '" />';
+				echo '<input type="hidden" value="' . (int) vgsr_is_post_vgsr( $post_id ) . '" />';
 				break;
 		}
 	}
@@ -455,19 +457,21 @@ class VGSR_Admin {
 	 *
 	 * @since 0.0.6
 	 *
+	 * @uses vgsr_is_post_vgsr()
+	 *
 	 * @param array $states Post states
 	 * @param WP_Post $post Post object
 	 * @return array $states
 	 */
 	public function display_post_states( $states, $post ) {
 
-		// Post is vgsr-only: big notation.
-		if ( vgsr_is_post_vgsr_only( $post->ID ) ) {
-			$states['vgsr-only'] = __( 'VGSR', 'vgsr' );
+		// Post is exclusive: big notation.
+		if ( vgsr_is_post_vgsr( $post->ID ) ) {
+			$states['vgsr'] = _x( 'VGSR', 'exclusivity label', 'vgsr' );
 
-		// Some parent is vgsr-only: small notation.
-		} elseif ( vgsr_is_post_vgsr_only( $post->ID, true ) ) {
-			$states['vgsr-only'] = __( 'vgsr', 'vgsr' );
+		// Some parent is exclusive: small notation.
+		} elseif ( vgsr_is_post_vgsr( $post->ID, true ) ) {
+			$states['vgsr'] = _x( 'vgsr', 'exclusivity label', 'vgsr' );
 		}
 
 		return $states;
