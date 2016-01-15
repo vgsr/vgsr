@@ -69,7 +69,7 @@ class VGSR_Event_Organiser {
 			// Get the date parts
 			$parts = explode( '-', str_replace( '/', '-', $query->query_vars['ondate'] ) );
 
-			// Query ALL events if this is a month or day query
+			// Query ALL events when this is a month or day query (at least yy-mm)
 			if ( count( $parts ) > 1 ) {
 				$query->query_vars['posts_per_page'] = -1;
 			}
