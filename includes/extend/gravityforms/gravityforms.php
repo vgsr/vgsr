@@ -172,9 +172,11 @@ class VGSR_GravityForms {
 			// Read the field from the form's data
 			$field = GFFormsModel::get_field( $form, $field );
 
-		} elseif ( ! is_array( $field ) ) {
+		} elseif ( ! is_array( $field ) && ! is_object( $field ) ) {
 			return null;
 		}
+
+		$field = (array) $field;
 
 		// Get field setting
 		return isset( $field[ $meta_key ] ) ? $field[ $meta_key ] : null;
