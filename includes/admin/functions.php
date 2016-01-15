@@ -70,13 +70,16 @@ function vgsr_post_vgsr_quick_edit( $column_name, $post_type ) {
 
 	?>
 
-	<fieldset class="inline-edit-col-right"><div class="inline-edit-col">
+	<fieldset class="inline-edit-col-right" style="display: none;"><div class="inline-edit-col">
 		<div class="inline-edit-group">
-			<label class="alignleft">
-				<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
-				<input type="checkbox" name="vgsr_post_vgsr" value="1" />
-				<span class="checkbox-title"><?php _ex( 'VGSR', 'exclusivity label', 'vgsr' ); ?></span>
-			</label>
+			<div id="inline-edit-vgsr" style="display: inline-block; margin-left: .5em;">
+				<em class="alignleft inline-edit-or"><?php _e( '&ndash;OR&ndash;' ); ?></em>
+				<label class="alignleft inline-edit-vgsr">
+					<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
+					<input type="checkbox" name="vgsr_post_vgsr" value="1" />
+					<span class="checkbox-title"><?php _ex( 'VGSR', 'exclusivity label', 'vgsr' ); ?></span>
+				</label>
+			</div>
 		</div>
 	</div></fieldset>
 
@@ -85,13 +88,18 @@ function vgsr_post_vgsr_quick_edit( $column_name, $post_type ) {
 
 			// When selecting new post to edit inline
 			$( '#the-list' ).on( 'click', 'a.editinline', function() {
-				var id    = inlineEditPost.getId( this ),
-				    input = $( '#inline-edit input[name="vgsr_post_vgsr"]' ).attr( 'checked', false );
+				var id     = inlineEditPost.getId( this ),
+				    _edit  = $( '#inline-edit' ),
+				    _field = _edit.find( '#inline-edit-vgsr' ),
+				    _input = _field.find( 'input[name="vgsr_post_vgsr"]' ).attr( 'checked', false );
 
-				// Check an exlusive post. Value is in hidden input field in vgsr column
-				if ( 1 == parseInt( $( '#post-' + id + ' td.column-vgsr input' ).val() ) ) {
-					input.attr( 'checked', 'checked' );
+				// Check an exlusive post
+				if ( $( '#post-' + id + ' td.column-vgsr i.dashicons-yes' ).length ) {
+					_input.attr( 'checked', 'checked' );
 				}
+
+				// Move field, insert after Private setting
+				_field.insertAfter( _edit.find( '.inline-edit-private' ) );
 			} );
 		} );
 	</script>

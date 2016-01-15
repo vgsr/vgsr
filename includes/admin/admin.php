@@ -445,10 +445,10 @@ class VGSR_Admin {
 		switch ( $column ) {
 			case 'vgsr' :
 
-				// Output quick edit value reference
-				// @todo Display check mark. It's existence will do for quick edit data finding.
-				echo '<input type="hidden" value="' . (int) vgsr_is_post_vgsr( $post_id ) . '" />';
-				break;
+				// Display whether the post is exclusive (for Quick Edit)
+				if ( vgsr_is_post_vgsr( $post_id ) ) {
+					echo '<i class="dashicons-before dashicons-yes"></i>';
+				}
 		}
 	}
 
