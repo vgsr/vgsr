@@ -69,21 +69,8 @@ class VGSR_WPSEO {
 				// Member type directory
 				if ( bp_get_current_member_type() ) {
 
-					// Append directory crumb and current page
-					array_splice( $crumbs, count( $crumbs ) - 1, 0, array(
-						array(
-							'text'       => bp_get_directory_title( 'members' ),
-							'url'        => bp_get_members_directory_permalink(),
-							'allow_html' => true,
-
-						// Replace last element with correct member type name
-						), array(
-							'text'       => $member_type->labels['name'],
-						)
-					) );
-
-					// Remove last 'empty' element
-					array_pop( $crumbs );
+					// Set the correct element text on the last element
+					$crumbs[ count( $crumbs ) - 1 ] = array( 'text' => $member_type->labels['name'] );
 
 				// Default to insert member type directory next-to-last
 				} else {
