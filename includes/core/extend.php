@@ -111,3 +111,23 @@ function vgsr_setup_gravityforms() {
 	// Instantiate Gravity Forms for VGSR
 	vgsr()->extend->gf = new VGSR_GravityForms;
 }
+
+/**
+ * Loads the WordPress SEO component
+ * 
+ * @since 0.1.0
+ *
+ * @return When WordPress SEO is not active
+ */
+function vgsr_setup_wpseo() {
+
+	// Bail if no WordPress SEO
+	if ( ! defined( 'WPSEO_VERSION' ) )
+		return;
+
+	// Include the WordPress SEO component
+	require( vgsr()->extend_dir . 'wordpress-seo/wordpress-seo.php' );
+
+	// Instantiate WordPress SEO for VGSR
+	vgsr()->extend->wpseo = new VGSR_WPSEO;
+}

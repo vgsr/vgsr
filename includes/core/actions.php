@@ -76,6 +76,7 @@ add_action( 'bbp_loaded', 'vgsr_setup_bbpress',         0  ); // Forum integrati
 add_action( 'bp_loaded',  'vgsr_setup_buddypress',      0  ); // Social network integration
 add_action( 'vgsr_ready', 'vgsr_setup_event_organiser', 10 ); // Events integration
 add_action( 'vgsr_ready', 'vgsr_setup_gravityforms',    10 ); // Forms integration
+add_action( 'vgsr_ready', 'vgsr_setup_wpseo',           10 ); // SEO integration
 
 // Login page
 add_action( 'login_enqueue_scripts', 'vgsr_login_enqueue_scripts' );
