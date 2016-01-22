@@ -113,7 +113,7 @@ class VGSR_BuddyPress {
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Pages
-		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'reset_dummy_post' ), 11 );
+		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11 );
 	}
 
 	/** Hide BP ************************************************************/
@@ -862,7 +862,7 @@ class VGSR_BuddyPress {
 	/** Pages **************************************************************/
 
 	/**
-	 * Define a BuddyPress's dummy global `$post`'s correct post parent
+	 * Define BuddyPress's dummy global post's post parent correctly
 	 *
 	 * @since 1.0.0
 	 *
@@ -872,14 +872,17 @@ class VGSR_BuddyPress {
 	 * @uses bp_current_component()
 	 * @uses get_post_ancestors()
 	 */
-	public function reset_dummy_post() {
+	public function dummy_post_set_post_parent() {
 		global $post;
 
 		// Get BuddyPress
 		$bp = buddypress();
 
+		// Define local variable
+		$post_parent = false;
+
 		// When the post parent is not defined
-		if ( is_buddypress() && ( bp_is_user() || bp_is_single_item() ) && 0 == $post->post_parent ) {
+		if ( is_buddypress() && ( bp_is_user() || bp_is_single_item() || bp_get_current_member_type() ) && 0 == $post->post_parent ) {
 
 			// Default all user pages to Members
 			if ( bp_is_user() && ! bp_is_single_activity() ) {
@@ -888,10 +891,20 @@ class VGSR_BuddyPress {
 				$component = bp_current_component();
 			}
 
-			// But the component does have a directory
+			// Define parent when component has a directory
 			if ( ! empty( $bp->pages->{$component}->id ) ) {
-				$post->post_parent = $bp->pages->{$component}->id;
-				$post->ancestors   = get_post_ancestors( $post );
+				$post_parent = $bp->pages->{$component}->id;
+			}
+		}
+
+		// Assign post parent and ancestors
+		if ( $post_parent ) {
+			$post->post_parent = $post_parent;
+			$post->ancestors   = get_post_ancestors( $post );
+
+			// For member types, modify the title as well
+			if ( $member_type = bp_get_member_type_object( bp_get_current_member_type() ) ) {
+				$post->post_title = $member_type->labels['name'];
 			}
 		}
 	}
