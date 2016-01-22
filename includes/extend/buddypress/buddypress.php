@@ -111,6 +111,9 @@ class VGSR_BuddyPress {
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
+
+		// Pages
+		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'reset_dummy_post' ), 11 );
 	}
 
 	/** Hide BP ************************************************************/
@@ -853,6 +856,43 @@ class VGSR_BuddyPress {
 			$sql['where']['member_type'] = "u.ID IN ( SELECT object_id FROM $wpdb->term_relationships WHERE {$matches[0]} )";
 		} elseif ( false !== strpos( $tq_sql_clauses['where'], '0 = 1' ) ) {
 			$sql['where']['member_type'] = $this->no_results['where'];
+		}
+	}
+
+	/** Pages **************************************************************/
+
+	/**
+	 * Define a BuddyPress's dummy global `$post`'s correct post parent
+	 *
+	 * @since 1.0.0
+	 *
+	 * @uses is_buddypress()
+	 * @uses bp_is_user()
+	 * @uses bp_is_single_item()
+	 * @uses bp_current_component()
+	 * @uses get_post_ancestors()
+	 */
+	public function reset_dummy_post() {
+		global $post;
+
+		// Get BuddyPress
+		$bp = buddypress();
+
+		// When the post parent is not defined
+		if ( is_buddypress() && ( bp_is_user() || bp_is_single_item() ) && 0 == $post->post_parent ) {
+
+			// Default all user pages to Members
+			if ( bp_is_user() && ! bp_is_single_activity() ) {
+				$component = 'members';
+			} else {
+				$component = bp_current_component();
+			}
+
+			// But the component does have a directory
+			if ( ! empty( $bp->pages->{$component}->id ) ) {
+				$post->post_parent = $bp->pages->{$component}->id;
+				$post->ancestors   = get_post_ancestors( $post );
+			}
 		}
 	}
 }
