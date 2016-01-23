@@ -897,12 +897,11 @@ class VGSR_BuddyPress {
 			}
 		}
 
-		// Assign post parent and ancestors
+		// Assign post parent
 		if ( $post_parent ) {
 			$post->post_parent = $post_parent;
-			$post->ancestors   = get_post_ancestors( $post );
 
-			// For member types, modify the title as well
+			// For member type directories, modify the title as well
 			if ( $member_type = bp_get_member_type_object( bp_get_current_member_type() ) ) {
 				$post->post_title = $member_type->labels['name'];
 			}
