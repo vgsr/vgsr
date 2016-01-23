@@ -69,7 +69,7 @@ class VGSR_Event_Organiser {
 			// Get the date parts
 			$parts = explode( '-', str_replace( '/', '-', $query->query_vars['ondate'] ) );
 
-			// Query ALL events when this is a month or day query (at least yy-mm)
+			// Query ALL events when this is a month or day query (having at least yy-mm)
 			if ( count( $parts ) > 1 ) {
 				$query->query_vars['posts_per_page'] = -1;
 			}
@@ -93,7 +93,7 @@ class VGSR_Event_Organiser {
 	public function adjacent_post_join( $join, $in_same_term, $excluded_terms, $taxonomy, $post ) {
 
 		// When this is an event
-		if ( 'event' == $post->post_type ) {
+		if ( is_singular( 'event' ) ) {
 			global $wpdb;
 
 			// Imagine get_query_var( 'group_events_by' ) = 'occurrence'
@@ -120,7 +120,7 @@ class VGSR_Event_Organiser {
 	public function adjacent_post_where( $where, $in_same_term, $excluded_terms, $taxonomy, $post ) {
 
 		// When this is an event
-		if ( 'event' == $post->post_type ) {
+		if ( is_singular( 'event' ) ) {
 			global $wpdb;
 
 			$previous = ( 'get_previous_post_where' === current_filter() );
@@ -137,7 +137,7 @@ class VGSR_Event_Organiser {
 			// Exclude the current post
 			$where .= $wpdb->prepare( " AND {$wpdb->eo_events}.event_id <> %d", $post->event_id );
 
-			// Previous event. We are interested in events starting earlier
+			// Previous event. Query events starting earlier
 			if ( $previous ) {
 				$date_query = array(
 					// Either events that occur earlier or on the same moment, but order event IDs to prevent adjacency loops
@@ -146,7 +146,7 @@ class VGSR_Event_Organiser {
 					'strict'    => " AND ({$wpdb->eo_events}.StartDate < %s OR ({$wpdb->eo_events}.StartDate = %s AND {$wpdb->eo_events}.StartTime < %s))"
 				);
 
-			// Next event. We are interested in events starting later
+			// Next event. Query events starting later
 			} else {
 				$date_query = array(
 					// Either events that occur later or on the same moment, but order event IDs to prevent adjacency loops
@@ -156,9 +156,27 @@ class VGSR_Event_Organiser {
 				);
 			}
 
-			// Get the current event's date details
-			$date = $post->StartDate;
-			$time = $post->StartTime;
+			// The current event reoccurs
+			if ( eo_reoccurs() ) {
+
+				// Get the current, next or last occurrence date
+				if ( ! $occurrence = eo_get_current_occurrence_of( $post->ID ) ) {
+					if ( ! $occurrence = eo_get_next_occurrence_of( $post->ID ) ) {
+						$date = eo_get_schedule_last( 'Y-m-d' );
+						$time = eo_get_schedule_last( 'H:i:s' );
+					}
+				}
+
+				if ( isset( $occurrence['start'] ) && is_a( $occurrence['start'], 'DateTime' ) ) {
+					$date = $occurrence['start']->format( 'Y-m-d' );
+					$time = $occurrence['start']->format( 'H:i:s' );
+				}
+
+			// Single event, get its date
+			} else {
+				$date = $post->StartDate;
+				$time = $post->StartTime;
+			}
 
 			// Append constructed queries
 			if ( $time == '00:00:00' ) {
@@ -185,7 +203,7 @@ class VGSR_Event_Organiser {
 	public function adjacent_post_sort( $order_by, $post ) {
 
 		// When this is an event
-		if ( 'event' == $post->post_type ) {
+		if ( is_singular( 'event' ) ) {
 			global $wpdb;
 
 			$previous = ( 'get_previous_post_sort' === current_filter() );
