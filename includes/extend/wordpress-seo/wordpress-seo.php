@@ -80,7 +80,7 @@ class VGSR_WPSEO {
 		if ( function_exists( 'buddypress' ) && is_buddypress() ) {
 
 			/**
-			 * Add member type directories to the breadcrumb trail.
+			 * Add member type directories to the members breadcrumb trail.
 			 */
 
 			// Get effective member type
@@ -112,6 +112,10 @@ class VGSR_WPSEO {
 		// Support Event Organiser pages
 		if ( defined( 'EVENT_ORGANISER_VER' ) && ( is_post_type_archive( 'event' ) || is_singular( 'event' ) ) ) {
 
+			/**
+			 * Add year/month/day event archives to the event breadcrumb trail.
+			 */
+
 			// Define local variable(s)
 			$add_year = $add_month = false;
 			$ancestors = array();
@@ -141,10 +145,8 @@ class VGSR_WPSEO {
 						$date = $occurrence['start']->format( 'Y-m-d H:i:s' );
 					}
 
-				// Single occurrence
+				// Single occurrence, use start date
 				} else {
-
-					// Use the start date
 					$date = eo_get_the_start( 'Y-m-d H:i:s' );
 				}
 
@@ -157,8 +159,6 @@ class VGSR_WPSEO {
 
 			// Event archive
 			} else {
-
-				// Use the event archive's date
 				$date = eo_get_event_archive_date( 'Y-m-d H:i:s' );
 			}
 
