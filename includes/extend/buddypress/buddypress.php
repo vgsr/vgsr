@@ -876,6 +876,10 @@ class VGSR_BuddyPress {
 	public function dummy_post_set_post_parent() {
 		global $post;
 
+		// Bail when there is no global post
+		if ( ! $post )
+			return;
+
 		// Get BuddyPress
 		$bp = buddypress();
 
