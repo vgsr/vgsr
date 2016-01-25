@@ -149,7 +149,8 @@ class VGSR_BuddyPress {
 			// Remove all other BP template routers when 404-ing
 			remove_all_actions( 'bp_template_redirect' );
 
-			// Make the page 404
+			// Prevent components from loading their templates
+			buddypress()->current_component = '';
 			bp_do_404();
 		}
 	}
