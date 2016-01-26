@@ -100,7 +100,7 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_oudlid', array( $this, 'is_user_oudlid' ), 10, 2 );
 
 		// Hide most of BP for non-vgsr
-		add_action( 'bp_template_redirect',     array( $this, 'bp_pages_set_404'         ), 0 );
+		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ), 0 );
 		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ), 5 ); // After members component setup
 		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )    );
 		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ), 5 ); // Before default priority
@@ -119,7 +119,7 @@ class VGSR_BuddyPress {
 	/** Hide BP ************************************************************/
 
 	/**
-	 * Hide nearly all BuddyPress pages for guests and non-vgsr users
+	 * Hide exclusive BuddyPress pages for the unpriviledged
 	 *
 	 * @since 0.1.0
 	 *
@@ -129,10 +129,9 @@ class VGSR_BuddyPress {
 	 * @uses VGSR_BuddyPress::is_vgsr_bp_component()
 	 * @uses bp_is_register_page()
 	 * @uses bp_is_activation_page()
-	 * @uses remove_all_actions()
-	 * @uses bp_do_404()
+	 * @uses bp_core_no_access()
 	 */
-	public function bp_pages_set_404() {
+	public function bp_no_access() {
 
 		// Set the page to 404 when:
 		// ... this is a BP page
@@ -146,12 +145,8 @@ class VGSR_BuddyPress {
 			if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
 				return;
 
-			// Remove all other BP template routers when 404-ing
-			remove_all_actions( 'bp_template_redirect' );
-
-			// Prevent components from loading their templates
-			buddypress()->current_component = '';
-			bp_do_404();
+			// Let BP handle the redirection (default = wp-login.php)
+			bp_core_no_access();
 		}
 	}
 
