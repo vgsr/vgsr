@@ -37,9 +37,10 @@ defined( 'ABSPATH' ) || exit;
  *
  *           v--WordPress Actions    v--VGSR Sub-actions
  */
-add_action( 'plugins_loaded',        'vgsr_loaded',         10 );
-add_action( 'init',                  'vgsr_init',           0  ); // Early for vgsr_register
-add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menu'     );
+add_action( 'plugins_loaded',        'vgsr_loaded',           10 );
+add_action( 'init',                  'vgsr_init',             0  ); // Early for vgsr_register
+add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menu'       );
+add_action( 'wp_head',               'vgsr_manifest_meta_tag'    );
 
 /**
  * vgsr_loaded - Attached to 'plugins_loaded' above
@@ -60,9 +61,10 @@ add_action( 'vgsr_loaded', 'vgsr_setup_globals',      8  );
  * The load order helps to execute code at the correct time.
  *                                                 v---Load order
  */
-add_action( 'vgsr_init', 'vgsr_load_textdomain',   0   );
-add_action( 'vgsr_init', 'vgsr_register',          0   );
-add_action( 'vgsr_init', 'vgsr_ready',             999 );
+add_action( 'vgsr_init', 'vgsr_load_textdomain',     0   );
+add_action( 'vgsr_init', 'vgsr_register',            0   );
+add_action( 'vgsr_init', 'vgsr_manifest_json_route', 10  );
+add_action( 'vgsr_init', 'vgsr_ready',               999 );
 
 /**
  * vgsr_ready - attached to end 'vgsr_init' above
