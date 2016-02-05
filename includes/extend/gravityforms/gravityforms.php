@@ -86,6 +86,9 @@ class VGSR_GravityForms {
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
 		add_filter( 'gform_field_css_class',         array( $this, 'add_field_class'        ), 10, 3 );
 
+		// Widgets
+		add_filter( 'widget_display_callback', array( $this, 'handle_widget_display' ), 5, 3 );
+
 		// Tooltips
 		add_filter( 'gform_tooltips', array( $this, 'tooltips' ) );
 
@@ -513,6 +516,35 @@ class VGSR_GravityForms {
 		) );
 
 		return $tips;
+	}
+
+	/** Widgets ************************************************************/
+
+	/**
+	 * Do not display exclusive form widgets to non-vgsr users
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses VGSR_GravityForms::is_form_vgsr()
+	 * @uses is_user_vgsr()
+	 *
+	 * @param array     $instance The current widget instance's settings.
+	 * @param WP_Widget $widget   The current widget instance.
+	 * @param array     $args     An array of default widget arguments.
+	 * @return array|bool The widget instance or False when not to display.
+	 */
+	public function handle_widget_display( $instance, $widget, $args ) {
+
+		// When this is a GF widget
+		if ( is_a( $widget, 'GFWidget' ) && isset( $instance['form_id'] ) ) {
+
+			// The form is exclusive and the user is not VGSR
+			if ( $this->is_form_vgsr( $instance['form_id'] ) && ! is_user_vgsr() ) {
+				$instance = false;
+			}
+		}
+
+		return $instance;
 	}
 
 	/** Misc ***************************************************************/
