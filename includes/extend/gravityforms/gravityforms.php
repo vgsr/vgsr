@@ -188,13 +188,35 @@ class VGSR_GravityForms {
 	 * @since 0.0.6
 	 *
 	 * @uses VGSR_GravityForms::get_form_meta()
+	 * @uses VGSR_GravityForms::is_field_vgsr()
 	 * @uses apply_filters() Calls 'vgsr_gf_is_form_vgsr'
 	 *
 	 * @param array|int $form Form object or form ID
 	 * @return bool Form is exclusive
 	 */
 	public function is_form_vgsr( $form ) {
-		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr', (bool) $this->get_form_meta( $form, $this->meta_key ), $form );
+
+		// Form itself is exclusive
+		$exclusive = (bool) $this->get_form_meta( $form, $this->meta_key );
+
+		// Or maybe *all* fields are exclusive
+		if ( ! $exclusive ) {
+
+			// Assume all fields are exclusive
+			$exclusive = true;
+
+			// Walk all fields
+			foreach ( $this->get_form_meta( $form, 'fields' ) as $field ) {
+
+				// Break when a field is not exclusive
+				if ( ! $this->is_field_vgsr( $field ) ) {
+					$exclusive = false;
+					break;
+				}
+			}
+		}
+
+		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr', $exclusive, $form );
 	}
 
 	/**
