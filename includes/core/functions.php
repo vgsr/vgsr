@@ -13,12 +13,13 @@ defined( 'ABSPATH' ) || exit;
 /** Meta *******************************************************************/
 
 /**
- * Catch the manifest request and serve the json
+ * Catch the manifest request and serve it for the main site
  *
  * @since 0.1.0
  *
  * @uses is_main_site()
  * @uses vgsr_manifest_json()
+ * @uses auth_redirect()
  */
 function vgsr_manifest_json_route() {
 
@@ -32,7 +33,15 @@ function vgsr_manifest_json_route() {
 
 	// Requesting the manifest file
 	if ( isset( $_GET['action'] ) && 'manifest' === $_GET['action'] ) {
+
+		// Serve the json contents
 		vgsr_manifest_json();
+
+	// Navigating from the manifest
+	} elseif ( isset( $_GET['homescreen'] ) && $_GET['homescreen'] ) {
+
+		// Force login
+		auth_redirect();
 	}
 }
 
@@ -78,7 +87,7 @@ function vgsr_manifest_json() {
 		'short_name'       => 'VGSR',
 		'name'             => 'Vereniging van Gereformeerde Studenten te Rotterdam',
 		// Always start at front page
-		'start_url'        => '/',
+		'start_url'        => '/?homescreen=1',
 		'display'          => 'fullscreen',
 		// Force orientation
 		'orientation'      => 'portrait',
