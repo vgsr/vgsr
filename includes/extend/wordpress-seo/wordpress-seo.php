@@ -19,7 +19,8 @@ if ( ! class_exists( 'VGSR_WPSEO' ) ) :
 class VGSR_WPSEO {
 
 	/**
-	 * Holds WPSEO's options from {@see WPSEO_Options::get_all()}
+	 * Dummy for WPSEO's options from {@see WPSEO_Options::get_all()}
+	 * to prevent multiple calls to that function.
 	 *
 	 * @since 1.0.0
 	 * @var array
@@ -75,6 +76,17 @@ class VGSR_WPSEO {
 	 * @return array Crumbs
 	 */
 	public function breadcrumb_links( $crumbs ) {
+
+		// Categories taxonomy crumbs
+		if ( isset( $this->options['post_types-post-maintax'] ) && 'category' == $this->options['post_types-post-maintax'] ) {
+			foreach ( $crumbs as $k => $crumb ) {
+
+				// Remove 'Uncategorized' category crumb
+				if ( isset( $crumb['term'] ) && (int) get_option( 'default_category' ) == $crumb['term']->term_id ) {
+					unset( $crumbs[ $k ] );
+				}
+			}
+		}
 
 		// Support BuddyPress pages
 		if ( function_exists( 'buddypress' ) && is_buddypress() ) {
