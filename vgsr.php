@@ -9,7 +9,7 @@
 
 /**
  * Plugin Name:       VGSR
- * Description:       Plugin to fill in the blanks for vgsr.nl
+ * Description:       Fill in the blanks for vgsr.nl
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
@@ -177,28 +177,28 @@ final class VGSR {
 
 		// Setup some base path and URL information
 		$this->file         = __FILE__;
-		$this->basename     = apply_filters( 'vgsr_plugin_basename', plugin_basename( $this->file ) );
-		$this->plugin_dir   = apply_filters( 'vgsr_plugin_dir_path', plugin_dir_path( $this->file ) );
-		$this->plugin_url   = apply_filters( 'vgsr_plugin_dir_url',  plugin_dir_url ( $this->file ) );
+		$this->basename     = plugin_basename( $this->file );
+		$this->plugin_dir   = plugin_dir_path( $this->file );
+		$this->plugin_url   = plugin_dir_url ( $this->file );
 
 		// Includes
-		$this->includes_dir = apply_filters( 'vgsr_includes_dir', trailingslashit( $this->plugin_dir . 'includes'  ) );
-		$this->includes_url = apply_filters( 'vgsr_includes_url', trailingslashit( $this->plugin_url . 'includes'  ) );
+		$this->includes_dir = trailingslashit( $this->plugin_dir . 'includes'  );
+		$this->includes_url = trailingslashit( $this->plugin_url . 'includes'  );
 
 		// Assets
-		$this->assets_dir   = apply_filters( 'vgsr_assets_dir',   trailingslashit( $this->includes_dir . 'assets'  ) );
-		$this->assets_url   = apply_filters( 'vgsr_assets_url',   trailingslashit( $this->includes_url . 'assets'  ) );
+		$this->assets_dir   = trailingslashit( $this->includes_dir . 'assets'  );
+		$this->assets_url   = trailingslashit( $this->includes_url . 'assets'  );
 
 		// Extenders
-		$this->extend_dir   = apply_filters( 'vgsr_extend_dir',   trailingslashit( $this->includes_dir . 'extend'  ) );
-		$this->extend_url   = apply_filters( 'vgsr_extend_url',   trailingslashit( $this->includes_url . 'extend'  ) );
+		$this->extend_dir   = trailingslashit( $this->includes_dir . 'extend'  );
+		$this->extend_url   = trailingslashit( $this->includes_url . 'extend'  );
 
 		// Languages
-		$this->lang_dir     = apply_filters( 'vgsr_lang_dir',     trailingslashit( $this->plugin_dir . 'languages' ) );
+		$this->lang_dir     = trailingslashit( $this->plugin_dir . 'languages' );
 
 		// Templates
-		$this->themes_dir   = apply_filters( 'vgsr_themes_dir',   trailingslashit( $this->plugin_dir . 'templates' ) );
-		$this->themes_url   = apply_filters( 'vgsr_themes_url',   trailingslashit( $this->plugin_url . 'templates' ) );
+		$this->themes_dir   = trailingslashit( $this->plugin_dir . 'templates' );
+		$this->themes_url   = trailingslashit( $this->plugin_url . 'templates' );
 
 		/** Users *************************************************************/
 
