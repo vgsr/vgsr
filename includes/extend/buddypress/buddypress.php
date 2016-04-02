@@ -113,7 +113,8 @@ class VGSR_BuddyPress {
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Pages
-		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11 );
+		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
+		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 	}
 
 	/** Hide BP ************************************************************/
@@ -858,6 +859,36 @@ class VGSR_BuddyPress {
 	/** Pages **************************************************************/
 
 	/**
+	 * Modify the directory page's page title
+	 *
+	 * @since 1.0.0
+	 *
+	 * @uses bp_core_get_directory_page_ids()
+	 * @uses get_the_title()
+	 *
+	 * @param string $title Page title
+	 * @param string $component Component name
+	 * @return string Page title
+	 */
+	public function directory_title( $title, $component ) {
+
+		// Get directory page ids
+		$page_ids = bp_core_get_directory_page_ids( 'all' );
+
+		// Use the actual directory page's title
+		if ( isset( $page_ids[ $component ] ) ) {
+			$title = get_the_title( $page_ids[ $component ] );
+		}
+
+		// For member type directories, modify the title as well
+		if ( $member_type = bp_get_member_type_object( bp_get_current_member_type() ) ) {
+			$title = $member_type->labels['name'];
+		}
+
+		return $title;
+	}
+
+	/**
 	 * Define BuddyPress's dummy global post's post parent correctly
 	 *
 	 * @since 1.0.0
@@ -867,6 +898,8 @@ class VGSR_BuddyPress {
 	 * @uses bp_is_single_item()
 	 * @uses bp_current_component()
 	 * @uses get_post_ancestors()
+	 *
+	 * @global WP_Post $post
 	 */
 	public function dummy_post_set_post_parent() {
 		global $post;
@@ -897,14 +930,9 @@ class VGSR_BuddyPress {
 			}
 		}
 
-		// Assign post parent
+		// Assign the global post's post parent
 		if ( $post_parent ) {
 			$post->post_parent = $post_parent;
-
-			// For member type directories, modify the title as well
-			if ( $member_type = bp_get_member_type_object( bp_get_current_member_type() ) ) {
-				$post->post_title = $member_type->labels['name'];
-			}
 		}
 	}
 }
