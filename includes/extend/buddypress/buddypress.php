@@ -114,6 +114,7 @@ class VGSR_BuddyPress {
 
 		// Pages
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
+		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 	}
 
@@ -865,6 +866,8 @@ class VGSR_BuddyPress {
 	 *
 	 * @uses bp_core_get_directory_page_ids()
 	 * @uses get_the_title()
+	 * @uses bp_get_member_type_object()
+	 * @uses bp_get_current_member_type()
 	 *
 	 * @param string $title Page title
 	 * @param string $component Component name
@@ -886,6 +889,36 @@ class VGSR_BuddyPress {
 		}
 
 		return $title;
+	}
+
+	/**
+	 * Modify the total member count
+	 *
+	 * @since 1.0.0
+	 *
+	 * @uses bp_get_member_type_object()
+	 * @uses bp_get_current_member_type()
+	 * @uses BP_User_Query
+	 *
+	 * @param int $count Total member count
+	 * @return int Total member count
+	 */
+	public function total_member_count( $count ) {
+
+		// For member type directories, modify the count
+		if ( $member_type = bp_get_member_type_object( bp_get_current_member_type() ) ) {
+			if ( $query = new BP_User_Query( array(
+				'type' => '', 'member_type__in' => $member_type->name
+			) ) ) {
+				$count = $query->total_users;
+			}
+
+		// Return the *full* total member count
+		} else {
+			$count = bp_core_get_total_member_count();
+		}
+
+		return $count;	
 	}
 
 	/**
