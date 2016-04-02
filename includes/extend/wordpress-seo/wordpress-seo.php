@@ -81,7 +81,7 @@ class VGSR_WPSEO {
 		if ( isset( $this->options['post_types-post-maintax'] ) && 'category' == $this->options['post_types-post-maintax'] ) {
 			foreach ( $crumbs as $k => $crumb ) {
 
-				// Remove 'Uncategorized' category crumb
+				// Remove 'Uncategorized' default category crumb
 				if ( isset( $crumb['term'] ) && (int) get_option( 'default_category' ) == $crumb['term']->term_id ) {
 					unset( $crumbs[ $k ] );
 				}
@@ -110,8 +110,7 @@ class VGSR_WPSEO {
 				} else {
 					$crumb = array(
 						'text'       => $member_type->labels['name'],
-						// @todo Use `bp_get_member_type_directory_permalink()` as per BP 2.5
-						'url'        => trailingslashit( bp_get_members_directory_permalink() . apply_filters( 'bp_members_member_type_base', _x( 'type', 'member type URL base', 'buddypress' ) ) . '/' . $member_type->directory_slug ),
+						'url'        => bp_get_member_type_directory_permalink( $member_type->name ), // BP 2.5+
 						'allow_html' => false,
 					);
 
