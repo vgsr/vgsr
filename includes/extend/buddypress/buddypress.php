@@ -235,7 +235,7 @@ class VGSR_BuddyPress {
 		// ... the activity component is active
 		// ... AND the activity component is exclusive
 		// ... AND the displayed user is non-vgsr
-		if ( bp_is_active( 'activity' ) && in_array( 'activity', $this->vgsr_bp_components() ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
+		if ( bp_is_active( 'activity' ) && $this->is_vgsr_bp_component( 'activity' ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
 
 			// Set the default component to XProfile
 			if ( ! defined( 'BP_DEFAULT_COMPONENT' ) ) {
@@ -303,7 +303,7 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Modify the return value for `bp_is_active()`
+	 * Modify the return value for active components
 	 *
 	 * @since 0.1.0
 	 *
@@ -320,7 +320,7 @@ class VGSR_BuddyPress {
 	public function bp_is_active( $retval, $component ) {
 
 		// Component is vgsr specific
-		if ( in_array( $component, $this->vgsr_bp_components() ) ) {
+		if ( $this->is_vgsr_bp_component( $component ) ) {
 
 			// Check the current user
 			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
