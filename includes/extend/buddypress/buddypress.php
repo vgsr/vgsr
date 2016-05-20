@@ -100,10 +100,11 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_oudlid', array( $this, 'is_user_oudlid' ), 10, 2 );
 
 		// Hide most of BP for non-vgsr
-		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ), 0 );
-		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ), 5 ); // After members component setup
-		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )    );
-		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ), 5 ); // Before default priority
+		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
+		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After members component setup
+		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )        );
+		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
+		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
 
 		// Settings
 		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
@@ -116,9 +117,6 @@ class VGSR_BuddyPress {
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
 		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
-
-		// Member-related
-		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url' ), 20, 3 );
 	}
 
 	/** Hide BP ************************************************************/
@@ -333,6 +331,34 @@ class VGSR_BuddyPress {
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Remove the comment author member url for non-vgsr users
+	 *
+	 * @since 1.0.0
+	 *
+	 * @see bp_core_filter_comments() Assigns member urls to the comment object.
+	 *
+	 * @uses bp_loggedin_user_id()
+	 * @uses is_user_vgsr()
+	 *
+	 * @param string $url Comment author url
+	 * @param int $comment_id Comment ID
+	 * @param WP_Comment $comment Comment object
+	 * @return string Comment author url
+	 */
+	public function comment_author_url( $url, $comment_id, $comment ) {
+
+		// Define local variable
+		$user_id = bp_loggedin_user_id();
+
+		// Hide member-url for non-vgsr, non-self, vgsr-member authors
+		if ( ! is_user_vgsr( $user_id ) && $user_id != $comment->user_id && is_user_vgsr( $comment->user_id ) ) {
+			$url = '';
+		}
+
+		return $url;
 	}
 
 	/** Capabilities *******************************************************/
@@ -970,34 +996,6 @@ class VGSR_BuddyPress {
 		if ( $post_parent ) {
 			$post->post_parent = $post_parent;
 		}
-	}
-
-	/**
-	 * Modify the comment author url for non-vgsr users
-	 *
-	 * @since 1.0.0
-	 *
-	 * @see bp_core_filter_comments()
-	 *
-	 * @uses bp_loggedin_user_id()
-	 * @uses is_user_vgsr()
-	 *
-	 * @param string $url Comment author url
-	 * @param int $comment_id Comment ID
-	 * @param WP_Comment $comment Comment object
-	 * @return string Comment author url
-	 */
-	public function comment_author_url( $url, $comment_id, $comment ) {
-
-		// Define local variable
-		$user_id = bp_loggedin_user_id();
-
-		// Hide member-url for non-vgsr, non-self, vgsr-member authors
-		if ( ! is_user_vgsr( $user_id ) && $user_id != $comment->user_id && is_user_vgsr( $comment->user_id ) ) {
-			$url = '';
-		}
-
-		return $url;
 	}
 }
 
