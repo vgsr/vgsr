@@ -689,8 +689,6 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @uses bp_has_member_type()
-	 * @uses bp_get_member_type_object()
-	 * @uses bp_get_member_type()
 	 *
 	 * @param string $member_type Member type name
 	 * @param int $user_id Optional. User ID. Defaults to current user.
@@ -703,26 +701,7 @@ class VGSR_BuddyPress {
 			$user_id = get_current_user_id();
 		}
 
-		// Per BP 2.3+
-		if ( function_exists( 'bp_has_member_type' ) ) {
-			return bp_has_member_type( $user_id, $member_type );
-
-		// Implementation of BP 2.3's `bp_has_member_type()`
-		} else {
-
-			// Bail if no valid member type was passed. 
-			if ( empty( $member_type ) || ! bp_get_member_type_object( $member_type ) ) { 
-				return false; 
-			} 
-
-			// Get all user's member types. 
-			$types = bp_get_member_type( $user_id, false ); 
-			if ( ! is_array( $types ) ) { 
-				return false; 
-			} 
-
-			return in_array( $member_type, $types ); 
-		}
+		return bp_has_member_type( $user_id, $member_type );
 	}
 
 	/** Users **************************************************************/
