@@ -11,56 +11,6 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Output the promote to member type link
- *
- * @since 1.0.0
- *
- * @uses vgsr_bp_get_member_type_promote_link()
- * @param string $member_type Member type
- * @param int $user_id User ID. Defaults to displayed user.
- * @param bool $append Whether to append or override the member type. Defaults to override.
- */
-function vgsr_bp_member_type_promote_link( $member_type = '', $user_id = 0, $append = false ) {
-	echo vgsr_bp_get_member_type_promote_link( $member_type, $append );
-}
-
-	/**
-	 * Return the promote to member type link
-	 *
-	 * @since 1.0.0
-	 *
-	 * @uses bp_get_member_type_object()
-	 * @uses vgsr_bp_get_member_type_promote_url()
-	 *
-	 * @param string $member_type Member type
-	 * @param int $user_id User ID. Defaults to displayed user.
-	 * @param bool $append Whether to append or override the member type. Defaults to override.
-	 * @return string Member type promote link
-	 */
-	function vgsr_bp_get_member_type_promote_link( $member_type = '', $user_id = 0, $append = false ) {
-
-		// Define local variables
-		$link = '';
-
-		if ( empty( $user_id ) ) {
-			$user_id = bp_displayed_user_id();
-		}
-
-		// Get the member type object
-		$member_type_object = bp_get_member_type_object( $member_type );
-
-		// Bail when the member type does not exist
-		if ( ! empty( $member_type_object ) ) {
-			$link = sprintf( '<a class="promote confirm" href="%s">%s</a>',
-				esc_url( vgsr_bp_get_member_type_promote_url( $member_type_object->name, $user_id, $append ) ),
-				sprintf( __( 'Promote to %s', 'vgsr' ), $member_type_object->labels['singular_name'] )
-			);
-		}
-
-		return apply_filters( 'vgsr_bp_get_member_type_promote_link', $link, $member_type, $user_id, $append );
-	}
-
-/**
  * Output the promote to member type url
  *
  * @since 1.0.0
