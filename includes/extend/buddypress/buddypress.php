@@ -76,7 +76,8 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 */
 	private function includes() {
-		require( $this->includes_dir . 'settings.php' );
+		require( $this->includes_dir . 'functions.php' );
+		require( $this->includes_dir . 'settings.php'  );
 	}
 
 	/**
@@ -112,6 +113,9 @@ class VGSR_BuddyPress {
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
+
+		// Members
+		add_action( 'bp_member_header_actions', array( $this, 'add_member_header_actions' ) );
 
 		// Pages
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
@@ -702,6 +706,46 @@ class VGSR_BuddyPress {
 		}
 
 		return bp_has_member_type( $user_id, $member_type );
+	}
+
+	/** Members ************************************************************/
+
+	/**
+	 * Output additional member action links
+	 *
+	 * @since 1.0.0
+	 *
+	 * @uses bp_current_user_can()
+	 * @uses is_user_vgsr()
+	 * @uses is_user_lid()
+	 * @uses vgsr_bp_get_member_type_promote_link()
+	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 */
+	public function add_member_header_actions() {
+
+		// Define button layout
+		$button = '<div class="generic-button" id="%2$s">%1$s</div>';
+
+		// For moderators
+		if ( bp_current_user_can( 'bp_moderate' ) ) {
+
+			// Edit user in wp-admin link
+			printf( $button, sprintf( '<a href="%s">%s</a>',
+				esc_url( add_query_arg( array( 'user_id' => bp_displayed_user_id() ), admin_url( 'user-edit.php' ) ) ),
+				__( 'Dashboard Profile', 'vgsr' )
+			), 'dashboard-profile' );
+
+			// Promote to lid action
+			if ( ! is_user_vgsr( bp_displayed_user_id() ) ) {
+				printf( $button, vgsr_bp_get_member_type_promote_link( $this->lid_member_type() ), 'promote-member' );
+			}
+
+			// Promote to oud-lid action
+			if ( is_user_lid( bp_displayed_user_id() ) ) {
+				printf( $button, vgsr_bp_get_member_type_promote_link( $this->oudlid_member_type() ), 'promote-member' );
+			}
+		}
 	}
 
 	/** Users **************************************************************/
