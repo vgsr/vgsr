@@ -738,12 +738,12 @@ class VGSR_BuddyPress {
 
 			// Promote to lid action
 			if ( ! is_user_vgsr( bp_displayed_user_id() ) ) {
-				printf( $button, vgsr_bp_get_member_type_promote_link( $this->lid_member_type() ), 'promote-member' );
+				printf( $button, vgsr_bp_get_member_type_promote_link( $this->lid_member_type() ), 'promote-member-lid' );
 			}
 
 			// Promote to oud-lid action
 			if ( is_user_lid( bp_displayed_user_id() ) ) {
-				printf( $button, vgsr_bp_get_member_type_promote_link( $this->oudlid_member_type() ), 'promote-member' );
+				printf( $button, vgsr_bp_get_member_type_promote_link( $this->oudlid_member_type() ), 'promote-member-oudlid' );
 			}
 		}
 	}
