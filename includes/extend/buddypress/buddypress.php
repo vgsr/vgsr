@@ -705,6 +705,14 @@ class VGSR_BuddyPress {
 			$user_id = get_current_user_id();
 		}
 
+		/*
+		 * Ensure BP's taxonomies are registered in case this is
+		 * called before `bp_init()`.
+		 */
+		if ( ! did_action( 'bp_init' ) ) {
+			bp_register_taxonomies();
+		}
+
 		return bp_has_member_type( $user_id, $member_type );
 	}
 
