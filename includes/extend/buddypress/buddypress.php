@@ -342,7 +342,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Remove the comment author member url for non-vgsr users
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
 	 * @see bp_core_filter_comments() Assigns member urls to the comment object.
 	 *
@@ -723,7 +723,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Output additional member action links
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
 	 * @uses bp_current_user_can()
 	 * @uses bp_button()
@@ -996,7 +996,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Modify the directory page's page title
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
 	 * @uses bp_core_get_directory_page_ids()
 	 * @uses get_the_title()
@@ -1051,7 +1051,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Define BuddyPress's dummy global post's post parent correctly
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
 	 * @uses is_buddypress()
 	 * @uses bp_is_user()

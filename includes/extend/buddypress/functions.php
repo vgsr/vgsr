@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Output the promote to member type url
  *
- * @since 1.0.0
+ * @since 0.1.0
  *
  * @uses vgsr_bp_get_member_type_promote_url()
  * @param string $member_type Member type
@@ -27,7 +27,7 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 	/**
 	 * Return the promote to member type url
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
 	 * @uses bp_get_member_type_object()
 	 * @uses bp_core_get_user_domain()
@@ -50,7 +50,7 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 		// Get the member type object
 		$member_type_object = bp_get_member_type_object( $member_type );
 
-		// Bail when the member type does not exist
+		// When the member type does exist
 		if ( ! empty( $member_type_object ) ) {
 
 			// Get the args to add to the URL.
@@ -79,7 +79,7 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 /**
  * Handle promoting a member to a given member type
  *
- * @since 1.0.0
+ * @since 0.1.0
  *
  * @uses bp_is_user()
  * @uses bp_is_current_action()
