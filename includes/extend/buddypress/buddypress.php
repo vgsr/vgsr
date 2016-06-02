@@ -1028,28 +1028,21 @@ class VGSR_BuddyPress {
 	/**
 	 * Modify the total member count
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 *
-	 * @uses bp_get_member_type_object()
 	 * @uses bp_get_current_member_type()
-	 * @uses BP_User_Query
+	 * @uses vgsr_bp_get_total_member_count()
 	 *
-	 * @param int $count Total member count
+	 * @param int $count Member count
 	 * @return int Total member count
 	 */
 	public function total_member_count( $count ) {
 
-		// For member type directories, modify the count
-		if ( $member_type = bp_get_member_type_object( bp_get_current_member_type() ) ) {
-			if ( $query = new BP_User_Query( array(
-				'type' => '', 'member_type__in' => $member_type->name
-			) ) ) {
-				$count = $query->total_users;
-			}
-
-		// Return the *full* total member count
-		} else {
-			$count = bp_core_get_total_member_count();
+		// Default to the current member type
+		if ( $member_type = bp_get_current_member_type() ) {
+			$count = vgsr_bp_get_total_member_count( array(
+				'member_type__in' => $member_type
+			) );
 		}
 
 		return $count;	

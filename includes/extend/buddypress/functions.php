@@ -172,3 +172,34 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 
 		return apply_filters( 'vgsr_bp_get_members_member_type_tab', $tab, $member_type, $count );
 	}
+
+/**
+ * Modify the total member count
+ *
+ * @since 0.1.0
+ *
+ * @uses BP_User_Query
+ * @uses bp_core_get_total_member_count()
+ *
+ * @param array $args Query args for `BP_User_Query`
+ * @return int Total member count
+ */
+function vgsr_bp_get_total_member_count( $args = array() ) {
+
+	// With args, do custom count query
+	if ( ! empty( $args ) ) {
+		$args = wp_parse_args( $args, array(
+			'type' => ''
+		) );
+
+		if ( $query = new BP_User_Query( $args ) ) {
+			$count = $query->total_users;
+		}
+
+	// Return the *full* total member count
+	} else {
+		$count = bp_core_get_total_member_count();
+	}
+
+	return $count;
+}
