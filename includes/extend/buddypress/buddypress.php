@@ -1039,12 +1039,15 @@ class VGSR_BuddyPress {
 	 */
 	public function total_member_count( $count ) {
 
+		$args = array();
+
 		// Default to the current member type
 		if ( $member_type = bp_get_current_member_type() ) {
-			$count = vgsr_bp_get_total_member_count( array(
-				'member_type__in' => $member_type
-			) );
+			$args['member_type__in'] = $member_type;
 		}
+
+		// Get the real total member count
+		$count = vgsr_bp_get_total_member_count( $args );
 
 		return $count;	
 	}
