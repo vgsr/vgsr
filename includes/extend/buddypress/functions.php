@@ -125,3 +125,50 @@ function vgsr_bp_member_promote_member_type() {
 	bp_core_redirect( bp_displayed_user_domain() );
 }
 add_action( 'bp_actions', 'vgsr_bp_member_promote_member_type' );
+
+/**
+ * Display a members query tab for the given member type
+ *
+ * @since 0.1.0
+ *
+ * @uses vgsr_bp_get_members_member_type_tab()
+ * @param string $member_type Member type
+ */
+function vgsr_bp_members_member_type_tab( $member_type ) {
+	echo vgsr_bp_get_members_member_type_tab( $member_type );
+}
+
+	/**
+	 * Return a members query tab for the given member type
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses bp_get_member_type_directory_permalink()
+	 * @uses vgsr_bp_get_total_member_count()
+	 * @uses apply_filters() Calls 'vgsr_bp_get_members_member_type_tab'
+	 * @param string $member_type Member type
+	 */
+	function vgsr_bp_get_members_member_type_tab( $member_type ) {
+
+		// Define local variables
+		$tab   = '';
+		$count = 0;
+
+		// Get the member type object
+		$member_type_object = bp_get_member_type_object( $member_type );
+
+		if ( ! empty( $member_type_object ) ) {
+
+			// Only display tab when there are members
+			if ( $count = vgsr_bp_get_get_total_member_count( array( 'member_type__in' => $member_type ) ) ) {
+				$tab = sprintf( '<li id="members-%s"><a href="%s">%s <span>%s</span></a></li>',
+					"member_type_{$member_type_object->name}",
+					esc_url( bp_get_member_type_directory_permalink( $member_type ) ),
+					$member_type_object->labels['name'],
+					$count
+				);
+			}
+		}
+
+		return apply_filters( 'vgsr_bp_get_members_member_type_tab', $tab, $member_type, $count );
+	}
