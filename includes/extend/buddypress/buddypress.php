@@ -115,7 +115,9 @@ class VGSR_BuddyPress {
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Members
-		add_action( 'bp_member_header_actions', array( $this, 'add_member_header_actions' ) );
+		add_action( 'bp_member_header_actions',          array( $this, 'add_member_header_actions'  )        );
+		add_action( 'bp_members_directory_member_types', array( $this, 'add_members_directory_tabs' )        );
+		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
 
 		// Pages
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
@@ -776,6 +778,56 @@ class VGSR_BuddyPress {
 				) );
 			}
 		}
+	}
+
+	/**
+	 * Add additional query tabs to the Members directory
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses is_user_vgsr()
+	 * @uses vgsr_bp_members_member_type_tab()
+	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 */
+	public function add_members_directory_tabs() {
+
+		// Bail when current user is not vgsr
+		if ( ! is_user_vgsr() )
+			return;
+
+		// Add tabs for Lid and Oud-lid member type
+		vgsr_bp_members_member_type_tab( $this->lid_member_type() );
+		vgsr_bp_members_member_type_tab( $this->oudlid_member_type() );
+	}
+
+	/**
+	 * Modify the ajax query string from the legacy theme
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $query_string        The query string we are working with.
+	 * @param string $object              The type of page we are on.
+	 * @param string $object_filter       The current object filter.
+	 * @param string $object_scope        The current object scope.
+	 * @param string $object_page         The current object page.
+	 * @param string $object_search_terms The current object search terms.
+	 * @param string $object_extras       The current object extras.
+	 * @return string The query string
+	 */
+	public function legacy_ajax_querystring( $query_string, $object, $object_filter, $object_scope, $object_page, $object_search_terms, $object_extras ) {
+
+		// Handle the members member type scope
+		if ( 'members' == $object && 0 == strpos( $object_scope, 'member_type_' ) ) {
+			$member_type = bp_get_member_type_object( str_replace( 'member_type_', '', $object_scope ) );
+
+			// Query only member type'd users
+			if ( ! empty( $member_type ) ) {
+				$query_string .= "&member_type__in={$member_type->name}";
+			}
+		}
+
+		return $query_string;
 	}
 
 	/** Users **************************************************************/
