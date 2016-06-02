@@ -110,7 +110,7 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 		if ( ! empty( $member_type_object ) ) {
 
 			// Only display tab when there are members
-			if ( $count = vgsr_bp_get_get_total_member_count( array( 'member_type__in' => $member_type ) ) ) {
+			if ( $count = vgsr_bp_get_total_member_count( array( 'member_type__in' => $member_type ) ) ) {
 				$tab = sprintf( '<li id="members-%s"><a href="%s">%s <span>%s</span></a></li>',
 					"member_type_{$member_type_object->name}",
 					esc_url( bp_get_member_type_directory_permalink( $member_type ) ),
