@@ -651,7 +651,7 @@ class VGSR_BuddyPress {
 	 * @return string Oud-lid member type name
 	 */
 	public function oudlid_member_type() {
-		return apply_filters( 'vgsr_bp_oudlid_member_type', 'oud-lid' );
+		return apply_filters( 'vgsr_bp_oudlid_member_type', 'oudlid' );
 	}
 
 	/**
@@ -664,7 +664,7 @@ class VGSR_BuddyPress {
 	 * @return string Oud-lid member type name
 	 */
 	public function exlid_member_type() {
-		return apply_filters( 'vgsr_bp_exlid_member_type', 'ex-lid' );
+		return apply_filters( 'vgsr_bp_exlid_member_type', 'exlid' );
 	}
 
 	/**
