@@ -765,7 +765,7 @@ class VGSR_BuddyPress {
 			}
 
 			// Promote to oud-lid action
-			if ( is_user_lid( bp_displayed_user_id() ) ) {
+			if ( ! is_user_oudlid( bp_displayed_user_id() ) ) {
 				bp_button( array(
 					'id'                => 'promote_member_oudlid',
 					'component'         => 'members',
