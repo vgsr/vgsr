@@ -116,6 +116,7 @@ class VGSR_BuddyPress {
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
 		// Members
+		add_action( 'bp_set_member_type',                array( $this, 'set_member_type'            ), 10, 3 );
 		add_action( 'bp_member_header_actions',          array( $this, 'add_member_header_actions'  )        );
 		add_action( 'bp_members_directory_member_types', array( $this, 'add_members_directory_tabs' )        );
 		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
@@ -695,6 +696,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @uses bp_register_taxonomies()
 	 * @uses bp_has_member_type()
 	 *
 	 * @param string $member_type Member type name
@@ -717,6 +719,29 @@ class VGSR_BuddyPress {
 		}
 
 		return bp_has_member_type( $user_id, $member_type );
+	}
+
+	/**
+	 * Act when a user's member type has been changed or added
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @uses VGSR_BuddyPress::exlid_member_type()
+	 * @uses is_user_lid()
+	 * @uses bp_remove_member_type()
+	 * @uses VGSR_BuddyPress::lid_member_type()
+	 *
+	 * @param int $user_id User ID
+	 * @param string $member_type Member type name
+	 * @param bool $append Whether the member type was appended
+	 */
+	public function set_member_type( $user_id, $member_type, $append ) {
+
+		// Remove the lid member type for new oud-lid or ex-lid members
+		if ( in_array( $member_type, array( $this->oudlid_member_type(), $this->exlid_member_type() ) ) && is_user_lid( $user_id ) ) {
+			bp_remove_member_type( $user_id, $this->lid_member_type() );
+		}
 	}
 
 	/** Members ************************************************************/
