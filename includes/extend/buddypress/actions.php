@@ -34,7 +34,7 @@ function vgsr_bp_member_promote_member_type() {
 	$action = ! empty( $_GET['action'] ) ? $_GET['action'] : '';
 	$nonce  = ! empty( $_GET['_wpnonce'] ) ? $_GET['_wpnonce'] : '';
 	$type   = ! empty( $_GET['type'] ) ? bp_get_member_type_object( $_GET['type'] ) : '';
-	$append = ! empty( $_GET['append'] ) ? intval( $_GET['append'] ) : '';
+	$append = ! empty( $_GET['append'] ) ? intval( $_GET['append'] ) : true;
 
 	// Bail if no action or no ID
 	if ( 'promote' !== $action || empty( $type ) || empty( $nonce ) )
