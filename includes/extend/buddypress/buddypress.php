@@ -748,7 +748,8 @@ class VGSR_BuddyPress {
 				'block_self'        => false,
 				'link_href'         => add_query_arg( array( 'user_id' => bp_displayed_user_id() ), admin_url( 'user-edit.php' ) ),
 				'link_title'        => __( 'Edit this user in the admin.', 'vgsr' ),
-				'link_text'         => __( 'Dashboard Profile', 'vgsr' )
+				'link_text'         => __( 'Dashboard Profile', 'vgsr' ),
+				'link_class'        => 'dashboard-profile'
 			) );
 
 			// Promote to lid action
