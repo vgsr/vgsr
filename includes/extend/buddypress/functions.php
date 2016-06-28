@@ -153,3 +153,14 @@ function vgsr_bp_get_total_member_count( $args = array() ) {
 
 	return $count;
 }
+
+/**
+ * Return whether custom activity posting is blocked
+ *
+ * @since 0.1.0
+ *
+ * @return bool Activity posting is blocked
+ */
+function vgsr_bp_is_activity_posting_blocked() {
+	return true;
+}

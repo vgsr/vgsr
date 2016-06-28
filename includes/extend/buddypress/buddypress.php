@@ -121,7 +121,8 @@ class VGSR_BuddyPress {
 		add_action( 'bp_members_directory_member_types', array( $this, 'add_members_directory_tabs' )        );
 		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
 
-		// Pages
+		// Pages & Templates
+		add_filter( 'bp_get_template_part',                      array( $this, 'get_template_part'          ), 20, 3 );
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
 		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
@@ -1018,7 +1019,29 @@ class VGSR_BuddyPress {
 		}
 	}
 
-	/** Pages **************************************************************/
+	/** Pages & Templates **************************************************/
+
+	/**
+	 * Filter the template part in BP's template loading
+	 *
+	 * @since 0.1.0
+	 *
+	 * @uses vgsr_bp_is_activity_posting_blocked()
+	 *
+	 * @param array $templates Templates to locate
+	 * @param string $slug Template part slug requested
+	 * @param string $name Template part name requested
+	 * @return array Templates
+	 */
+	public function get_template_part( $templates, $slug, $name ) {
+
+		// When blocking custom activity posting, prevent loading the Activity post form
+		if ( vgsr_bp_is_activity_posting_blocked() && 'activity/post-form' == $slug ) {
+			$templates = array();
+		}
+
+		return $templates;
+	}
 
 	/**
 	 * Modify the directory page's page title
