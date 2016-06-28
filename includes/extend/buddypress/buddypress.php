@@ -121,6 +121,9 @@ class VGSR_BuddyPress {
 		add_action( 'bp_members_directory_member_types', array( $this, 'add_members_directory_tabs' )        );
 		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
 
+		// Activity
+		add_filter( 'bp_after_has_activities_parse_args', array( $this, 'activity_comments_in_stream' ) );
+
 		// Pages & Templates
 		add_filter( 'bp_get_template_part',                      array( $this, 'get_template_part'          ), 20, 3 );
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
@@ -856,6 +859,26 @@ class VGSR_BuddyPress {
 		}
 
 		return $query_string;
+	}
+
+	/** Activity ***********************************************************/
+
+	/**
+	 * Modify the arguments of 'has_activities' after parsing defaults to
+	 * bring activity comments into the stream.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $args Parsed args
+	 * @return array Parsed args
+	 */
+	public function activity_comments_in_stream( $args ) {
+
+		// Force activity comment items to be displayed in the stream. The
+		// default is 'threaded', which stacks comments to their parent item.
+		$args['display_comments'] = 'stream';
+
+		return $args;
 	}
 
 	/** Users **************************************************************/
