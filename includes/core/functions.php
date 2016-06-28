@@ -141,3 +141,30 @@ function vgsr_manifest_json() {
 	// Send json headers and output the content
 	wp_send_json( apply_filters( 'vgsr_manifest_json', $params ) );
 }
+
+/** Comments ***************************************************************/
+
+/**
+ * Modify the approved status of a comment before setting it
+ *
+ * @since 0.1.0
+ *
+ * @uses get_user_by()
+ * @uses is_user_vgsr()
+ *
+ * @param int|string $approved Approved status
+ * @param array $commentdata New comment data
+ * @return int|string Approved status
+ */
+function vgsr_pre_comment_approved( $approved, $commentdata ) {
+
+	// Approve a VGSR user's comments without further moderation.
+	if ( ! $approved && ! empty( $commentdata['user_id'] ) ) {
+		$user = get_user_by( 'id', $commentdata['user_id'] );
+		if ( $user && is_user_vgsr( $user->ID ) ) {
+			$approved = 1;
+		}
+	}
+
+	return $approved;
+}
