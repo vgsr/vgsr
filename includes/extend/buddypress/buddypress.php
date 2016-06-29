@@ -122,7 +122,9 @@ class VGSR_BuddyPress {
 		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
 
 		// Activity
-		add_filter( 'bp_after_has_activities_parse_args', array( $this, 'activity_comments_in_stream' ) );
+		add_filter( 'bp_after_has_activities_parse_args',               array( $this, 'activity_comments_in_stream'       )        );
+		add_filter( 'bp_activity_custom_post_type_comment_action',      array( $this, 'activity_post_type_comment_action' ), 10, 2 );
+		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'activity_post_type_comment_action' ), 10, 2 );
 
 		// Pages & Templates
 		add_filter( 'bp_get_template_part',                      array( $this, 'get_template_part'          ), 20, 3 );
@@ -879,6 +881,82 @@ class VGSR_BuddyPress {
 		$args['display_comments'] = 'stream';
 
 		return $args;
+	}
+
+	/**
+	 * Modify the activity action for custom post type comments
+	 *
+	 * @since 0.1.0
+	 *
+	 * @see bp_activity_format_activity_action_custom_post_type_comment()
+	 * @see bp_blogs_format_activity_action_new_blog_comment()
+	 *
+	 * @uses bp_core_get_userlink()
+	 * @uses get_comment()
+	 * @uses get_post()
+	 * @uses get_permalink()
+	 * @uses get_the_title()
+	 * @uses bp_get_activity_meta()
+	 *
+	 * @param string $action Action string value
+	 * @param BP_Activity_Activity $activity Activity data object
+	 * @return string Action
+	 */
+	public function activity_post_type_comment_action( $action, $activity ) {
+		$bp = buddypress();
+
+		// Remove the 'on the site {$site}' part when the comment is displayed on the
+		// blog it was written on. Override only when there is no explicit post type
+		// action set.
+		if ( is_multisite()
+
+			// The comment was made on the current blog
+			&& get_current_blog_id() == $activity->item_id
+
+			// There is no explicit post type action set
+			&& empty( $bp->activity->track[ $activity->type ]->new_post_type_comment_action_ms )
+		) {
+
+			// Get comment and post objects
+			$comment_id = (int) $activity->secondary_item_id;
+			$comment    = get_comment( $comment_id );
+			$post       = get_post( $comment->comment_post_ID );
+
+			// Get post link and title
+			$post_url   = get_permalink( $post->ID );
+			$post_title = get_the_title( $post->ID );
+
+			// Default to the registered primary link
+			if ( empty( $post_url ) ) {
+				$post_url = $activity->primary_link;
+			}
+
+			// Default to registered post title
+			if ( empty( $post_title ) ) {
+
+				// Should be the case when the comment has just been published
+				if ( isset( $activity->post_title ) ) {
+					$post_title = $activity->post_title;
+
+				// If activity already exists try to get the post title from activity meta
+				} elseif ( ! empty( $activity->id ) ) {
+					$post_title = bp_activity_get_meta( $activity->id, 'post_title' );
+				}
+			}
+
+			// Define action parameters
+			$post_link = '<a href="' . esc_url( $post_url ) . '">' . $post_title . '</a>';
+			$user_link = bp_core_get_userlink( $activity->user_id );
+
+			// Redefine action per post type
+			if ( 'post' == $post->post_type ) {
+				$action = sprintf( __( '%1$s commented on the post, %2$s', 'buddypress' ), $user_link, $post_link );
+			} else {
+				$action = sprintf( __( '%1$s commented on the %3$s, %2$s', 'vgsr' ), $user_link, $post_link, $post->post_type );
+			}
+		}
+
+		return $action;
 	}
 
 	/** Users **************************************************************/
