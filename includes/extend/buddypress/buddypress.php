@@ -110,10 +110,6 @@ class VGSR_BuddyPress {
 		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
 		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
 
-		// Settings
-		add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
-		add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'   );
-
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
