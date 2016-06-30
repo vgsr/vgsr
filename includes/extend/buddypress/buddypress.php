@@ -77,6 +77,8 @@ class VGSR_BuddyPress {
 	 */
 	private function includes() {
 		require( $this->includes_dir . 'actions.php'   );
+		require( $this->includes_dir . 'activity.php'  );
+		require( $this->includes_dir . 'filters.php'   );
 		require( $this->includes_dir . 'functions.php' );
 		require( $this->includes_dir . 'settings.php'  );
 	}
@@ -120,13 +122,6 @@ class VGSR_BuddyPress {
 		add_action( 'bp_member_header_actions',          array( $this, 'add_member_header_actions'  )        );
 		add_action( 'bp_members_directory_member_types', array( $this, 'add_members_directory_tabs' )        );
 		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
-
-		// Activity
-		add_filter( 'bp_after_has_activities_parse_args',               array( $this, 'activity_comments_in_stream'       )        );
-		add_filter( 'bp_activity_custom_post_type_post_action',         array( $this, 'activity_post_type_post_action'    ), 10, 2 );
-		add_filter( 'bp_blogs_format_activity_action_new_blog_post',    array( $this, 'activity_post_type_post_action'    ), 10, 2 );
-		add_filter( 'bp_activity_custom_post_type_comment_action',      array( $this, 'activity_post_type_comment_action' ), 10, 2 );
-		add_filter( 'bp_blogs_format_activity_action_new_blog_comment', array( $this, 'activity_post_type_comment_action' ), 10, 2 );
 
 		// Pages & Templates
 		add_filter( 'bp_get_template_part',                      array( $this, 'get_template_part'          ), 20, 3 );
@@ -863,198 +858,6 @@ class VGSR_BuddyPress {
 		}
 
 		return $query_string;
-	}
-
-	/** Activity ***********************************************************/
-
-	/**
-	 * Modify the arguments of 'has_activities' after parsing defaults to
-	 * bring activity comments into the stream.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $args Parsed args
-	 * @return array Parsed args
-	 */
-	public function activity_comments_in_stream( $args ) {
-
-		// Force activity comment items to be displayed in the stream. The
-		// default is 'threaded', which stacks comments to their parent item.
-		$args['display_comments'] = 'stream';
-
-		return $args;
-	}
-
-	/**
-	 * Modify the activity action displayed for custom post type posts
-	 *
-	 * @since 0.1.0
-	 *
-	 * @see bp_activity_format_activity_action_custom_post_type_post()
-	 * @see bp_blogs_format_activity_action_new_blog_post()
-	 *
-	 * @uses bp_core_get_userlink()
-	 * @uses get_post()
-	 * @uses get_permalink()
-	 * @uses get_the_title()
-	 * @uses bp_get_activity_meta()
-	 * @uses bp_activity_get_post_types_tracking_args()
-	 *
-	 * @param string $action Action string value
-	 * @param BP_Activity_Activity $activity Activity data object
-	 * @return string Action
-	 */
-	public function activity_post_type_post_action( $action, $activity ) {
-
-		// Remove the 'on the site {$site}' part when the post is displayed on the
-		// site it was actually written on.
-		if ( is_multisite() && get_current_blog_id() === (int) $activity->item_id ) {
-			$bp = buddypress();
-
-			// Get post object
-			$post_id = (int) $activity->secondary_item_id;
-			$post    = get_post( $post_id );
-
-			// Get post link and title
-			$post_url   = get_permalink( $post->ID );
-			$post_title = get_the_title( $post->ID );
-
-			// Default to the registered primary link
-			if ( empty( $post_url ) ) {
-				$post_url = $activity->primary_link;
-			}
-
-			// Default to registered post title
-			if ( empty( $post_title ) ) {
-
-				// Should be the case when the comment has just been published
-				if ( isset( $activity->post_title ) ) {
-					$post_title = $activity->post_title;
-
-				// If activity already exists try to get the post title from activity meta
-				} elseif ( ! empty( $activity->id ) ) {
-					$post_title = bp_activity_get_meta( $activity->id, 'post_title' );
-				}
-			}
-
-			// Define action parameters
-			$post_link = '<a href="' . esc_url( $post_url ) . '">' . $post_title . '</a>';
-			$user_link = bp_core_get_userlink( $activity->user_id );
-
-			// Get post types tracking args
-			if ( empty( $bp->activity->track ) ) {
-				$bp->activity->track = bp_activity_get_post_types_tracking_args();
-			}
-
-			// Get action post type tracking details
-			$track = $bp->activity->track[ $activity->type ];
-
-			// Use the single site equivalent when there is an explicit post type action set
-			if ( ! empty( $track->new_post_type_action_ms ) && ! empty( $track->new_post_type_action ) ) {
-				$action = sprintf( $track->new_post_type_action, $user_link, esc_url( $post_url ) );
-
-			/**
-			 * Object is a 'post'. See {@link bp_blogs_format_activity_action_new_blog_post()}.
-			 */
-			} elseif ( 'post' == $post->post_type ) {
-				$action = sprintf( __( '%1$s wrote a new post, %2$s', 'buddypress' ), $user_link, $post_link );
-
-			/**
-			 * Default to 'item'. See {@link bp_activity_format_activity_action_custom_post_type_post()}.
-			 */
-			} else {
-				$action = sprintf( _x( '%1$s wrote a new <a href="%2$s">item</a>', 'Activity Custom Post Type post action', 'buddypress' ), $user_link, esc_url( $post_url ) );
-			}
-		}
-
-		return $action;
-	}
-
-	/**
-	 * Modify the activity action displayed for custom post type comments
-	 *
-	 * @since 0.1.0
-	 *
-	 * @see bp_activity_format_activity_action_custom_post_type_comment()
-	 * @see bp_blogs_format_activity_action_new_blog_comment()
-	 *
-	 * @uses bp_core_get_userlink()
-	 * @uses get_comment()
-	 * @uses get_post()
-	 * @uses get_permalink()
-	 * @uses get_the_title()
-	 * @uses bp_get_activity_meta()
-	 * @uses bp_activity_get_post_types_tracking_args()
-	 *
-	 * @param string $action Action string value
-	 * @param BP_Activity_Activity $activity Activity data object
-	 * @return string Action
-	 */
-	public function activity_post_type_comment_action( $action, $activity ) {
-
-		// Remove the 'on the site {$site}' part when the comment is displayed on the
-		// site it was actually written on.
-		if ( is_multisite() && get_current_blog_id() === (int) $activity->item_id ) {
-			$bp = buddypress();
-
-			// Get comment and post objects
-			$comment_id = (int) $activity->secondary_item_id;
-			$comment    = get_comment( $comment_id );
-			$post       = get_post( $comment->comment_post_ID );
-
-			// Get post link and title
-			$post_url   = get_permalink( $post->ID );
-			$post_title = get_the_title( $post->ID );
-
-			// Default to the registered primary link
-			if ( empty( $post_url ) ) {
-				$post_url = $activity->primary_link;
-			}
-
-			// Default to registered post title
-			if ( empty( $post_title ) ) {
-
-				// Should be the case when the comment has just been published
-				if ( isset( $activity->post_title ) ) {
-					$post_title = $activity->post_title;
-
-				// If activity already exists try to get the post title from activity meta
-				} elseif ( ! empty( $activity->id ) ) {
-					$post_title = bp_activity_get_meta( $activity->id, 'post_title' );
-				}
-			}
-
-			// Define action parameters
-			$post_link = '<a href="' . esc_url( $post_url ) . '">' . $post_title . '</a>';
-			$user_link = bp_core_get_userlink( $activity->user_id );
-
-			// Get post types tracking args
-			if ( empty( $bp->activity->track ) ) {
-				$bp->activity->track = bp_activity_get_post_types_tracking_args();
-			}
-
-			// Get action post type tracking details
-			$track = $bp->activity->track[ $activity->type ];
-
-			// Use the single site equivalent when there is an explicit post type action set
-			if ( ! empty( $track->new_post_type_comment_action_ms ) && ! empty( $track->new_post_type_comment_action ) ) {
-				$action = sprintf( $track->new_post_type_comment_action, $user_link, esc_url( $post_url ) );
-
-			/**
-			 * Object is a 'post'. See {@link bp_blogs_format_activity_action_new_blog_comment()}
-			 */
-			} elseif ( 'post' == $post->post_type ) {
-				$action = sprintf( __( '%1$s commented on the post, %2$s', 'buddypress' ), $user_link, $post_link );
-
-			/**
-			 * Default to 'item'. See {@link bp_activity_format_activity_action_custom_post_type_comment()}.
-			 */
-			} else {
-				$action = sprintf( _x( '%1$s commented on the <a href="%2$s">item</a>', 'Activity Custom Post Type post comment action', 'buddypress' ), $user_link, esc_url( $post_url ) );
-			}
-		}
-
-		return $action;
 	}
 
 	/** Users **************************************************************/
