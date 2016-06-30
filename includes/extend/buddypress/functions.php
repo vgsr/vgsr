@@ -159,8 +159,9 @@ function vgsr_bp_get_total_member_count( $args = array() ) {
  *
  * @since 0.1.0
  *
+ * @uses apply_filters() Calls 'vgsr_bp_block_activity_posting'
  * @return bool Activity posting is blocked
  */
-function vgsr_bp_is_activity_posting_blocked() {
-	return true;
+function vgsr_bp_block_activity_posting() {
+	return apply_filters( 'vgsr_bp_block_activity_posting', true );
 }
