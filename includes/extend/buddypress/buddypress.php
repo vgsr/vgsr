@@ -88,20 +88,16 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses bp_is_active() To check for active components
 	 * @uses add_action()
 	 * @uses add_filter()
 	 */
 	private function setup_actions() {
 
-		// Define member types. Dedicated hook per BP 2.3+
-		$member_type_hook = function_exists( 'bp_has_member_type' ) ? 'bp_register_member_types' : 'bp_loaded';
-		add_action( $member_type_hook, array( $this, 'register_member_types' ) );
-
-		// Define vgsr membership by member type
-		add_filter( 'is_user_vgsr',   array( $this, 'is_user_vgsr'   ), 10, 2 );
-		add_filter( 'is_user_lid',    array( $this, 'is_user_lid'    ), 10, 2 );
-		add_filter( 'is_user_oudlid', array( $this, 'is_user_oudlid' ), 10, 2 );
+		// Define member types and define user checks
+		add_action( 'bp_register_member_types', array( $this, 'register_member_types' )        );
+		add_filter( 'is_user_vgsr',             array( $this, 'is_user_vgsr'          ), 10, 2 );
+		add_filter( 'is_user_lid',              array( $this, 'is_user_lid'           ), 10, 2 );
+		add_filter( 'is_user_oudlid',           array( $this, 'is_user_oudlid'        ), 10, 2 );
 
 		// Hide most of BP for non-vgsr
 		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
