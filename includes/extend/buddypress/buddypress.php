@@ -1038,9 +1038,11 @@ class VGSR_BuddyPress {
 
 			// Use the single site equivalent when there is an explicit post type action set
 			if ( ! empty( $track->new_post_type_comment_action_ms ) && ! empty( $track->new_post_type_comment_action ) ) {
-				$action = sprintf( $track->new_post_type_comment_action, $user_link, $post_url );
+				$action = sprintf( $track->new_post_type_comment_action, $user_link, esc_url( $post_url ) );
 
-			// Object is a 'post'
+			/**
+			 * Object is a 'post'. See {@link bp_blogs_format_activity_action_new_blog_comment()}
+			 */
 			} elseif ( 'post' == $post->post_type ) {
 				$action = sprintf( __( '%1$s commented on the post, %2$s', 'buddypress' ), $user_link, $post_link );
 
@@ -1048,7 +1050,7 @@ class VGSR_BuddyPress {
 			 * Default to 'item'. See {@link bp_activity_format_activity_action_custom_post_type_comment()}.
 			 */
 			} else {
-				$action = sprintf( _x( '%1$s commented on the <a href="%2$s">item</a>', 'Activity Custom Post Type post comment action', 'buddypress' ), $user_link, $post_url );
+				$action = sprintf( _x( '%1$s commented on the <a href="%2$s">item</a>', 'Activity Custom Post Type post comment action', 'buddypress' ), $user_link, esc_url( $post_url ) );
 			}
 		}
 
