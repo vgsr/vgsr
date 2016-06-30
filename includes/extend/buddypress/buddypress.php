@@ -884,7 +884,7 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Modify the activity action for custom post type comments
+	 * Modify the activity action displayed for custom post type comments
 	 *
 	 * @since 0.1.0
 	 *
@@ -897,25 +897,18 @@ class VGSR_BuddyPress {
 	 * @uses get_permalink()
 	 * @uses get_the_title()
 	 * @uses bp_get_activity_meta()
+	 * @uses bp_activity_get_post_types_tracking_args()
 	 *
 	 * @param string $action Action string value
 	 * @param BP_Activity_Activity $activity Activity data object
 	 * @return string Action
 	 */
 	public function activity_post_type_comment_action( $action, $activity ) {
-		$bp = buddypress();
 
 		// Remove the 'on the site {$site}' part when the comment is displayed on the
-		// blog it was written on. Override only when there is no explicit post type
-		// action set.
-		if ( is_multisite()
-
-			// The comment was made on the current blog
-			&& get_current_blog_id() == $activity->item_id
-
-			// There is no explicit post type action set
-			&& empty( $bp->activity->track[ $activity->type ]->new_post_type_comment_action_ms )
-		) {
+		// site it was actually written on.
+		if ( is_multisite() && get_current_blog_id() === (int) $activity->item_id ) {
+			$bp = buddypress();
 
 			// Get comment and post objects
 			$comment_id = (int) $activity->secondary_item_id;
@@ -948,11 +941,27 @@ class VGSR_BuddyPress {
 			$post_link = '<a href="' . esc_url( $post_url ) . '">' . $post_title . '</a>';
 			$user_link = bp_core_get_userlink( $activity->user_id );
 
-			// Redefine action per post type
-			if ( 'post' == $post->post_type ) {
+			// Get post types tracking args
+			if ( empty( $bp->activity->track ) ) {
+				$bp->activity->track = bp_activity_get_post_types_tracking_args();
+			}
+
+			// Get action post type tracking details
+			$track = $bp->activity->track[ $activity->type ];
+
+			// Use the single site equivalent when there is an explicit post type action set
+			if ( ! empty( $track->new_post_type_comment_action_ms ) && ! empty( $track->new_post_type_comment_action ) ) {
+				$action = sprintf( $track->new_post_type_comment_action, $user_link, $post_url );
+
+			// Object is a 'post'
+			} elseif ( 'post' == $post->post_type ) {
 				$action = sprintf( __( '%1$s commented on the post, %2$s', 'buddypress' ), $user_link, $post_link );
+
+			/**
+			 * Default to 'item'. See {@link bp_activity_format_activity_action_custom_post_type_comment()}.
+			 */
 			} else {
-				$action = sprintf( __( '%1$s commented on the %3$s, %2$s', 'vgsr' ), $user_link, $post_link, $post->post_type );
+				$action = sprintf( _x( '%1$s commented on the <a href="%2$s">item</a>', 'Activity Custom Post Type post comment action', 'buddypress' ), $user_link, $post_url );
 			}
 		}
 
