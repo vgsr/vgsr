@@ -99,13 +99,6 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_lid',              array( $this, 'is_user_lid'           ), 10, 2 );
 		add_filter( 'is_user_oudlid',           array( $this, 'is_user_oudlid'        ), 10, 2 );
 
-		// Hide most of BP for non-vgsr
-		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
-		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After members component setup
-		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )        );
-		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
-		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
-
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
 
@@ -121,6 +114,27 @@ class VGSR_BuddyPress {
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
 		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
+
+		// Hide most of BP for non-vgsr
+		$this->hide_bp();
+	}
+
+	/**
+	 * Setup actions and filters to hide BP for non-vgsr users
+	 *
+	 * @since 0.1.0
+	 */
+	private function hide_bp() {
+
+		// Bail when the user can manage BP, but is non-vgsr (e.g. when testing)
+		if ( bp_current_user_can( 'bp_moderate' ) )
+			return;
+		
+		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
+		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After Members component setup
+		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )        );
+		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
+		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
 	}
 
 	/** Hide BP ************************************************************/
