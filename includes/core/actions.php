@@ -37,7 +37,7 @@ defined( 'ABSPATH' ) || exit;
  *
  *           v--WordPress Actions    v--VGSR Sub-actions
  */
-add_action( 'plugins_loaded',        'vgsr_loaded',           10 );
+add_action( 'plugins_loaded',        'vgsr_loaded',           20 );
 add_action( 'init',                  'vgsr_init',             0  ); // Early for vgsr_register
 add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menu'       );
 add_action( 'wp_head',               'vgsr_manifest_meta_tag'    );
