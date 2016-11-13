@@ -133,7 +133,7 @@ function vgsr_setting_callback_private_reading_post_types() {
 	// Get the saved post types
 	$option = vgsr_get_private_reading_post_types(); ?>
 
-	<p><?php _e( 'Select the post types of which users in VGSR groups will read posts that are privately published.', 'vgsr' ); ?></p>
+	<p><?php _e( 'Select the post types of which VGSR users will read posts that are privately published.', 'vgsr' ); ?></p>
 	<ul>
 		<?php foreach ( $wp_post_types as $post_type ) : ?>
 
@@ -263,15 +263,6 @@ function vgsr_admin_page_help() {
 						'</ul>' .
 					 '</p>' .
 					 '<p>' . __( 'You must click the Save Changes button at the bottom of the screen for new settings to take effect.', 'vgsr' ) . '</p>'
-	) );
-
-	// Groupz Settings
-	$current_screen->add_help_tab( array(
-		'id'      => 'groupz_settings',
-		'title'   => __( 'Per Page', 'vgsr' ),
-		'content' => '<p>' . __( 'Per Page settings allow you to control the number of topics and replies appear on each page.',                                                    'vgsr' ) . '</p>' .
-					 '<p>' . __( 'This is comparable to the WordPress "Reading Settings" page, where you can set the number of posts that should show on blog pages and in feeds.', 'vgsr' ) . '</p>' .
-					 '<p>' . __( 'These are broken up into two separate groups: one for what appears in your theme, another for RSS feeds.',                                        'vgsr' ) . '</p>'
 	) );
 
 	// Help Sidebar

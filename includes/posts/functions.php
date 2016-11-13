@@ -148,7 +148,7 @@ function vgsr_post_types() {
  */
 function _vgsr_post_query( $query ) {
 
-	// Bail when current user _is_ VGSR
+	// Bail when current user is VGSR
 	if ( is_user_vgsr() )
 		return $query;
 

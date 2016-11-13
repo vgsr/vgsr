@@ -63,11 +63,6 @@ class VGSR_BuddyPress {
 			'messages',
 			'notifications'
 		) );
-
-		/** Supports *******************************************************/
-
-		// BP Group Hierarchy plugin
-		$this->bp_group_hierarchy = defined( 'BP_GROUP_HIERARCHY_VERSION' );
 	}
 
 	/**
@@ -87,9 +82,6 @@ class VGSR_BuddyPress {
 	 * Setup default actions and filters
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses add_action()
-	 * @uses add_filter()
 	 */
 	private function setup_actions() {
 
@@ -119,6 +111,8 @@ class VGSR_BuddyPress {
 		$this->hide_bp();
 	}
 
+	/** Hide BP ************************************************************/
+
 	/**
 	 * Setup actions and filters to hide BP for non-vgsr users
 	 *
@@ -136,8 +130,6 @@ class VGSR_BuddyPress {
 		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
 		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
 	}
-
-	/** Hide BP ************************************************************/
 
 	/**
 	 * Hide exclusive BuddyPress pages for the unpriviledged
@@ -285,9 +277,12 @@ class VGSR_BuddyPress {
 
 			$class = $bp->{$component};
 
-			// Unhook default added component actions
-			// Keep component globals and included files
-			// See BP_Component::setup_actions()
+			/**
+			 * Unhook default added component actions, but keep component
+			 * globals and included files.
+			 * 
+			 * @see BP_Component::setup_actions()
+			 */
 
 			// Remove core component hooks for current user
 			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
@@ -396,208 +391,11 @@ class VGSR_BuddyPress {
 
 		switch ( $cap ) {
 			case 'vgsr_settings_bp_general' :
-			case 'vgsr_settings_bp_groups'  :
 				$caps = array( vgsr()->admin->minimum_capability );
 				break;
 		}
 
 		return $caps;
-	}
-
-	/** Groups *************************************************************/
-
-	/**
-	 * The following code in this section is legacy stuff since the
-	 * introduction and use of the Member Type API. Though the logic
-	 * will remain here for a while for it may be considered valuable
-	 * in future projects.
-	 *
-	 *  // Groups Component
-	 *  if ( bp_is_active( 'groups' ) ) {
-	 *  	add_filter( 'is_user_vgsr',   array( $this, 'in_vgsr_group'     ), 10, 2 );
-	 *  	add_filter( 'is_user_lid',    array( $this, 'in_leden_group'    ), 10, 2 );
-	 *  	add_filter( 'is_user_oudlid', array( $this, 'in_oudleden_group' ), 10, 2 );
-	 *  }
-	 */
-
-	/**
-	 * Return the oud-leden group ID
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses get_site_option()
-	 *
-	 * @return int Oud-leden group ID
-	 */
-	public function vgsr_group_id() {
-		return (int) get_site_option( 'vgsr_bp_group_vgsr', 0 );
-	}
-
-	/**
-	 * Return the oud-leden group ID
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses get_site_option()
-	 *
-	 * @return int Oud-leden group ID
-	 */
-	public function leden_group_id() {
-		return (int) get_site_option( 'vgsr_bp_group_leden', 0 );
-	}
-
-	/**
-	 * Return the oud-leden group ID
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses get_site_option()
-	 *
-	 * @return int Oud-leden group ID
-	 */
-	public function oudleden_group_id() {
-		return (int) get_site_option( 'vgsr_bp_group_oudleden', 0 );
-	}
-
-	/**
-	 * Return whether the given user is member of (a) BuddyPress group(s)
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses groups_get_groups()
-	 * @uses VGSR_BuddyPress::get_group_hierarchy()
-	 *
-	 * @param int|array $group_id Group ID or ids
-	 * @param int $user_id User ID
-	 * @return bool User is group member
-	 */
-	public function user_in_group( $group_id = 0, $user_id = null ) {
-		global $wpdb;
-
-		// Bail when no group was provided
-		if ( empty( $group_id ) )
-			return false;
-
-		// Default to the current user
-		if ( null === $user_id ) {
-			$user_id = get_current_user_id();
-		}
-
-		$group_id = array_map( 'intval', (array) $group_id );
-		$user_id  = (int) $user_id;
-
-		// Ensure BP is setup to use its logic
-		if ( ! did_action( 'bp_init' ) ) {
-			bp_init();
-		}
-
-		// Find any group memberships
-		$groups = groups_get_groups( array( 
-			'user_id'         => $user_id,
-			'include'         => $this->get_group_hierarchy( $group_id ),
-			'show_hidden'     => true,
-			'per_page'        => false,
-			'populate_extras' => false
-		) );
-
-		// Return whether any membership was found
-		return ! empty( $groups['groups'] );
-	}
-
-	/**
-	 * Return all groups in the group hierarchy when it's active
-	 *
-	 * @since 0.0.7
-	 *
-	 * @uses BP_Groups_Hierarchy::has_children()
-	 * @uses VGSR_BuddyPress::vgsr_group_id()
-	 * @uses VGSR_BuddyPress::leden_group_id()
-	 * @uses VGSR_BuddyPress::oudleden_group_id()
-	 *
-	 * @param int|array $group_ids Group ID or ids
-	 * @return array Group ids
-	 */
-	public function get_group_hierarchy( $group_ids ) {
-
-		// Force array
-		$group_ids = (array) $group_ids;
-
-		// Account for group hierarchy
-		if ( $this->bp_group_hierarchy ) {
-
-			/**
-			 * Use the ArrayIterator class to dynamically walk all array elements 
-			 * while adding new items to that array for continued iteration.
-			 */
-			$hierarchy = new ArrayIterator( $group_ids );
-			foreach ( $hierarchy as $gid ) {
-
-				// Add child group ids when found
-				if ( ! empty( $gid ) && ( $children = @BP_Groups_Hierarchy::has_children( $gid ) ) ) {
-					foreach ( $children as $child_id ) {
-						$hierarchy->append( (int) $child_id );
-					}
-				}
-			}
-
-			// Set hierarchy group id collection
-			$group_ids = $hierarchy->getArrayCopy();
-		}
-
-		// Ensure leden + oud-leden are checked as well
-		if ( $this->vgsr_group_id() === $group_id ) {
-			$hierarchy += array( $this->leden_group_id(), $this->oudleden_group_id() );
-		}
-
-		return array_unique( $group_ids );
-	}
-
-	/**
-	 * Return whether the given user is member of the vgsr group
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses VGSR_BuddyPress::user_in_group()
-	 * @uses VGSR_BuddyPress::vgsr_group_id()
-	 *
-	 * @param bool $is User validation
-	 * @param int $user_id User ID
-	 * @return int User is member of VGSR group
-	 */
-	public function in_vgsr_group( $is, $user_id = null ) {
-		return ( $is ? $is : $this->user_in_group( $this->vgsr_group_id(), $user_id ) );
-	}
-
-	/**
-	 * Return whether the given user is member of the leden group
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses VGSR_BuddyPress::user_in_group()
-	 * @uses VGSR_BuddyPress::leden_group_id()
-	 *
-	 * @param bool $is User validation
-	 * @param int $user_id User ID
-	 * @return int User is member of Leden group
-	 */
-	public function in_leden_group( $is, $user_id = null ) {
-		return ( $is ? $is : $this->user_in_group( $this->leden_group_id(), $user_id ) );
-	}
-
-	/**
-	 * Return whether the given user is member of the oud-leden group
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses VGSR_BuddyPress::user_in_group()
-	 * @uses VGSR_BuddyPress::oudleden_group_id()
-	 *
-	 * @param bool $is User validation
-	 * @param int $user_id User ID
-	 * @return int User is member of Oud-leden group
-	 */
-	public function in_oudleden_group( $is, $user_id = null ) {
-		return ( $is ? $is : $this->user_in_group( $this->oudleden_group_id(), $user_id ) );
 	}
 
 	/** Member Types *******************************************************/
@@ -1074,7 +872,7 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Modify the directory page's page title
+	 * Modify the directory page's title
 	 *
 	 * @since 0.1.0
 	 *

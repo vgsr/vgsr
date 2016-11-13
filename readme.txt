@@ -29,6 +29,9 @@ VGSR is designed, used and maintained to support vgsr.nl and bring in to its ful
 
 == Changelog ==
 
+= 0.1.0 =
+* Replaced group-based is_user_*() logic wiith BuddyPress member-type based logic
+
 = 0.0.7 =
 * Improved the plugin for Network context (admin, settings)
 * Improved VGSR-only for Gravity Forms

@@ -10,7 +10,7 @@
  */
 
 /**
- * Add private read caps to user in VGSR groups
+ * Add private read caps to VGSR users
  *
  * @since 0.0.6
  *
@@ -34,7 +34,7 @@ function vgsr_user_add_private_caps( $user_id = 0 ) {
 }
 
 /**
- * Remove private read caps from user in VGSR groups
+ * Remove private read caps from VGSR users
  *
  * @since 0.0.6
  *

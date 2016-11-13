@@ -37,7 +37,7 @@ class VGSR_Ancienniteit {
 	/** Methods ************************************************************/
 
 	/**
-	 * Add ancienniteit BP groups settings field
+	 * Add ancienniteit settings field
 	 *
 	 * @since 0.0.3
 	 * 

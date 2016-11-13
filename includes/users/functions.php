@@ -28,7 +28,7 @@ function vgsr_get_current_user_id() {
 /** Is Functions **********************************************************/
 
 /**
- * Return whether a given user is in any VGSR group
+ * Return whether a given user is marked as VGSR
  *
  * @since 0.0.1
  *
@@ -48,14 +48,14 @@ function is_user_vgsr( $user_id = 0 ) {
 }
 
 /**
- * Return whether a given user is in the leden group
+ * Return whether a given user is marked as Lid
  *
  * @since 0.0.1
  *
  * @uses apply_filters() Calls 'is_user_lid'
  * 
  * @param int $user_id User ID. Defaults to current user
- * @return boolean User is lid
+ * @return boolean User is Lid
  */
 function is_user_lid( $user_id = 0 ) {
 
@@ -68,14 +68,14 @@ function is_user_lid( $user_id = 0 ) {
 }
 
 /**
- * Return whether a given user is in the oud-leden group
+ * Return whether a given user is marked as Oud-lid
  *
  * @since 0.0.1
  *
  * @uses apply_filters() Calls 'is_user_oudlid'
  * 
  * @param int $user_id User ID. Defaults to current user
- * @return boolean User is oud-lid
+ * @return boolean User is Oud-lid
  */
 function is_user_oudlid( $user_id = 0 ) {
 
