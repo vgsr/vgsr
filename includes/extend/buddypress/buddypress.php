@@ -1046,7 +1046,7 @@ class VGSR_BuddyPress {
 
 		// When blocking custom activity posting, prevent loading the Activity post form
 		if ( vgsr_bp_block_activity_posting() && 'activity/post-form' == $slug ) {
-			$templates = array();
+			$templates = array( '' );
 		}
 
 		return $templates;
