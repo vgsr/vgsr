@@ -579,8 +579,9 @@ class VGSR_BuddyPress {
 	public function legacy_ajax_querystring( $query_string, $object, $object_filter, $object_scope, $object_page, $object_search_terms, $object_extras ) {
 
 		// Handle the members member type scope
-		if ( 'members' == $object && 0 == strpos( $object_scope, 'member_type_' ) ) {
-			$member_type = bp_get_member_type_object( str_replace( 'member_type_', '', $object_scope ) );
+		if ( 'members' == $object && 0 == strpos( $object_scope, 'vgsr_member_type_' ) ) {
+			$member_type = str_replace( 'vgsr_member_type_', '', $object_scope );
+			$member_type = bp_get_member_type_object( $member_type );
 
 			// Query only member type'd users
 			if ( ! empty( $member_type ) ) {

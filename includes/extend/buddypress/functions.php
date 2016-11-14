@@ -58,7 +58,6 @@ function vgsr_bp_member_types() {
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_lid_member_type'
- *
  * @return string Lid member type name
  */
 function vgsr_bp_lid_member_type() {
@@ -71,7 +70,6 @@ function vgsr_bp_lid_member_type() {
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_oudlid_member_type'
- *
  * @return string Oud-lid member type name
  */
 function vgsr_bp_oudlid_member_type() {
@@ -84,7 +82,6 @@ function vgsr_bp_oudlid_member_type() {
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_exlid_member_type'
- *
  * @return string Oud-lid member type name
  */
 function vgsr_bp_exlid_member_type() {
@@ -178,18 +175,16 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 		// Define local variables
 		$tab   = '';
 		$count = 0;
+		$mt    = bp_get_member_type_object( $member_type );
 
-		// Get the member type object
-		$member_type_object = bp_get_member_type_object( $member_type );
-
-		if ( ! empty( $member_type_object ) ) {
+		if ( ! empty( $mt ) ) {
 
 			// Only display tab when there are members
-			if ( $count = vgsr_bp_get_total_member_count( array( 'member_type__in' => $member_type ) ) ) {
+			if ( $count = vgsr_bp_get_total_member_count( array( 'member_type__in' => $mt->name ) ) ) {
 				$tab = sprintf( '<li id="members-%s"><a href="%s">%s <span>%s</span></a></li>',
-					"member_type_{$member_type_object->name}",
-					esc_url( bp_get_member_type_directory_permalink( $member_type ) ),
-					$member_type_object->labels['name'],
+					"vgsr_member_type_{$mt->name}", // The scope part (cannot have any dashes in it!)
+					esc_url( bp_get_member_type_directory_permalink( $mt->name ) ),
+					$mt->labels['name'],
 					$count
 				);
 			}
