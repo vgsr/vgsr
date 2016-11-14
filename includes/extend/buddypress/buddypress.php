@@ -107,53 +107,12 @@ class VGSR_BuddyPress {
 		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 
-		// Hide most of BP for non-vgsr
-		$this->hide_bp();
+		// Hide BuddyPress for non-vgsr
+		add_filter( 'is_buddypress', array( $this, 'is_buddypress' )    );
+		add_action( 'bp_init',       array( $this, 'hide_bp'       ), 1 );
 	}
 
 	/** Hide BP ************************************************************/
-
-	/**
-	 * Setup actions and filters to hide BP for non-vgsr users
-	 *
-	 * @since 0.1.0
-	 */
-	private function hide_bp() {
-
-		// Bail when the user can manage BP, but is non-vgsr (e.g. when testing)
-		if ( bp_current_user_can( 'bp_moderate' ) )
-			return;
-		
-		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
-		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After Members component setup
-		add_filter( 'is_buddypress',            array( $this, 'is_buddypress'            )        );
-		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
-		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
-	}
-
-	/**
-	 * Block exclusive BuddyPress pages for non-vgsr
-	 *
-	 * @since 0.1.0
-	 */
-	public function bp_no_access() {
-
-		// Set the page to 404 when:
-		// ... this is a BP page
-		// ... AND the user is not VGSR or a guest
-		if ( is_buddypress() && ! is_user_vgsr() ) {
-
-			// Make an exception when:
-			// ... this is the user's own profile AND this is a common component
-			// ... OR this is the registration page
-			// ... OR this is the activation page
-			if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
-				return;
-
-			// Let BP handle the redirection (default = wp-login.php)
-			bp_core_no_access();
-		}
-	}
 
 	/**
 	 * Modify the return value for `is_buddypress()`
@@ -173,6 +132,25 @@ class VGSR_BuddyPress {
 		}
 
 		return $is;
+	}
+
+	/**
+	 * Setup actions and filters to hide BP for non-vgsr users
+	 *
+	 * @since 0.1.0
+	 *
+	 * @todo Invalidate BP's items in nav menus for non-vgsr
+	 */
+	public function hide_bp() {
+
+		// Bail when the user can manage BP, but is non-vgsr (e.g. when testing)
+		if ( bp_current_user_can( 'bp_moderate' ) )
+			return;
+		
+		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
+		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After Members component setup
+		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
+		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
 	}
 
 	/**
@@ -204,6 +182,30 @@ class VGSR_BuddyPress {
 		$is = in_array( $component, $this->vgsr_bp_components() );
 
 		return $is;
+	}
+
+	/**
+	 * Block exclusive BuddyPress pages for non-vgsr
+	 *
+	 * @since 0.1.0
+	 */
+	public function bp_no_access() {
+
+		// Set the page to 404 when:
+		// ... this is a BP page
+		// ... AND the user is not VGSR or a guest
+		if ( is_buddypress() && ! is_user_vgsr() ) {
+
+			// Make an exception when:
+			// ... this is the user's own profile AND this is a common component
+			// ... OR this is the registration page
+			// ... OR this is the activation page
+			if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
+				return;
+
+			// Let BP handle the redirection (default = wp-login.php)
+			bp_core_no_access();
+		}
 	}
 
 	/**
