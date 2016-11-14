@@ -401,106 +401,29 @@ class VGSR_BuddyPress {
 	/** Member Types *******************************************************/
 
 	/**
-	 * Return the collection of VGSR member types
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses apply_filters() Calls 'vgsr_bp_member_types'
-	 * @return array Member type data
-	 */
-	public function vgsr_member_types() {
-		return (array) apply_filters( 'vgsr_bp_member_types', array(
-
-			// Lid
-			$this->lid_member_type() => array(
-				'labels' => array(
-					'name'          => __( 'Leden', 'vgsr' ),
-					'singular_name' => __( 'Lid',   'vgsr' ),
-					'plural_name'   => __( 'Leden', 'vgsr' ),
-				)
-			),
-
-			// Oud-lid
-			$this->oudlid_member_type() => array(
-				'labels' => array(
-					'name'          => __( 'Oud-leden', 'vgsr' ),
-					'singular_name' => __( 'Oud-lid',   'vgsr' ),
-					'plural_name'   => __( 'Oud-leden', 'vgsr' ),
-				)
-			),
-
-			// Ex-lid
-			$this->exlid_member_type() => array(
-				'labels' => array(
-					'name'          => __( 'Ex-leden', 'vgsr' ),
-					'singular_name' => __( 'Ex-lid',   'vgsr' ),
-					'plural_name'   => __( 'Ex-leden', 'vgsr' ),
-				)
-			),
-		) );
-	}
-
-	/**
-	 * Return the member type for lid
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses apply_filters() Calls 'vgsr_bp_lid_member_type'
-	 *
-	 * @return string Lid member type name
-	 */
-	public function lid_member_type() {
-		return apply_filters( 'vgsr_bp_lid_member_type', 'lid' );
-	}
-
-	/**
-	 * Return the member type for oud-lid
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses apply_filters() Calls 'vgsr_bp_oudlid_member_type'
-	 *
-	 * @return string Oud-lid member type name
-	 */
-	public function oudlid_member_type() {
-		return apply_filters( 'vgsr_bp_oudlid_member_type', 'oudlid' );
-	}
-
-	/**
-	 * Return the member type for ex-lid
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses apply_filters() Calls 'vgsr_bp_exlid_member_type'
-	 *
-	 * @return string Oud-lid member type name
-	 */
-	public function exlid_member_type() {
-		return apply_filters( 'vgsr_bp_exlid_member_type', 'exlid' );
-	}
-
-	/**
 	 * Register VGSR member types
 	 *
 	 * Since BP 2.2.0
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress:vgsr_member_types()
+	 * @uses vgsr_bp_member_types()
 	 * @uses bp_register_member_type()
 	 */
 	public function register_member_types() {
 
 		// Walk our member types
-		foreach ( $this->vgsr_member_types() as $type => $data ) {
+		foreach ( vgsr_bp_member_types() as $type => $args ) {
 
 			// Register the member type
-			bp_register_member_type( $type, $data );
+			bp_register_member_type( $type, $args );
 		}
 	}
 
 	/**
 	 * Return whether the given user has the given member type
+	 *
+	 * Ensures that the member-type taxonomy is registered before using it.
 	 *
 	 * @since 0.1.0
 	 *
@@ -534,11 +457,10 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::oudlid_member_type()
-	 * @uses VGSR_BuddyPress::exlid_member_type()
-	 * @uses is_user_lid()
+	 * @uses vgsr_bp_oudlid_member_type()
+	 * @uses vgsr_bp_exlid_member_type()
 	 * @uses bp_remove_member_type()
-	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @uses vgsr_bp_lid_member_type()
 	 *
 	 * @param int $user_id User ID
 	 * @param string $member_type Member type name
@@ -546,9 +468,9 @@ class VGSR_BuddyPress {
 	 */
 	public function set_member_type( $user_id, $member_type, $append ) {
 
-		// Remove the lid member type for new oud-lid or ex-lid members
-		if ( in_array( $member_type, array( $this->oudlid_member_type(), $this->exlid_member_type() ) ) && is_user_lid( $user_id ) ) {
-			bp_remove_member_type( $user_id, $this->lid_member_type() );
+		// When assigning Oud-lid or Ex-lid member types, remove the Lid member type
+		if ( in_array( $member_type, array( vgsr_bp_oudlid_member_type(), vgsr_bp_exlid_member_type() ) ) ) {
+			bp_remove_member_type( $user_id, vgsr_bp_lid_member_type() );
 		}
 	}
 
@@ -565,53 +487,53 @@ class VGSR_BuddyPress {
 	 * @uses is_user_lid()
 	 * @uses vgsr_bp_get_member_type_promote_url()
 	 * @uses bp_get_member_type_object()
-	 * @uses VGSR_BuddyPress::lid_member_type()
-	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @uses vgsr_bp_lid_member_type()
+	 * @uses vgsr_bp_oudlid_member_type()
 	 */
 	public function add_member_header_actions() {
 
-		// For moderators
-		if ( bp_current_user_can( 'bp_moderate' ) ) {
+		// Bail when the user cannot moderate
+		if ( ! bp_current_user_can( 'bp_moderate' ) )
+			return;
 
-			// Edit user in wp-admin link
+		// Edit user in wp-admin link
+		bp_button( array(
+			'id'                => 'dashboard_profile',
+			'component'         => 'members',
+			'must_be_logged_in' => true,
+			'block_self'        => false,
+			'link_href'         => add_query_arg( array( 'user_id' => bp_displayed_user_id() ), admin_url( 'user-edit.php' ) ),
+			'link_title'        => __( 'Edit this user in the admin.', 'vgsr' ),
+			'link_text'         => __( 'Dashboard Profile', 'vgsr' ),
+			'link_class'        => 'dashboard-profile'
+		) );
+
+		// Promote to Lid action
+		if ( ! is_user_vgsr( bp_displayed_user_id() ) ) {
 			bp_button( array(
-				'id'                => 'dashboard_profile',
+				'id'                => 'promote_member_lid',
 				'component'         => 'members',
 				'must_be_logged_in' => true,
-				'block_self'        => false,
-				'link_href'         => add_query_arg( array( 'user_id' => bp_displayed_user_id() ), admin_url( 'user-edit.php' ) ),
-				'link_title'        => __( 'Edit this user in the admin.', 'vgsr' ),
-				'link_text'         => __( 'Dashboard Profile', 'vgsr' ),
-				'link_class'        => 'dashboard-profile'
+				'block_self'        => true,
+				'link_href'         => vgsr_bp_get_member_type_promote_url( vgsr_bp_lid_member_type() ),
+				'link_title'        => __( 'Change the member type of this member.', 'vgsr' ),
+				'link_text'         => sprintf( __( 'Promote to %s', 'vgsr' ), bp_get_member_type_object( vgsr_bp_lid_member_type() )->labels['singular_name'] ),
+				'link_class'        => 'promote-member confirm'
 			) );
+		}
 
-			// Promote to lid action
-			if ( ! is_user_vgsr( bp_displayed_user_id() ) ) {
-				bp_button( array(
-					'id'                => 'promote_member_lid',
-					'component'         => 'members',
-					'must_be_logged_in' => true,
-					'block_self'        => true,
-					'link_href'         => vgsr_bp_get_member_type_promote_url( $this->lid_member_type() ),
-					'link_title'        => __( 'Change the member type of this member.', 'vgsr' ),
-					'link_text'         => sprintf( __( 'Promote to %s', 'vgsr' ), bp_get_member_type_object( $this->lid_member_type() )->labels['singular_name'] ),
-					'link_class'        => 'promote-member confirm'
-				) );
-			}
-
-			// Promote to oud-lid action
-			if ( ! is_user_oudlid( bp_displayed_user_id() ) ) {
-				bp_button( array(
-					'id'                => 'promote_member_oudlid',
-					'component'         => 'members',
-					'must_be_logged_in' => true,
-					'block_self'        => true,
-					'link_href'         => vgsr_bp_get_member_type_promote_url( $this->oudlid_member_type() ),
-					'link_title'        => __( 'Change the member type of this member.', 'vgsr' ),
-					'link_text'         => sprintf( __( 'Promote to %s', 'vgsr' ), bp_get_member_type_object( $this->oudlid_member_type() )->labels['singular_name'] ),
-					'link_class'        => 'promote-member confirm'
-				) );
-			}
+		// Promote to Oud-lid action
+		if ( ! is_user_oudlid( bp_displayed_user_id() ) ) {
+			bp_button( array(
+				'id'                => 'promote_member_oudlid',
+				'component'         => 'members',
+				'must_be_logged_in' => true,
+				'block_self'        => true,
+				'link_href'         => vgsr_bp_get_member_type_promote_url( vgsr_bp_oudlid_member_type() ),
+				'link_title'        => __( 'Change the member type of this member.', 'vgsr' ),
+				'link_text'         => sprintf( __( 'Promote to %s', 'vgsr' ), bp_get_member_type_object( vgsr_bp_oudlid_member_type() )->labels['singular_name'] ),
+				'link_class'        => 'promote-member confirm'
+			) );
 		}
 	}
 
@@ -622,8 +544,8 @@ class VGSR_BuddyPress {
 	 *
 	 * @uses is_user_vgsr()
 	 * @uses vgsr_bp_members_member_type_tab()
-	 * @uses VGSR_BuddyPress::lid_member_type()
-	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @uses vgsr_bp_lid_member_type()
+	 * @uses vgsr_bp_oudlid_member_type()
 	 */
 	public function add_members_directory_tabs() {
 
@@ -632,8 +554,8 @@ class VGSR_BuddyPress {
 			return;
 
 		// Add tabs for Lid and Oud-lid member type
-		vgsr_bp_members_member_type_tab( $this->lid_member_type() );
-		vgsr_bp_members_member_type_tab( $this->oudlid_member_type() );
+		vgsr_bp_members_member_type_tab( vgsr_bp_lid_member_type() );
+		vgsr_bp_members_member_type_tab( vgsr_bp_oudlid_member_type() );
 	}
 
 	/**
@@ -684,35 +606,35 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Filter whether the given user is lid.
+	 * Filter whether the given user is Lid.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @uses VGSR_BuddyPress::has_member_type()
-	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @uses vgsr_bp_lid_member_type()
 	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
-	 * @return boolean User is lid
+	 * @return boolean User is Lid
 	 */
 	public function is_user_lid( $is, $user_id = null ) {
-		return ( $is ? $is : $this->has_member_type( $this->lid_member_type(), $user_id ) );
+		return ( $is ? $is : $this->has_member_type( vgsr_bp_lid_member_type(), $user_id ) );
 	}
 
 	/**
-	 * Filter whether the given user is oud-lid.
+	 * Filter whether the given user is Oud-lid.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @uses VGSR_BuddyPress::has_member_type()
-	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @uses vgsr_bp_oudlid_member_type()
 	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
-	 * @return boolean User is oud-lid
+	 * @return boolean User is Oud-lid
 	 */
 	public function is_user_oudlid( $is, $user_id = null ) {
-		return ( $is ? $is : $this->has_member_type( $this->oudlid_member_type(), $user_id ) );
+		return ( $is ? $is : $this->has_member_type( vgsr_bp_oudlid_member_type(), $user_id ) );
 	}
 
 	/**
@@ -721,29 +643,29 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses VGSR_BuddyPress::lid_member_type()
-	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @uses vgsr_bp_lid_member_type()
+	 * @uses vgsr_bp_oudlid_member_type()
 	 * @param array $sql User query SQL
 	 */
 	public function query_is_user_vgsr( $sql ) {
 
 		// Define SQL clauses for member types
-		$this->query_user_by_member_type( $sql, array( $this->lid_member_type(), $this->oudlid_member_type() ) );
+		$this->query_user_by_member_type( $sql, array( vgsr_bp_lid_member_type(), vgsr_bp_oudlid_member_type() ) );
 	}
 
 	/**
-	 * Modify the user query SQL to query by lid member type
+	 * Modify the user query SQL to query by Lid member type
 	 *
 	 * @since 0.1.0
 	 *
 	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses VGSR_BuddyPress::lid_member_type()
+	 * @uses vgsr_bp_lid_member_type()
 	 * @param array $sql User query SQL
 	 */
 	public function query_is_user_lid( $sql ) {
 
 		// Define SQL clauses for member types
-		$this->query_user_by_member_type( $sql, $this->lid_member_type() );
+		$this->query_user_by_member_type( $sql, vgsr_bp_lid_member_type() );
 	}
 
 	/**
@@ -752,13 +674,13 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses VGSR_BuddyPress::oudlid_member_type()
+	 * @uses vgsr_bp_oudlid_member_type()
 	 * @param array $sql User query SQL
 	 */
 	public function query_is_user_oudlid( $sql ) {
 
 		// Define SQL clauses for member types
-		$this->query_users_by_member_type( $sql, $this->oudlid_member_type() );
+		$this->query_users_by_member_type( $sql, vgsr_bp_oudlid_member_type() );
 	}
 
 	/**

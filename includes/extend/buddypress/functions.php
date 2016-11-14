@@ -10,6 +10,87 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+/** Member Types ***********************************************************/
+
+/**
+ * Return the collection of VGSR member types
+ *
+ * @since 0.1.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_member_types'
+ * @return array Member types
+ */
+function vgsr_bp_member_types() {
+	return (array) apply_filters( 'vgsr_bp_member_types', array(
+
+		// Lid
+		$this->lid_member_type() => array(
+			'labels' => array(
+				'name'          => __( 'Leden', 'vgsr' ),
+				'singular_name' => __( 'Lid',   'vgsr' ),
+				'plural_name'   => __( 'Leden', 'vgsr' ),
+			)
+		),
+
+		// Oud-lid
+		$this->oudlid_member_type() => array(
+			'labels' => array(
+				'name'          => __( 'Oud-leden', 'vgsr' ),
+				'singular_name' => __( 'Oud-lid',   'vgsr' ),
+				'plural_name'   => __( 'Oud-leden', 'vgsr' ),
+			)
+		),
+
+		// Ex-lid
+		$this->exlid_member_type() => array(
+			'labels' => array(
+				'name'          => __( 'Ex-leden', 'vgsr' ),
+				'singular_name' => __( 'Ex-lid',   'vgsr' ),
+				'plural_name'   => __( 'Ex-leden', 'vgsr' ),
+			)
+		),
+	) );
+}
+
+/**
+ * Return the member type for Lid
+ *
+ * @since 0.1.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_lid_member_type'
+ *
+ * @return string Lid member type name
+ */
+function vgsr_bp_lid_member_type() {
+	return apply_filters( 'vgsr_bp_lid_member_type', 'lid' );
+}
+
+/**
+ * Return the member type for Oud-lid
+ *
+ * @since 0.1.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_oudlid_member_type'
+ *
+ * @return string Oud-lid member type name
+ */
+function vgsr_bp_oudlid_member_type() {
+	return apply_filters( 'vgsr_bp_oudlid_member_type', 'oudlid' );
+}
+
+/**
+ * Return the member type for Ex-lid
+ *
+ * @since 0.1.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_exlid_member_type'
+ *
+ * @return string Oud-lid member type name
+ */
+function vgsr_bp_exlid_member_type() {
+	return apply_filters( 'vgsr_bp_exlid_member_type', 'exlid' );
+}
+
 /**
  * Output the promote to member type url
  *
@@ -123,6 +204,8 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 		return apply_filters( 'vgsr_bp_get_members_member_type_tab', $tab, $member_type, $count );
 	}
 
+/** Members ****************************************************************/
+
 /**
  * Modify the total member count
  *
@@ -153,6 +236,8 @@ function vgsr_bp_get_total_member_count( $args = array() ) {
 
 	return $count;
 }
+
+/** Options ****************************************************************/
 
 /**
  * Return whether custom activity posting is blocked
