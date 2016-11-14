@@ -726,8 +726,8 @@ class VGSR_BuddyPress {
 		// Get directory page ids
 		$page_ids = bp_core_get_directory_page_ids( 'all' );
 
-		// Use the actual directory page's title
-		if ( isset( $page_ids[ $component ] ) ) {
+		// Use the actual directory page's title. Only for BP pre-2.7
+		if ( version_compare( buddypress()->version, '2.7', '<' ) && isset( $page_ids[ $component ] ) ) {
 			$title = get_the_title( $page_ids[ $component ] );
 		}
 
