@@ -121,11 +121,12 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 	 */
 	function vgsr_bp_get_member_type_promote_url( $member_type = '', $user_id = 0, $append = false ) {
 
+		// Default to the displayed user
 		if ( empty( $user_id ) ) {
 			$user_id = bp_displayed_user_id();
 		}
 
-		// Define local variables
+		// Define local variable(s)
 		$url = '';
 
 		// Get the member type object
@@ -136,22 +137,15 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 
 			// Get the args to add to the URL.
 			$args = array(
-				'action' => 'promote',
+				'action' => 'vgsr_promote',
 				'type'   => $member_type_object->name,
+				'append' => (int) (bool) $append,
 			);
 
-			if ( $append ) {
-				$args['append'] = 1;
-			} 
-
-			// Base unread URL.
-			$url = trailingslashit( bp_core_get_user_domain( $user_id ) . 'promote' );
-
-			// Add the args to the URL.
+			// Construct action url
+			$url = trailingslashit( bp_core_get_user_domain( $user_id ) . 'vgsr_promote' );
 			$url = add_query_arg( $args, $url );
-
-			// Add the nonce.
-			$url = wp_nonce_url( $url, 'vgsr_bp_member_promote_member_type_' . $member_type );
+			$url = wp_nonce_url( $url, 'vgsr_promote_member_type_' . $member_type );
 		}
 
 		return apply_filters( 'vgsr_bp_get_member_type_promote_url', $url, $member_type, $user_id, $append );

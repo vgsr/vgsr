@@ -27,32 +27,32 @@ defined( 'ABSPATH' ) || exit;
  */
 function vgsr_bp_member_promote_member_type() {
 
-	// Bail when this is not a promotion action
+	// Bail when this is not an action for a user
 	if ( ! bp_is_user() )
-		return false;
+		return;
 
-	$action = ! empty( $_GET['action'] ) ? $_GET['action'] : '';
+	$action = ! empty( $_GET['action']   ) ? $_GET['action'] : '';
 	$nonce  = ! empty( $_GET['_wpnonce'] ) ? $_GET['_wpnonce'] : '';
-	$type   = ! empty( $_GET['type'] ) ? bp_get_member_type_object( $_GET['type'] ) : '';
-	$append = ! empty( $_GET['append'] ) ? intval( $_GET['append'] ) : true;
+	$type   = ! empty( $_GET['type']     ) ? bp_get_member_type_object( $_GET['type'] ) : '';
+	$append = ! empty( $_GET['append']   ) ? intval( $_GET['append'] ) : true;
 
 	// Bail if no action or no ID
-	if ( 'promote' !== $action || empty( $type ) || empty( $nonce ) )
-		return false;
+	if ( 'vgsr_promote' !== $action || empty( $type ) || empty( $nonce ) )
+		return;
 
 	// Check the nonce
-	if ( ! bp_verify_nonce_request( 'vgsr_bp_member_promote_member_type_' . $type->name ) )
-		return false;
+	if ( ! bp_verify_nonce_request( 'vgsr_promote_member_type_' . $type->name ) )
+		return;
 
 	// Check user moderation cap
 	if ( ! bp_current_user_can( 'bp_moderate' ) )
-		return false;
+		return;
 
 	// Execute promotion
 	if ( bp_set_member_type( bp_displayed_user_id(), $type->name, (bool) $append ) ) {
 		bp_core_add_message( sprintf( __( 'Member promoted to %s.', 'vgsr' ), $type->labels['singular_name'] ) );
 	} else {
-		bp_core_add_message( __( 'There was a problem promoting the member.', 'vgsr' ), 'error' );
+		bp_core_add_message( __( 'There was a problem promoting this member.', 'vgsr' ), 'error' );
 	}
 
 	// Redirect back to the member's home page
