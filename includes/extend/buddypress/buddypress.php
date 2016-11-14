@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Main VGSR BuddyPress Class
+ * VGSR BuddyPress Extension
  *
  * @package VGSR
- * @subpackage Plugins
+ * @subpackage BuddyPress
  */
 
 // Exit if accessed directly
@@ -12,14 +12,14 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_BuddyPress' ) ) :
 /**
- * VGSR BuddyPress extension
+ * The VGSR BuddyPress extension class
  *
  * @since 0.1.0
  */
 class VGSR_BuddyPress {
 
 	/**
-	 * Holds the components that are exlusive for VGSR users.
+	 * Holds the components that are exclusive for VGSR users
 	 *
 	 * @since 0.1.0
 	 * @var array
@@ -132,17 +132,9 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Hide exclusive BuddyPress pages for the unpriviledged
+	 * Block exclusive BuddyPress pages for non-vgsr
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses is_buddypress()
-	 * @uses is_user_vgsr()
-	 * @uses bp_is_my_profile()
-	 * @uses VGSR_BuddyPress::is_vgsr_bp_component()
-	 * @uses bp_is_register_page()
-	 * @uses bp_is_activation_page()
-	 * @uses bp_core_no_access()
 	 */
 	public function bp_no_access() {
 
@@ -167,10 +159,6 @@ class VGSR_BuddyPress {
 	 * Modify the return value for `is_buddypress()`
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses is_page()
-	 * @uses get_queried_object_id()
-	 * @uses bp_core_get_directory_page_ids()
 	 *
 	 * @param bool $is Is this a BuddyPress page?
 	 * @return boolean Is BuddyPress
@@ -203,10 +191,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses bp_current_component()
-	 * @uses VGSR_BuddyPress::vgsr_bp_components()
-	 *
-	 * @param string $component Optional. Defaults to current component
+	 * @param string $component Optional. Defaults to the current component
 	 * @return bool Component is exclusive
 	 */
 	public function is_vgsr_bp_component( $component = '' ) {
@@ -231,10 +216,6 @@ class VGSR_BuddyPress {
 	 * the profile component default for this situation.
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses VGSR_BuddyPress::vgsr_bp_components()
-	 * @uses bp_is_active()
-	 * @uses is_user_vgsr()
 	 */
 	public function define_default_component() {
 		$bp = buddypress();
@@ -257,13 +238,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::vgsr_bp_components()
-	 * @uses bp_is_active()
-	 * @uses is_user_vgsr()
-	 * @uses remove_action()
-	 * @uses bp_is_user()
 	 * @uses do_action() Calls 'vgsr_bp_deactivated_component'
-	 * @uses add_filter()
 	 */
 	public function deactivate_components() {
 		$bp = buddypress();
@@ -318,12 +293,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress:vgsr_bp_components()
-	 * @uses is_user_vgsr()
-	 * @uses in_the_loop()
-	 * @uses bp_loggedin_user_id()
-	 * @uses bp_displayed_user_id()
-	 *
 	 * @param bool $retval Component is active
 	 * @param string $component Component name
 	 * @return bool Component is active
@@ -352,9 +321,6 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @see bp_core_filter_comments() Assigns member urls to the comment object.
-	 *
-	 * @uses bp_loggedin_user_id()
-	 * @uses is_user_vgsr()
 	 *
 	 * @param string $url Comment author url
 	 * @param int $comment_id Comment ID
@@ -403,12 +369,7 @@ class VGSR_BuddyPress {
 	/**
 	 * Register VGSR member types
 	 *
-	 * Since BP 2.2.0
-	 *
 	 * @since 0.1.0
-	 *
-	 * @uses vgsr_bp_member_types()
-	 * @uses bp_register_member_type()
 	 */
 	public function register_member_types() {
 
@@ -421,14 +382,11 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Return whether the given user has the given member type
+	 * Return whether the user has the given member type
 	 *
 	 * Ensures that the member-type taxonomy is registered before using it.
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses bp_register_taxonomies()
-	 * @uses bp_has_member_type()
 	 *
 	 * @param string $member_type Member type name
 	 * @param int $user_id Optional. User ID. Defaults to current user.
@@ -457,11 +415,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses vgsr_bp_oudlid_member_type()
-	 * @uses vgsr_bp_exlid_member_type()
-	 * @uses bp_remove_member_type()
-	 * @uses vgsr_bp_lid_member_type()
-	 *
 	 * @param int $user_id User ID
 	 * @param string $member_type Member type name
 	 * @param bool $append Whether the member type was appended
@@ -477,18 +430,9 @@ class VGSR_BuddyPress {
 	/** Members ************************************************************/
 
 	/**
-	 * Output additional member action links
+	 * Display additional member profile action links
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses bp_current_user_can()
-	 * @uses bp_button()
-	 * @uses is_user_vgsr()
-	 * @uses is_user_lid()
-	 * @uses vgsr_bp_get_member_type_promote_url()
-	 * @uses bp_get_member_type_object()
-	 * @uses vgsr_bp_lid_member_type()
-	 * @uses vgsr_bp_oudlid_member_type()
 	 */
 	public function add_member_header_actions() {
 
@@ -545,11 +489,6 @@ class VGSR_BuddyPress {
 	 * Add additional query tabs to the Members directory
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses is_user_vgsr()
-	 * @uses vgsr_bp_members_member_type_tab()
-	 * @uses vgsr_bp_lid_member_type()
-	 * @uses vgsr_bp_oudlid_member_type()
 	 */
 	public function add_members_directory_tabs() {
 
@@ -558,7 +497,7 @@ class VGSR_BuddyPress {
 			return;
 
 		// Add tabs for Lid and Oud-lid member type
-		vgsr_bp_members_member_type_tab( vgsr_bp_lid_member_type() );
+		vgsr_bp_members_member_type_tab( vgsr_bp_lid_member_type()    );
 		vgsr_bp_members_member_type_tab( vgsr_bp_oudlid_member_type() );
 	}
 
@@ -599,9 +538,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::is_user_lid()
-	 * @uses VGSR_BuddyPress::is_user_oudlid()
-	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return boolean User is VGSR
@@ -614,9 +550,6 @@ class VGSR_BuddyPress {
 	 * Filter whether the given user is Lid.
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses VGSR_BuddyPress::has_member_type()
-	 * @uses vgsr_bp_lid_member_type()
 	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
@@ -631,9 +564,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::has_member_type()
-	 * @uses vgsr_bp_oudlid_member_type()
-	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
 	 * @return boolean User is Oud-lid
@@ -647,9 +577,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses vgsr_bp_lid_member_type()
-	 * @uses vgsr_bp_oudlid_member_type()
 	 * @param array $sql User query SQL
 	 */
 	public function query_is_user_vgsr( $sql ) {
@@ -663,8 +590,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses vgsr_bp_lid_member_type()
 	 * @param array $sql User query SQL
 	 */
 	public function query_is_user_lid( $sql ) {
@@ -678,8 +603,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses vgsr_bp_oudlid_member_type()
 	 * @param array $sql User query SQL
 	 */
 	public function query_is_user_oudlid( $sql ) {
@@ -694,11 +617,6 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @see BP_User_Query::prepare_user_ids_query()
-	 *
-	 * @uses VGSR_BuddyPress::query_users_by_member_type()
-	 * @uses bp_get_member_type_object()
-	 * @uses switch_to_blog()
-	 * @uses restore_current_blog()
 	 *
 	 * @param array $sql User query SQL, modified by reference
 	 * @param string|array Member type name(s)
@@ -760,8 +678,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses vgsr_bp_block_activity_posting()
-	 *
 	 * @param array $templates Templates to locate
 	 * @param string $slug Template part slug requested
 	 * @param string $name Template part name requested
@@ -782,16 +698,14 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses vgsr_bp_block_activity_posting()
-	 *
 	 * @param string $button Parsed button
 	 * @param array $args Button arguments
 	 * @return string Button
 	 */
 	public function get_button( $button, $args ) {
 
-		// When blocking custom activity posting, unrender the public message button
-		if ( vgsr_bp_block_activity_posting() && 'public_message' == $args['id'] ) {
+		// When blocking custom activity posting, remove the public message button
+		if ( 'public_message' === $args['id'] && vgsr_bp_block_activity_posting() ) {
 			$button = '';
 		}
 
@@ -802,11 +716,6 @@ class VGSR_BuddyPress {
 	 * Modify the directory page's title
 	 *
 	 * @since 0.1.0
-	 *
-	 * @uses bp_core_get_directory_page_ids()
-	 * @uses get_the_title()
-	 * @uses bp_get_member_type_object()
-	 * @uses bp_get_current_member_type()
 	 *
 	 * @param string $title Page title
 	 * @param string $component Component name
@@ -835,9 +744,6 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses bp_get_current_member_type()
-	 * @uses vgsr_bp_get_total_member_count()
-	 *
 	 * @param int $count Member count
 	 * @return int Total member count
 	 */
@@ -859,13 +765,9 @@ class VGSR_BuddyPress {
 	/**
 	 * Define BuddyPress's dummy global post's post parent correctly
 	 *
-	 * @since 0.1.0
+	 * This affects how non-pages like `bp_is_user()` are listed in breadcrumbs functions.
 	 *
-	 * @uses is_buddypress()
-	 * @uses bp_is_user()
-	 * @uses bp_is_single_item()
-	 * @uses bp_current_component()
-	 * @uses get_post_ancestors()
+	 * @since 0.1.0
 	 *
 	 * @global WP_Post $post
 	 */

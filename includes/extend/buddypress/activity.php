@@ -36,13 +36,6 @@ function vgsr_bp_activity_comments_in_stream( $args ) {
  * @see bp_activity_format_activity_action_custom_post_type_post()
  * @see bp_blogs_format_activity_action_new_blog_post()
  *
- * @uses bp_core_get_userlink()
- * @uses get_post()
- * @uses get_permalink()
- * @uses get_the_title()
- * @uses bp_get_activity_meta()
- * @uses bp_activity_get_post_types_tracking_args()
- *
  * @param string $action Action string value
  * @param BP_Activity_Activity $activity Activity data object
  * @return string Action
@@ -123,14 +116,6 @@ function vgsr_bp_activity_post_type_post_action( $action, $activity ) {
  * @see bp_activity_format_activity_action_custom_post_type_comment()
  * @see bp_blogs_format_activity_action_new_blog_comment()
  *
- * @uses bp_core_get_userlink()
- * @uses get_comment()
- * @uses get_post()
- * @uses get_permalink()
- * @uses get_the_title()
- * @uses bp_get_activity_meta()
- * @uses bp_activity_get_post_types_tracking_args()
- *
  * @param string $action Action string value
  * @param BP_Activity_Activity $activity Activity data object
  * @return string Action
@@ -203,4 +188,3 @@ function vgsr_bp_activity_post_type_comment_action( $action, $activity ) {
 
 	return $action;
 }
-

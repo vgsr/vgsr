@@ -93,7 +93,6 @@ function vgsr_bp_exlid_member_type() {
  *
  * @since 0.1.0
  *
- * @uses vgsr_bp_get_member_type_promote_url()
  * @param string $member_type Member type
  * @param int $user_id User ID. Defaults to displayed user.
  * @param bool $append Whether to append or override the member type. Defaults to override.
@@ -107,8 +106,6 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses bp_get_member_type_object()
-	 * @uses bp_core_get_user_domain()
 	 * @uses apply_filters() Calls 'vgsr_bp_get_member_type_promote_url'
 	 *
 	 * @param string $member_type Member type
@@ -125,24 +122,22 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 
 		// Define local variable(s)
 		$url = '';
-
-		// Get the member type object
-		$member_type_object = bp_get_member_type_object( $member_type );
+		$mt  = bp_get_member_type_object( $member_type );
 
 		// When the member type does exist
-		if ( ! empty( $member_type_object ) ) {
+		if ( ! empty( $mt ) ) {
 
 			// Get the args to add to the URL.
 			$args = array(
 				'action' => 'vgsr_promote',
-				'type'   => $member_type_object->name,
+				'type'   => $mt->name,
 				'append' => (int) (bool) $append,
 			);
 
 			// Construct action url
 			$url = trailingslashit( bp_core_get_user_domain( $user_id ) . 'vgsr_promote' );
 			$url = add_query_arg( $args, $url );
-			$url = wp_nonce_url( $url, 'vgsr_promote_member_type_' . $member_type );
+			$url = wp_nonce_url( $url, 'vgsr_promote_member_type_' . $mt->name );
 		}
 
 		return apply_filters( 'vgsr_bp_get_member_type_promote_url', $url, $member_type, $user_id, $append );
@@ -153,7 +148,6 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
  *
  * @since 0.1.0
  *
- * @uses vgsr_bp_get_members_member_type_tab()
  * @param string $member_type Member type
  */
 function vgsr_bp_members_member_type_tab( $member_type ) {
@@ -165,14 +159,12 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses bp_get_member_type_directory_permalink()
-	 * @uses vgsr_bp_get_total_member_count()
 	 * @uses apply_filters() Calls 'vgsr_bp_get_members_member_type_tab'
 	 * @param string $member_type Member type
 	 */
 	function vgsr_bp_get_members_member_type_tab( $member_type ) {
 
-		// Define local variables
+		// Define local variable(s)
 		$tab   = '';
 		$count = 0;
 		$mt    = bp_get_member_type_object( $member_type );
@@ -201,7 +193,6 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
  * @since 0.1.0
  *
  * @uses BP_User_Query
- * @uses bp_core_get_total_member_count()
  *
  * @param array $args Query args for `BP_User_Query`
  * @return int Total member count
@@ -210,11 +201,9 @@ function vgsr_bp_get_total_member_count( $args = array() ) {
 
 	// With args, do custom count query
 	if ( ! empty( $args ) ) {
-		$args = wp_parse_args( $args, array(
-			'type' => ''
-		) );
-
-		if ( $query = new BP_User_Query( $args ) ) {
+		if ( $query = new BP_User_Query( wp_parse_args( $args, array(
+			'type' => '' // Default to just a user query (join with $wpdb->users, no last-active etc.)
+		) ) ) ) {
 			$count = $query->total_users;
 		}
 

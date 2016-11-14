@@ -15,13 +15,6 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  *
- * @uses bp_is_user()
- * @uses bp_get_member_type_object()
- * @uses bp_verify_nonce_request()
- * @uses bp_set_member_type()
- * @uses bp_core_add_message()
- * @uses bp_core_redirect()
- *
  * @return false|null Returns false on failure. Otherwise redirects backc to the
  *                    member's home page.
  */
