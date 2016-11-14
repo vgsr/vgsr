@@ -24,7 +24,7 @@ function vgsr_bp_member_types() {
 	return (array) apply_filters( 'vgsr_bp_member_types', array(
 
 		// Lid
-		$this->lid_member_type() => array(
+		vgsr_bp_lid_member_type() => array(
 			'labels' => array(
 				'name'          => __( 'Leden', 'vgsr' ),
 				'singular_name' => __( 'Lid',   'vgsr' ),
@@ -33,7 +33,7 @@ function vgsr_bp_member_types() {
 		),
 
 		// Oud-lid
-		$this->oudlid_member_type() => array(
+		vgsr_bp_oudlid_member_type() => array(
 			'labels' => array(
 				'name'          => __( 'Oud-leden', 'vgsr' ),
 				'singular_name' => __( 'Oud-lid',   'vgsr' ),
@@ -42,7 +42,7 @@ function vgsr_bp_member_types() {
 		),
 
 		// Ex-lid
-		$this->exlid_member_type() => array(
+		vgsr_bp_exlid_member_type() => array(
 			'labels' => array(
 				'name'          => __( 'Ex-leden', 'vgsr' ),
 				'singular_name' => __( 'Ex-lid',   'vgsr' ),
