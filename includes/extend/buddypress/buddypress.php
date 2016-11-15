@@ -151,6 +151,7 @@ class VGSR_BuddyPress {
 		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After Members component setup
 		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
 		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
+		add_filter( 'wp_setup_nav_menu_item',   array( $this, 'setup_nav_menu_item'      ), 11    ); // After BP is done
 	}
 
 	/**
@@ -340,6 +341,30 @@ class VGSR_BuddyPress {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Invalidate BP menu items for non-vgsr users
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_Post $menu_item Nav menu item
+	 * @return WP_Post Nav menu item
+	 */
+	public function setup_nav_menu_item( $menu_item ) {
+
+		// Post type menu item
+		if ( 'post_type' == $menu_item->type ) {
+			$page_ids  = bp_core_get_directory_page_ids( 'all' );
+			$component = array_search( $menu_item->object_id, $page_ids );
+
+			// Invalidate an exclusive component's directory page menu item
+			if ( $component && $this->is_vgsr_bp_component( $component ) && ! is_user_vgsr() ) {
+				$menu_item->_invalid = true;
+			}
+		}
+
+		return $menu_item;
 	}
 
 	/** Capabilities *******************************************************/
