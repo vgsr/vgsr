@@ -358,8 +358,8 @@ class VGSR_BuddyPress {
 			$page_ids  = bp_core_get_directory_page_ids( 'all' );
 			$component = array_search( $menu_item->object_id, $page_ids );
 
-			// Invalidate an exclusive component's directory page menu item
-			if ( $component && $this->is_vgsr_bp_component( $component ) && ! is_user_vgsr() ) {
+			// Invalidate any component's directory page menu item
+			if ( $component && ! is_user_vgsr() ) {
 				$menu_item->_invalid = true;
 			}
 		}
