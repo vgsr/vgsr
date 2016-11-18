@@ -12,7 +12,7 @@
  *
  * There are a few common places that additional actions can currently be found
  *
- *  - VGSR: In {@link VGSR::setup_actions()} in fiscaat.php
+ *  - VGSR: In {@link VGSR::setup_actions()} in vgsr.php
  *  - Admin: More in {@link VGSR_Admin::setup_actions()} in admin.php
  *
  * @see /core/filters.php
@@ -38,7 +38,7 @@ defined( 'ABSPATH' ) || exit;
  *           v--WordPress Actions    v--VGSR Sub-actions
  */
 add_action( 'plugins_loaded',        'vgsr_loaded',           20 );
-add_action( 'init',                  'vgsr_init',             0  ); // Early for vgsr_register
+add_action( 'init',                  'vgsr_init',              0 ); // Early for vgsr_register
 add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menu'       );
 add_action( 'wp_head',               'vgsr_manifest_meta_tag'    );
 
@@ -73,12 +73,12 @@ add_action( 'vgsr_init', 'vgsr_ready',               999 );
  * The load order helps to execute code at the correct time.
  *                                                     v---Load order
  */
-add_action( 'vgsr_ready', 'vgsr_setup_ancienniteit',    10 ); // Ancienniteit for users
-add_action( 'bbp_loaded', 'vgsr_setup_bbpress',         0  ); // Forum integration
-add_action( 'bp_loaded',  'vgsr_setup_buddypress',      0  ); // Social network integration
-add_action( 'vgsr_ready', 'vgsr_setup_event_organiser', 10 ); // Events integration
-add_action( 'vgsr_ready', 'vgsr_setup_gravityforms',    10 ); // Forms integration
-add_action( 'vgsr_ready', 'vgsr_setup_wpseo',           10 ); // SEO integration
+add_action( 'vgsr_ready',     'vgsr_setup_ancienniteit',    10 ); // Ancienniteit for users
+add_action( 'bbp_loaded',     'vgsr_setup_bbpress',         0  ); // Forum integration
+add_action( 'bp_core_loaded', 'vgsr_setup_buddypress',      10 ); // Social network integration
+add_action( 'vgsr_ready',     'vgsr_setup_event_organiser', 10 ); // Events integration
+add_action( 'vgsr_ready',     'vgsr_setup_gravityforms',    10 ); // Forms integration
+add_action( 'vgsr_ready',     'vgsr_setup_wpseo',           10 ); // SEO integration
 
 // Login page
 add_action( 'login_enqueue_scripts', 'vgsr_login_enqueue_scripts' );

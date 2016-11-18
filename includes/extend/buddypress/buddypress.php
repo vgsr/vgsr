@@ -108,8 +108,9 @@ class VGSR_BuddyPress {
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 
 		// Hide BuddyPress for non-vgsr
-		add_filter( 'is_buddypress', array( $this, 'is_buddypress' )    );
-		add_action( 'bp_init',       array( $this, 'hide_bp'       ), 1 );
+		add_filter( 'is_buddypress',  array( $this, 'is_buddypress'   )     );
+		add_action( 'bp_core_loaded', array( $this, 'hide_buddypress' ), 20 );
+		add_action( 'bp_setup_nav',   array( $this, 'bp_setup_nav'    ), 99 );
 	}
 
 	/** Hide BP ************************************************************/
@@ -141,17 +142,28 @@ class VGSR_BuddyPress {
 	 *
 	 * @todo Invalidate BP's items in nav menus for non-vgsr
 	 */
-	public function hide_bp() {
+	public function hide_buddypress() {
 
 		// Bail when the user can manage BP, but is non-vgsr (e.g. when testing)
 		if ( bp_current_user_can( 'bp_moderate' ) )
 			return;
-		
-		add_action( 'bp_template_redirect',     array( $this, 'bp_no_access'             ),  0    );
-		add_action( 'bp_init',                  array( $this, 'deactivate_components'    ),  5    ); // After Members component setup
-		add_action( 'bp_setup_canonical_stack', array( $this, 'define_default_component' ),  5    ); // Before default priority
-		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'       ), 12, 3 );
-		add_filter( 'wp_setup_nav_menu_item',   array( $this, 'setup_nav_menu_item'      ), 11    ); // After BP is done
+
+		// If the user is not logged-in, hide BP completely
+		if ( ! get_current_user_id() ) {
+			/**
+			 * Modify the list of active components before activating them
+			 *
+			 * At this point, the 'members' component isn't loaded yet, so we
+			 * cannot use the member-type logic to determine vgsr-ship.
+			 */
+			add_filter( 'bp_active_components', '__return_empty_array' );
+		}
+
+		add_action( 'bp_register_taxonomies',   array( $this, 'deactivate_components'   ), 99    );
+		add_action( 'bp_setup_canonical_stack', array( $this, 'setup_default_component' ),  5    ); // Before default priority
+		add_action( 'bp_template_redirect',     array( $this, 'do_404'                  ),  1    );
+		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'      ), 12, 3 );
+		add_filter( 'wp_setup_nav_menu_item',   array( $this, 'setup_nav_menu_item'     ), 11    ); // After BP's hook
 	}
 
 	/**
@@ -186,64 +198,15 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Block exclusive BuddyPress pages for non-vgsr
+	 * Modify the logic order of registered component parts
+	 *
+	 * At this point, the member-type logic has just become available.
 	 *
 	 * @since 0.1.0
-	 */
-	public function bp_no_access() {
-
-		// Set the page to 404 when:
-		// ... this is a BP page
-		// ... AND the user is not VGSR or a guest
-		if ( is_buddypress() && ! is_user_vgsr() ) {
-
-			// Make an exception when:
-			// ... this is the user's own profile AND this is a common component
-			// ... OR this is the registration page
-			// ... OR this is the activation page
-			if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
-				return;
-
-			// Let BP handle the redirection (default = wp-login.php)
-			bp_core_no_access();
-		}
-	}
-
-	/**
-	 * Define the default component for non-vgsr displayed users
-	 *
-	 * When active, the activity component is set as the default component in
-	 * BP_Members_Component::setup_canonical_stack(). For non-vgsr displayed
-	 * users, with the activity component being exclusive, this results in a
-	 * 404 when visiting 'members/<non-vgsr-user>'. This is solved by making
-	 * the profile component default for this situation.
-	 *
-	 * @since 0.1.0
-	 */
-	public function define_default_component() {
-		$bp = buddypress();
-
-		// Define the default component when
-		// ... the activity component is active
-		// ... AND the activity component is exclusive
-		// ... AND the displayed user is non-vgsr
-		if ( bp_is_active( 'activity' ) && $this->is_vgsr_bp_component( 'activity' ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
-
-			// Set the default component to XProfile
-			if ( ! defined( 'BP_DEFAULT_COMPONENT' ) ) {
-				define( 'BP_DEFAULT_COMPONENT', ( 'xprofile' === $bp->profile->id ) ? 'profile' : $bp->profile->id );
-			}
-		}
-	}
-
-	/**
-	 * Deactivate selected components for non-vgsr users
-	 *
-	 * @since 0.1.0
-	 *
-	 * @uses do_action() Calls 'vgsr_bp_deactivated_component'
 	 */
 	public function deactivate_components() {
+
+		// Get BuddyPress
 		$bp = buddypress();
 
 		// Unhook selected components' elements
@@ -261,19 +224,9 @@ class VGSR_BuddyPress {
 			 * 
 			 * @see BP_Component::setup_actions()
 			 */
-
-			// Remove core component hooks for current user
 			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
-				remove_action( 'bp_setup_canonical_stack',  array( $class, 'setup_canonical_stack'  ), 10 );
-				remove_action( 'bp_setup_admin_bar',        array( $class, 'setup_admin_bar'        ), $class->adminbar_myaccount_order );
-				remove_action( 'bp_setup_cache_groups',     array( $class, 'setup_cache_groups'     ), 10 );
-				remove_action( 'bp_register_post_types',    array( $class, 'register_post_types'    ), 10 );
-				remove_action( 'bp_register_taxonomies',    array( $class, 'register_taxonomies'    ), 10 );
-				remove_action( 'bp_add_rewrite_tags',       array( $class, 'add_rewrite_tags'       ), 10 );
-				remove_action( 'bp_add_rewrite_rules',      array( $class, 'add_rewrite_rules'      ), 10 );
-				remove_action( 'bp_add_permastructs',       array( $class, 'add_permastructs'       ), 10 );
-				remove_action( 'bp_parse_query',            array( $class, 'parse_query'            ), 10 );
-				remove_action( 'bp_generate_rewrite_rules', array( $class, 'generate_rewrite_rules' ), 10 );
+				remove_action( 'bp_setup_nav',       array( $class, 'setup_nav'       ), 10 );
+				remove_action( 'bp_setup_admin_bar', array( $class, 'setup_admin_bar' ), $class->adminbar_myaccount_order );
 			}
 
 			// Remove display component hooks for displayed user
@@ -283,12 +236,68 @@ class VGSR_BuddyPress {
 			}
 
 			// Provide hook for further unhooking
-			do_action( 'vgsr_bp_deactivated_component', $class, $component );
+			do_action( 'vgsr_bp_deactivated_component', $component );
 		}
 
-		// Mark the component as inactive (but do not remove) under certain
-		// conditions for component checks after this point.
-		add_filter( 'bp_is_active', array( $this, 'bp_is_active' ), 10, 2 );
+		/**
+		 * Mark the component as inactive (but do not remove) under certain
+		 * conditions for component checks after this point.
+		 *
+		 * @todo See whether this is still viable, since `bp_is_active()` is also
+		 *       already called before 'bp_init', i.e. on `after_setup_theme()` by
+		 *       the theme-compat's buddypress-functions.php.
+		 */
+		// add_filter( 'bp_is_active', array( $this, 'bp_is_active' ), 10, 2 );
+	}
+
+	/**
+	 * 404 exclusive BuddyPress pages for non-vgsr
+	 *
+	 * @since 0.1.0
+	 */
+	public function do_404() {
+
+		// Bail when this is not BP or the user is vgsr
+		if ( ! is_buddypress() || is_user_vgsr() )
+			return;
+
+		// Bail when:
+		// ... this is the user's own profile AND this is a common component
+		// ... OR this is the registration page
+		// ... OR this is the activation page
+		if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
+			return;
+
+		// 404 and prevent components from loading their templates
+		remove_all_actions( 'bp_template_redirect' );
+		bp_do_404();
+	}
+
+	/**
+	 * Define the default component for non-vgsr displayed users
+	 *
+	 * When active, the Activity component is set as the default component in
+	 * BP_Members_Component::setup_canonical_stack(). For non-vgsr displayed
+	 * users, with the activity component being exclusive, this results in a
+	 * 404 when visiting 'members/<non-vgsr-user>'. This is solved by making
+	 * the profile component default for this situation.
+	 *
+	 * @since 0.1.0
+	 */
+	public function setup_default_component() {
+
+		// Define the default component when
+		// ... the activity component is active
+		// ... AND the activity component is exclusive
+		// ... AND the displayed user is non-vgsr
+		if ( bp_is_active( 'activity' ) && $this->is_vgsr_bp_component( 'activity' ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
+			$bp = buddypress();
+
+			// Set the default component to XProfile
+			if ( ! defined( 'BP_DEFAULT_COMPONENT' ) ) {
+				define( 'BP_DEFAULT_COMPONENT', ( 'xprofile' === $bp->profile->id ) ? 'profile' : $bp->profile->id );
+			}
+		}
 	}
 
 	/**
@@ -367,6 +376,23 @@ class VGSR_BuddyPress {
 		return $menu_item;
 	}
 
+	/**
+	 * Modify the registered navigation elements
+	 *
+	 * @since 0.1.0
+	 */
+	public function bp_setup_nav() {
+
+		// Bail when the current user is vgsr
+		if ( is_user_vgsr() )
+			return;
+
+		// Settings
+		remove_all_actions( 'bp_notification_settings' ); // Eliminates need for Email (admin) nav, but may be too restrictive
+		bp_core_remove_subnav_item( bp_get_settings_slug(), 'notifications' );
+		bp_core_remove_subnav_item( bp_get_settings_slug(), 'profile'       ); // See BP_XProfile_Component::setup_settings_nav()
+	}
+
 	/** Capabilities *******************************************************/
 
 	/**
@@ -428,9 +454,9 @@ class VGSR_BuddyPress {
 
 		/*
 		 * Ensure BP's taxonomies are registered in case this is
-		 * called before `bp_init()`.
+		 * called before `bp_register_taxonomies()`.
 		 */
-		if ( ! did_action( 'bp_init' ) ) {
+		if ( ! did_action( 'bp_register_taxonomies' ) ) {
 			bp_register_taxonomies();
 		}
 
@@ -519,7 +545,7 @@ class VGSR_BuddyPress {
 	 */
 	public function add_members_directory_tabs() {
 
-		// Bail when current user is not vgsr
+		// Bail when current user is non-vgsr
 		if ( ! is_user_vgsr() )
 			return;
 
