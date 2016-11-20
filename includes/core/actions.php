@@ -66,6 +66,9 @@ add_action( 'vgsr_init', 'vgsr_register',            0   );
 add_action( 'vgsr_init', 'vgsr_manifest_json_route', 10  );
 add_action( 'vgsr_init', 'vgsr_ready',               999 );
 
+// Users
+add_action( 'pre_user_query', 'vgsr_pre_user_query' );
+
 /**
  * vgsr_ready - attached to end 'vgsr_init' above
  *

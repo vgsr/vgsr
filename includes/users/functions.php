@@ -30,6 +30,7 @@ function vgsr_get_current_user_id() {
  * 
  * @since 0.1.0
  *
+ * @uses apply_filters() Calls 'vgsr_get_users'
  * @param array $args Optional. Arguments for use in `WP_User_Query`.
  * @return array Users
  */
@@ -40,7 +41,7 @@ function vgsr_get_users( $args = array() ) {
 
 	$users = get_users( $args );
 
-	return (array) apply_filters( 'get_vgsr_users', $users, $args );
+	return (array) apply_filters( 'vgsr_get_users', $users, $args );
 }
 
 /**
@@ -76,6 +77,37 @@ function vgsr_dropdown_users_args( $query_args = array(), $args = array() ) {
 	}
 
 	return $query_args;
+}
+
+/**
+ * Modify the user query when querying vgsr users
+ *
+ * @since 0.1.0
+ *
+ * @uses apply_filters() Calls 'vgsr_pre_user_query'
+ * @param WP_User_Query $query
+ */
+function vgsr_pre_user_query( $query ) {
+
+	// Bail when not querying vgsr users
+	if ( ! $query->get( 'vgsr' ) )
+		return;
+
+	// Enable plugin filtering
+	$sql_clauses = array( 'join' => '', 'where' => '' );
+	$sql_clauses = apply_filters( 'vgsr_pre_user_query', $sql_clauses, $query );
+
+	// Append JOIN statement
+	if ( ! empty( $sql_clauses['join'] ) ) {
+		$join = preg_replace( '/^\s*/', '', $sql_clauses['where'] );
+		$query->query_join .= " $join";
+	}
+
+	// Append WHERE statement
+	if ( ! empty( $sql_clauses['where'] ) ) {
+		$where = preg_replace( '/^\s*AND\s*/', '', $sql_clauses['where'] );
+		$query->query_where .= " AND $where";
+	}
 }
 
 /** Is Functions **********************************************************/
