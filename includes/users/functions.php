@@ -25,6 +25,59 @@ function vgsr_get_current_user_id() {
 	return did_action( 'set_current_user' ) ? get_current_user_id() : apply_filters( 'determine_current_user', 0 );
 }
 
+/**
+ * Return a list of vgsr users matching criteria
+ * 
+ * @since 0.1.0
+ *
+ * @param array $args Optional. Arguments for use in `WP_User_Query`.
+ * @return array Users
+ */
+function vgsr_get_users( $args = array() ) {
+
+	$args = wp_parse_args( $args, array( 'vgsr' => true ) );
+	$args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
+
+	$users = get_users( $args );
+
+	return (array) apply_filters( 'get_vgsr_users', $users, $args );
+}
+
+/**
+ * Create dropdown HTML element of vgsr users
+ *
+ * @since 0.1.0
+ *
+ * @param array $args Optional. Arguments for `wp_dropdown_users()`.
+ * @return string Dropdown when 'echo' argument is false.
+ */
+function vgsr_dropdown_users( $args = array() ) {
+
+	$args = wp_parse_args( $args, array( 'vgsr' => true ) );
+	$args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
+
+	return wp_dropdown_users( $args );
+}
+
+/**
+ * Modify the query arguments for the users dropdown
+ *
+ * @since 0.1.0
+ *
+ * @param array $query_args Query arguments
+ * @param array $args Dropdown arguments
+ * @return array Query arguments
+ */
+function vgsr_dropdown_users_args( $query_args = array(), $args = array() ) {
+
+	// Add 'vgsr' argument to query args
+	if ( isset( $args['vgsr'] ) && $args['vgsr'] ) {
+		$query_args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
+	}
+
+	return $query_args;
+}
+
 /** Is Functions **********************************************************/
 
 /**

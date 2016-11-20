@@ -44,6 +44,9 @@ add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
 add_filter( 'login_headerurl',         'vgsr_login_header_url'               );
 add_filter( 'login_headertitle',       'vgsr_login_header_title'             );
 
+// Users
+add_filter( 'wp_dropdown_users_args',  'vgsr_dropdown_users_args',     20, 2 );
+
 // Comments
 add_filter( 'pre_comment_approved',    'vgsr_pre_comment_approved',    20, 2 );
 
