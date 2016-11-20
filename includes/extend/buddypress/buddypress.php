@@ -100,7 +100,7 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_vgsr',             array( $this, 'is_user_vgsr'          ), 10, 2 );
 		add_filter( 'is_user_lid',              array( $this, 'is_user_lid'           ), 10, 2 );
 		add_filter( 'is_user_oudlid',           array( $this, 'is_user_oudlid'        ), 10, 2 );
-		add_action( 'pre_user_query',           array( $this, 'pre_user_query'        )        );
+		add_filter( 'vgsr_pre_user_query',      array( $this, 'pre_user_query'        ), 10, 2 );
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
@@ -689,25 +689,29 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @param array $sql_clauses SQL clauses to append
 	 * @param WP_User_Query $query
+	 * @return array SQL clauses
 	 */
-	public function pre_user_query( $query ) {
+	public function pre_user_query( $sql_clauses, $query ) {
 
 		// Get the 'vgsr' query argument
 		$type = $query->get( 'vgsr' );
 
 		// Query Leden
 		if ( 'lid' === $type ) {
-			$query->query_where .= $this->query_is_user_lid();
+			$sql_clauses['where'] = $this->query_is_user_lid();
 
 		// Query Oud-leden
 		} elseif ( 'oud-lid' === $type ) {
-			$query->query_where .= $this->query_is_user_oudlid();
+			$sql_clauses['where'] = $this->query_is_user_oudlid();
 
 		// Query all vgsr
 		} elseif ( true === $type ) {
-			$query->query_where .= $this->query_is_user_vgsr();
+			$sql_clauses['where'] = $this->query_is_user_vgsr();
 		}
+
+		return $sql_clauses;
 	}
 
 	/**
@@ -734,7 +738,7 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 */
 	public function query_is_user_oudlid() {
-		return $this->query_users_by_member_type( vgsr_bp_oudlid_member_type() );
+		return $this->query_where_user_by_member_type( vgsr_bp_oudlid_member_type() );
 	}
 
 	/**
@@ -744,8 +748,8 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array $sql User query SQL, modified by reference
 	 * @param string|array Member type name(s)
+	 * @return string Member type SQL WHERE statement
 	 */
 	private function query_where_user_by_member_type( $member_types = '' ) {
 		global $wpdb;
@@ -782,13 +786,15 @@ class VGSR_BuddyPress {
 		// Generete SQL clause
 		$sql_clauses = $tax_query->get_sql( 'u', 'ID' );
 
+		$clause = '';
+
 		// The no_results clauses are the same between IN and NOT IN.
 		if ( false !== strpos( $sql_clauses['where'], '0 = 1' ) ) {
 			$clause = $sql_clauses['where'];
 
 		// IN clauses must be converted to a subquery.
 		} elseif ( preg_match( '/' . $wpdb->term_relationships . '\.term_taxonomy_id IN \([0-9, ]+\)/', $sql_clauses['where'], $matches ) ) {
-			$clause = "AND {$wpdb->users}.ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE {$matches[0]} )";
+			$clause = "{$wpdb->users}.ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE {$matches[0]} )";
 		}
 
 		if ( $switched ) {
