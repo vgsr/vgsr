@@ -26,6 +26,14 @@ class VGSR_BuddyPress {
 	 */
 	protected $components;
 
+	/**
+	 * Holds all users per member type
+	 *
+	 * @since 0.1.0
+	 * @var array
+	 */
+	protected $member_type_users;
+
 	/** Setup Methods ******************************************************/
 
 	/**
@@ -63,6 +71,8 @@ class VGSR_BuddyPress {
 			'messages',
 			'notifications'
 		) );
+
+		$this->member_type_users = array();
 	}
 
 	/**
@@ -454,14 +464,62 @@ class VGSR_BuddyPress {
 		}
 
 		/*
-		 * Ensure BP's taxonomies are registered in case this is
-		 * called before `bp_register_taxonomies()`.
+		 * When this is called before `bp_register_taxonomies()` has fired,
+		 * verify member-types by the cached list of member type users.
+		 *
+		 * NOTE: this ignores any existing member-type filters, like 'bp_get_member_type'.
 		 */
 		if ( ! did_action( 'bp_register_taxonomies' ) ) {
-			bp_register_taxonomies();
+			return in_array( $user_id, $this->get_member_type_users( $member_type ) );
 		}
 
 		return bp_has_member_type( $user_id, $member_type );
+	}
+
+	/**
+	 * Return the collection of users per member type
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $member_type Member type name
+	 * @return array User ids having the member type
+	 */
+	public function get_member_type_users( $member_type = '' ) {
+
+		/**
+		 * Cache users per member type
+		 *
+		 * NOTE: Using WP_Tax_Query returns no results here, because it checks
+		 * whether the member-type taxonomy is registered, which it probably isn't.
+		 */
+		if ( ! isset( $this->member_type_users[ $member_type ] ) ) {
+			global $wpdb;
+
+			$tax = function_exists( 'bp_get_member_type_tax_name' ) ? bp_get_member_type_tax_name() : 'bp_member_type';
+
+			// Switch to the root blog, where member type taxonomies live.
+			$site_id  = bp_get_taxonomy_term_site_id( $tax );
+			$switched = false;
+			if ( $site_id !== get_current_blog_id() ) {
+				switch_to_blog( $site_id );
+				$switched = true;
+			}
+
+			// Setup SQL clause
+			$sql = $wpdb->prepare( "SELECT tr.object_id FROM {$wpdb->terms} t INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id WHERE tt.taxonomy = %s AND t.name = %s", $tax, $member_type );
+			$result = $wpdb->get_col( $sql );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+
+			// Sanitize user ids
+			$user_ids = array_unique( array_map( 'intval', $result ) );
+
+			$this->member_type_users[ $member_type ] = array_values( $user_ids );
+		}
+
+		return $this->member_type_users[ $member_type ];
 	}
 
 	/**
