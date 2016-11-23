@@ -204,12 +204,8 @@ class VGSR_BuddyPress {
 	 */
 	public function block_components() {
 
-		// Bail when this is not BP
-		if ( ! is_buddypress() )
-			return;
-
-		// Current user is non-vgsr and page is not their profile, so 404
-		if ( ! is_user_vgsr() && ! bp_is_my_profile() ) {
+		// Current user is non-vgsr and page is BP but not their profile, so 404
+		if ( ! is_user_vgsr() && is_buddypress() && ! bp_is_my_profile() ) {
 
 			// 404 and prevent components from loading their templates
 			remove_all_actions( 'bp_template_redirect' );
@@ -219,35 +215,11 @@ class VGSR_BuddyPress {
 		// Viewing a non-vgsr user's profile
 		} elseif ( bp_is_user() && ! is_user_vgsr( bp_displayed_user_id() ) ) {
 
-			// Remove nav items properly
+			// Remove component nav items properly
 			$this->unhook_bp_nav_items();
 
-			/**
-			 * Unhook theme-compat component hooks in bp-legacy
-			 *
-			 * @see BP_Legacy::setup_actions()
-			 */
-			if ( vgsr_bp_is_vgsr_component( 'friends' ) ) {
-				remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
-			}
-			if ( vgsr_bp_is_vgsr_component( 'activity' ) ) {
-				remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
-			}
-			if ( vgsr_bp_is_vgsr_component( 'messages' ) ) {
-				remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
-			}
-			if ( vgsr_bp_is_vgsr_component( 'groups' ) ) {
-				remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
-				remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
-				remove_action( 'bp_directory_groups_actions',      'bp_group_join_button'                            );
-				remove_action( 'bp_groups_directory_group_filter', 'bp_legacy_theme_group_create_nav', 999           );
-				remove_action( 'bp_after_group_admin_content',     'bp_legacy_groups_admin_screen_hidden_input'      );
-				remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
-			}
-			if ( vgsr_bp_is_vgsr_component( 'blogs' ) ) {
-				remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
-				remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
-			}
+			// Unhook theme-compat component hooks
+			$this->unhook_theme_compat();
 		}
 	}
 
@@ -326,6 +298,41 @@ class VGSR_BuddyPress {
 			if ( is_callable( $function ) ) {
 				remove_action( 'bp_screens', $function, 3 );
 			}
+		}
+	}
+
+	/**
+	 * Unhook theme-compat component hooks in bp-legacy
+	 *
+	 * @see BP_Legacy::setup_actions()
+	 *
+	 * @since 0.1.0
+	 */
+	public function unhook_theme_compat() {
+		if ( vgsr_bp_is_vgsr_component( 'friends' ) ) {
+			remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
+		}
+
+		if ( vgsr_bp_is_vgsr_component( 'activity' ) ) {
+			remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
+		}
+
+		if ( vgsr_bp_is_vgsr_component( 'messages' ) ) {
+			remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
+		}
+
+		if ( vgsr_bp_is_vgsr_component( 'groups' ) ) {
+			remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
+			remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
+			remove_action( 'bp_directory_groups_actions',      'bp_group_join_button'                            );
+			remove_action( 'bp_groups_directory_group_filter', 'bp_legacy_theme_group_create_nav', 999           );
+			remove_action( 'bp_after_group_admin_content',     'bp_legacy_groups_admin_screen_hidden_input'      );
+			remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
+		}
+
+		if ( vgsr_bp_is_vgsr_component( 'blogs' ) ) {
+			remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
+			remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
 		}
 	}
 
