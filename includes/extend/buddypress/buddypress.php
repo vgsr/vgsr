@@ -242,7 +242,7 @@ class VGSR_BuddyPress {
 		$bp = buddypress();
 
 		// Define local variable(s)
-		$screen_functions = array();
+		$items = array();
 
 		// For now, only Members and Groups have a nav
 		foreach ( array( 'members', 'groups' ) as $nav_component ) {
@@ -268,29 +268,14 @@ class VGSR_BuddyPress {
 					$slug = $component;
 				}
 
-				// Hide the nav item
-				$nav->edit_nav( array( 'show_for_displayed_user' => false ), $slug );
-
-				// Get the nav item and subnav items...
-				$primary   = $nav->get_primary(   array( 'slug'        => $slug )        );
-				$secondary = $nav->get_secondary( array( 'parent_slug' => $slug ), false );
-
-				// Skip when no primary item was found
-				if ( ! $primary )
-					continue;
-
-				// Delivered as array( $k => $item )
-				$primary = reset( $primary );
-
-				// ... to collect their screen functions
-				$screen_functions[] = $primary->screen_function;
-				if ( ! empty( $secondary ) ) {
-					foreach ( $secondary as $sub_item ) {
-						$screen_functions[] = $sub_item->screen_function;
-					}
-				}
+				// Hide the nav item and get the nav item and subnav items
+				$items[] = $nav->edit_nav( array( 'show_for_displayed_user' => false ), $slug );
+				$items  += $nav->get_secondary( array( 'parent_slug' => $slug ), false );
 			}
 		}
+
+		// Remove falsey findings
+		$items = array_filter( $items );
 
 		/**
 		 * Unhook the nav item's screen functions
@@ -298,9 +283,9 @@ class VGSR_BuddyPress {
 		 * Screen functions deliver the actual content of the pages. If they
 		 * are not providing content, BP does a 404, which is what we want.
 		 */
-		foreach ( $screen_functions as $function ) {
-			if ( is_callable( $function ) ) {
-				remove_action( 'bp_screens', $function, 3 );
+		foreach ( $items as $item ) {
+			if ( isset( $item->screen_function ) && is_callable( $item->screen_function ) ) {
+				remove_action( 'bp_screens', $item->screen_function, 3 );
 			}
 		}
 	}
