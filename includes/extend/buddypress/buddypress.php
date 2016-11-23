@@ -66,6 +66,7 @@ class VGSR_BuddyPress {
 
 		$this->components   = apply_filters( 'vgsr_bp_components', array(
 			'activity',
+			'blogs',
 			'friends',
 			'groups',
 			'messages',
