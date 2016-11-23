@@ -127,12 +127,34 @@ function is_vgsr_post_type( $post_type = '' ) {
  * Defaults to all public registered post types.
  *
  * @since 0.0.7
+ * @since 0.1.0 Applied custom WP_List_Util implementation, and added
+ *              the 'vgsr' post type parameter check.
  *
  * @uses apply_filters() Calls 'vgsr_post_types'
  * @return array Post types
  */
 function vgsr_post_types() {
-	return apply_filters( 'vgsr_post_types', get_post_types( array( 'public' => true ) ) );
+	global $wp_post_types;
+
+	// Since WP 4.7
+	$util = new WP_List_Util( $wp_post_types );
+
+	// Only public post types
+	$util->filter( array( 'public' => true ) );
+
+	/**
+	 * Exclude self-aware vgsr post types
+	 *
+	 * When the current user is vgsr, the post type might be public,
+	 * but the post type is still exclusive in its own right. These
+	 * post types do not need any additional vgsr treatment, so leave
+	 * them out of this collection.
+	 */
+	$util->filter( array( 'vgsr' => true ), 'NOT' );
+
+	$util->pluck( 'name' );
+
+	return apply_filters( 'vgsr_post_types', $util->get_output() );
 }
 
 /** Exclusivity: Query Filters **************************************************/
@@ -205,6 +227,7 @@ function _vgsr_post_query( $query ) {
  * @since 0.0.6
  *
  * @uses apply_filters() Calls 'vgsr_post_nav_menu_objects'
+ *
  * @param array $nav_menu_items Nav menu items
  * @param array $args Query arguments
  * @return array Nav menu items
@@ -233,6 +256,7 @@ function _vgsr_post_nav_menu_objects( $nav_menu_items, $args ) {
  * @since 0.0.6
  *
  * @uses apply_filters() Calls 'vgsr_post_get_pages'
+ *
  * @param array $pages Pages
  * @param array $args Query arguments
  * @return array Pages
@@ -261,6 +285,7 @@ function _vgsr_post_get_pages( $pages, $args ) {
  * @since 0.0.6
  *
  * @uses apply_filters() Calls 'vgsr_post_list_pages'
+ *
  * @param string $title Page title
  * @param WP_Post $args Page object
  * @return string Page title
@@ -285,8 +310,6 @@ function _vgsr_post_list_pages( $title, $page ) {
  *
  * @since 0.0.6
  *
- * @uses _vgsr_post_get_hierarchy()
- *
  * @param string $where Adjacent where clause
  * @return string Adjacent where clause
  */
@@ -309,8 +332,6 @@ function _vgsr_post_get_adjacent_post( $where ) {
  * exclude exclusive posts for non-VGSR users
  *
  * @since 0.0.6
- *
- * @uses _vgsr_post_get_hierarchy()
  *
  * @param string $where Where clause
  * @param array $args Query args
@@ -395,16 +416,6 @@ function _vgsr_post_comment_query( $clause, $query ) {
  * added or removed as child of marked parent posts.
  *
  * @since 0.0.6
- *
- * @uses remove_filter()
- * @uses add_filter()
- * @uses apply_filters() Calls 'vgsr_post_types'
- * @uses get_post_types()
- * @uses get_posts()
- * @uses vgsr_is_post_vgsr()
- * @uses get_children()
- * @uses get_option()
- * @uses update_option()
  *
  * @param int $post_id Post ID
  * @param bool $rebuild Optional. Whether to fully rebuild the post hierarchy
