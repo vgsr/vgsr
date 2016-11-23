@@ -151,29 +151,11 @@ class VGSR_BuddyPress {
 	 * Setup actions and filters to hide BP for non-vgsr users
 	 *
 	 * @since 0.1.0
-	 *
-	 * @todo Invalidate BP's items in nav menus for non-vgsr
 	 */
 	public function hide_buddypress() {
-
-		// Bail when the user can manage BP, but is non-vgsr (e.g. when testing)
-		if ( bp_current_user_can( 'bp_moderate' ) )
-			return;
-
-		// If the user is not logged-in, hide BP completely
-		if ( ! get_current_user_id() ) {
-			/**
-			 * Modify the list of active components before activating them
-			 *
-			 * At this point, the 'members' component isn't loaded yet, so we
-			 * cannot use the member-type logic to determine vgsr-ship.
-			 */
-			add_filter( 'bp_active_components', '__return_empty_array' );
-		}
-
-		add_action( 'bp_register_taxonomies',   array( $this, 'deactivate_components'   ), 99    );
+		add_filter( 'bp_active_components',     array( $this, 'active_components'       )        );
+		add_action( 'bp_template_redirect',     array( $this, 'block_components'        ),  1    ); // Before bp_actions and bp_screens
 		add_action( 'bp_setup_canonical_stack', array( $this, 'setup_default_component' ),  5    ); // Before default priority
-		add_action( 'bp_template_redirect',     array( $this, 'do_404'                  ),  1    );
 		add_filter( 'get_comment_author_url',   array( $this, 'comment_author_url'      ), 12, 3 );
 		add_filter( 'wp_setup_nav_menu_item',   array( $this, 'setup_nav_menu_item'     ), 11    ); // After BP's hook
 	}
@@ -210,79 +192,157 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Modify the logic order of registered component parts
+	 * Modify the list of active components for the current user
 	 *
-	 * At this point, the member-type logic has just become available.
+	 * @since 0.1.0
+	 *
+	 * @param array $components Active components
+	 * @return array Active components
+	 */
+	public function active_components( $components ) {
+
+		// If the user is not logged-in, completely unload BP
+		if ( ! get_current_user_id() ) {
+			$components = array();
+
+		// The user is non-vgsr, so don't load exclusive components
+		} elseif ( ! is_user_vgsr() ) {
+			$components = array_diff_key( $components, array_flip( $this->vgsr_bp_components() ) );
+		}
+
+		return $components;
+	}
+
+	/**
+	 * Block BuddyPress pages for non-vgsr by 404-ing or unhooking
 	 *
 	 * @since 0.1.0
 	 */
-	public function deactivate_components() {
+	public function block_components() {
+
+		// Bail when this is not BP
+		if ( ! is_buddypress() )
+			return;
+
+		// Current user is non-vgsr and page is not their profile, so 404
+		if ( ! is_user_vgsr() && ! bp_is_my_profile() ) {
+
+			// 404 and prevent components from loading their templates
+			remove_all_actions( 'bp_template_redirect' );
+			bp_do_404();
+			return;
+
+		// Viewing a non-vgsr user's profile
+		} elseif ( bp_is_user() && ! is_user_vgsr( bp_displayed_user_id() ) ) {
+
+			// Remove nav items properly
+			$this->unhook_bp_nav_items();
+
+			/**
+			 * Unhook theme-compat component hooks in bp-legacy
+			 *
+			 * @see BP_Legacy::setup_actions()
+			 */
+			if ( $this->is_vgsr_bp_component( 'friends' ) ) {
+				remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
+			}
+			if ( $this->is_vgsr_bp_component( 'activity' ) ) {
+				remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
+			}
+			if ( $this->is_vgsr_bp_component( 'messages' ) ) {
+				remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
+			}
+			if ( $this->is_vgsr_bp_component( 'groups' ) ) {
+				remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
+				remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
+				remove_action( 'bp_directory_groups_actions',      'bp_group_join_button'                            );
+				remove_action( 'bp_groups_directory_group_filter', 'bp_legacy_theme_group_create_nav', 999           );
+				remove_action( 'bp_after_group_admin_content',     'bp_legacy_groups_admin_screen_hidden_input'      );
+				remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
+			}
+			if ( $this->is_vgsr_bp_component( 'blogs' ) ) {
+				remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
+				remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
+			}
+		}
+	}
+
+	/**
+	 * Unhook exclusive registered BP nav items
+	 *
+	 * The following is a combination of logic found in {@see BP_Core_Nav::delete_nav()},
+	 * where the nav items are collected, and {@see bp_core_remove_nav_item()} where the
+	 * actual unhooking is done after the screen_functions are collected.
+	 *
+	 * The thing is, we'd still want to keep the nav items, because they are also used
+	 * for the current user beyond the displayed user's profile navigation. See for example
+	 * the collection of available logged-in pages in {@see bp_nav_menu_get_loggedin_pages()}.
+	 *
+	 * @since 0.1.0
+	 */
+	public function unhook_bp_nav_items() {
 
 		// Get BuddyPress
 		$bp = buddypress();
 
-		// Unhook selected components' elements
-		foreach ( $this->vgsr_bp_components() as $component ) {
+		// Define local variable(s)
+		$screen_functions = array();
 
-			// Skip logic when component is not active
-			if ( ! bp_is_active( $component ) )
+		// For now, only Members and Groups have a nav
+		foreach ( array( 'members', 'groups' ) as $nav_component ) {
+
+			// Component has no navigation
+			if ( ! bp_is_active( $nav_component ) || ! isset( $bp->{$nav_component}->nav ) )
 				continue;
 
-			$class = $bp->{$component};
+			// Get the nav object
+			$nav = $bp->{$nav_component}->nav;
 
-			/**
-			 * Unhook default added component actions, but keep component
-			 * globals and included files.
-			 * 
-			 * @see BP_Component::setup_actions()
-			 */
-			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
-				remove_action( 'bp_setup_nav',       array( $class, 'setup_nav'       ), 10 );
-				remove_action( 'bp_setup_admin_bar', array( $class, 'setup_admin_bar' ), $class->adminbar_myaccount_order );
+			// Walk BP's components
+			foreach ( array_keys( $bp->active_components ) as $component ) {
+
+				// Skip non-exclusive components
+				if ( ! empty( $component ) && ! $this->is_vgsr_bp_component( $component ) )
+					continue;
+
+				// Get the component's primary nav slug or skip
+				if ( is_callable( "bp_get_{$component}_slug" ) ) {
+					$slug = call_user_func( "bp_get_{$component}_slug" );
+				} else {
+					continue;
+				}
+
+				// Hide the nav item
+				$nav->edit_nav( array( 'show_for_displayed_user' => false ), $slug );
+
+				// Get the nav item and subnav items...
+				$primary   = $nav->get_primary(   array( 'slug'        => $slug )        );
+				$secondary = $nav->get_secondary( array( 'parent_slug' => $slug ), false );
+
+				// Delivered as array( 0 => $item )
+				$primary = reset( $primary );
+
+				// ... to collect their screen functions
+				$screen_functions[] = $primary->screen_function;
+				if ( ! empty( $secondary ) ) {
+					foreach ( $secondary as $sub_item ) {
+						$screen_functions[] = $sub_item->screen_function;
+					}
+				}
 			}
-
-			// Remove display component hooks for displayed user
-			if ( bp_is_user() && ! is_user_vgsr( bp_displayed_user_id() ) ) {
-				remove_action( 'bp_setup_nav',   array( $class, 'setup_nav'   ), 10 );
-				remove_action( 'bp_setup_title', array( $class, 'setup_title' ), 10 );
-			}
-
-			// Provide hook for further unhooking
-			do_action( 'vgsr_bp_deactivated_component', $component );
 		}
 
 		/**
-		 * Mark the component as inactive (but do not remove) under certain
-		 * conditions for component checks after this point.
+		 * Unhook the nav item's screen functions
 		 *
-		 * @todo See whether this is still viable, since `bp_is_active()` is also
-		 *       already called before 'bp_init', i.e. on `after_setup_theme()` by
-		 *       the theme-compat's buddypress-functions.php.
+		 * Screen functions deliver the actual content of the pages. If they
+		 * are not providing content, BP does a 404, which is what we want.
 		 */
-		// add_filter( 'bp_is_active', array( $this, 'bp_is_active' ), 10, 2 );
-	}
-
-	/**
-	 * 404 exclusive BuddyPress pages for non-vgsr
-	 *
-	 * @since 0.1.0
-	 */
-	public function do_404() {
-
-		// Bail when this is not BP or the user is vgsr
-		if ( ! is_buddypress() || is_user_vgsr() )
-			return;
-
-		// Bail when:
-		// ... this is the user's own profile AND this is a common component
-		// ... OR this is the registration page
-		// ... OR this is the activation page
-		if ( ( bp_is_my_profile() && ! $this->is_vgsr_bp_component() ) || bp_is_register_page() || bp_is_activation_page() )
-			return;
-
-		// 404 and prevent components from loading their templates
-		remove_all_actions( 'bp_template_redirect' );
-		bp_do_404();
+		foreach ( $screen_functions as $function ) {
+			if ( is_callable( $function ) ) {
+				remove_action( 'bp_screens', $function, 3 );
+			}
+		}
 	}
 
 	/**
@@ -313,33 +373,6 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Modify the return value for active components
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param bool $retval Component is active
-	 * @param string $component Component name
-	 * @return bool Component is active
-	 */
-	public function bp_is_active( $retval, $component ) {
-
-		// Component is vgsr specific
-		if ( $this->is_vgsr_bp_component( $component ) ) {
-
-			// Check the current user
-			if ( ! is_user_vgsr( bp_loggedin_user_id() ) ) {
-				$retval = false;
-
-			// When in the loop, check the displayed user
-			} elseif ( in_the_loop() && bp_is_user() && ! is_user_vgsr( bp_displayed_user_id() ) ) {
-				$retval = false;
-			}
-		}
-
-		return $retval;
-	}
-
-	/**
 	 * Remove the comment author member url for non-vgsr users
 	 *
 	 * @since 0.1.0
@@ -365,7 +398,7 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Invalidate BP menu items for non-vgsr users
+	 * Invalidate BP nav menu items for non-vgsr users
 	 *
 	 * @since 1.0.0
 	 *
@@ -395,8 +428,8 @@ class VGSR_BuddyPress {
 	 */
 	public function bp_setup_nav() {
 
-		// Bail when the current user is vgsr
-		if ( is_user_vgsr() )
+		// Bail when the current user is vgsr or not logged-in
+		if ( ! get_current_user_id() || is_user_vgsr() )
 			return;
 
 		// Settings
@@ -487,6 +520,11 @@ class VGSR_BuddyPress {
 	 */
 	public function get_member_type_users( $member_type = '' ) {
 
+		// Bail early when the member type is invalid
+		if ( empty( $member_type ) ) {
+			return array();
+		}
+
 		/**
 		 * Cache users per member type
 		 *
@@ -496,6 +534,7 @@ class VGSR_BuddyPress {
 		if ( ! isset( $this->member_type_users[ $member_type ] ) ) {
 			global $wpdb;
 
+			// Get the taxonomy name or guess like we're educated
 			$tax = function_exists( 'bp_get_member_type_tax_name' ) ? bp_get_member_type_tax_name() : 'bp_member_type';
 
 			// Switch to the root blog, where member type taxonomies live.
