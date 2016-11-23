@@ -265,7 +265,7 @@ class VGSR_BuddyPress {
 				if ( is_callable( "bp_get_{$component}_slug" ) ) {
 					$slug = call_user_func( "bp_get_{$component}_slug" );
 				} else {
-					continue;
+					$slug = $component;
 				}
 
 				// Hide the nav item
@@ -275,7 +275,11 @@ class VGSR_BuddyPress {
 				$primary   = $nav->get_primary(   array( 'slug'        => $slug )        );
 				$secondary = $nav->get_secondary( array( 'parent_slug' => $slug ), false );
 
-				// Delivered as array( 0 => $item )
+				// Skip when no primary item was found
+				if ( ! $primary )
+					continue;
+
+				// Delivered as array( $k => $item )
 				$primary = reset( $primary );
 
 				// ... to collect their screen functions
