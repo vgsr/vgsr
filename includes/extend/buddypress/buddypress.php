@@ -52,7 +52,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 * 
-	 * @uses apply_filters() Calls 'vgsr_bp_components'
+	 * @uses apply_filters() Calls 'vgsr_components'
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();
@@ -63,15 +63,6 @@ class VGSR_BuddyPress {
 		$this->includes_url = trailingslashit( $vgsr->extend_url . 'buddypress' );
 
 		/** Identifiers ****************************************************/
-
-		$this->components   = apply_filters( 'vgsr_bp_components', array(
-			'activity',
-			'blogs',
-			'friends',
-			'groups',
-			'messages',
-			'notifications'
-		) );
 
 		$this->member_type_users = array();
 	}
@@ -167,28 +158,21 @@ class VGSR_BuddyPress {
 	 *
 	 * @return array Exclusive BP components
 	 */
-	public function vgsr_bp_components() {
-		return $this->components;
-	}
+	public function vgsr_components() {
 
-	/**
-	 * Return whether the given component is exclusive
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param string $component Optional. Defaults to the current component
-	 * @return bool Component is exclusive
-	 */
-	public function is_vgsr_bp_component( $component = '' ) {
-
-		// Default to the current component
-		if ( empty( $component ) ) {
-			$component = bp_current_component();
+		// Define exclusive BP components
+		if ( ! isset( $this->components ) ) {
+			$this->components = apply_filters( 'vgsr_components', array(
+				'activity',
+				'blogs',
+				'friends',
+				'groups',
+				'messages',
+				'notifications'
+			) );
 		}
 
-		$is = in_array( $component, $this->vgsr_bp_components() );
-
-		return $is;
+		return $this->components;
 	}
 
 	/**
@@ -207,7 +191,7 @@ class VGSR_BuddyPress {
 
 		// The user is non-vgsr, so don't load exclusive components
 		} elseif ( ! is_user_vgsr() ) {
-			$components = array_diff_key( $components, array_flip( $this->vgsr_bp_components() ) );
+			$components = array_diff_key( $components, array_flip( $this->vgsr_components() ) );
 		}
 
 		return $components;
@@ -243,16 +227,16 @@ class VGSR_BuddyPress {
 			 *
 			 * @see BP_Legacy::setup_actions()
 			 */
-			if ( $this->is_vgsr_bp_component( 'friends' ) ) {
+			if ( vgsr_bp_is_vgsr_component( 'friends' ) ) {
 				remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
 			}
-			if ( $this->is_vgsr_bp_component( 'activity' ) ) {
+			if ( vgsr_bp_is_vgsr_component( 'activity' ) ) {
 				remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
 			}
-			if ( $this->is_vgsr_bp_component( 'messages' ) ) {
+			if ( vgsr_bp_is_vgsr_component( 'messages' ) ) {
 				remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
 			}
-			if ( $this->is_vgsr_bp_component( 'groups' ) ) {
+			if ( vgsr_bp_is_vgsr_component( 'groups' ) ) {
 				remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
 				remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
 				remove_action( 'bp_directory_groups_actions',      'bp_group_join_button'                            );
@@ -260,7 +244,7 @@ class VGSR_BuddyPress {
 				remove_action( 'bp_after_group_admin_content',     'bp_legacy_groups_admin_screen_hidden_input'      );
 				remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
 			}
-			if ( $this->is_vgsr_bp_component( 'blogs' ) ) {
+			if ( vgsr_bp_is_vgsr_component( 'blogs' ) ) {
 				remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
 				remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
 			}
@@ -302,7 +286,7 @@ class VGSR_BuddyPress {
 			foreach ( array_keys( $bp->active_components ) as $component ) {
 
 				// Skip non-exclusive components
-				if ( ! empty( $component ) && ! $this->is_vgsr_bp_component( $component ) )
+				if ( ! empty( $component ) && ! vgsr_bp_is_vgsr_component( $component ) )
 					continue;
 
 				// Get the component's primary nav slug or skip
@@ -362,7 +346,7 @@ class VGSR_BuddyPress {
 		// ... the activity component is active
 		// ... AND the activity component is exclusive
 		// ... AND the displayed user is non-vgsr
-		if ( bp_is_active( 'activity' ) && $this->is_vgsr_bp_component( 'activity' ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
+		if ( bp_is_active( 'activity' ) && vgsr_bp_is_vgsr_component( 'activity' ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
 			$bp = buddypress();
 
 			// Set the default component to XProfile

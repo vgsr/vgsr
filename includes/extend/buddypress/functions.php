@@ -10,6 +10,28 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+/** Components *************************************************************/
+
+/**
+ * Return whether the given component is exclusive for vgsr
+ *
+ * @since 0.1.0
+ *
+ * @param string $component Optional. Defaults to the current component
+ * @return bool Component is exclusive
+ */
+function vgsr_bp_is_vgsr_component( $component = '' ) {
+
+	// Default to the current component
+	if ( empty( $component ) ) {
+		$component = bp_current_component();
+	}
+
+	$is = in_array( $component, vgsr()->extend->bp->vgsr_components() );
+
+	return $is;
+}
+
 /** Member Types ***********************************************************/
 
 /**
