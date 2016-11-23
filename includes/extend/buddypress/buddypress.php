@@ -398,13 +398,13 @@ class VGSR_BuddyPress {
 	 */
 	public function setup_nav_menu_item( $menu_item ) {
 
-		// Post type menu item
-		if ( 'post_type' == $menu_item->type ) {
+		// Post type menu item, when user is non-vgsr
+		if ( 'post_type' == $menu_item->type && ! is_user_vgsr() ) {
 			$page_ids  = bp_core_get_directory_page_ids( 'all' );
 			$component = array_search( $menu_item->object_id, $page_ids );
 
-			// Invalidate any component's directory page menu item
-			if ( $component && ! is_user_vgsr() ) {
+			// Invalidate all component's directory page menu items
+			if ( $component ) {
 				$menu_item->_invalid = true;
 			}
 		}
