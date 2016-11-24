@@ -52,7 +52,8 @@ function vgsr_admin_get_settings_fields() {
 
 		/** Main Section **************************************************/
 		
-		'vgsr_settings_main' => array(),
+		'vgsr_settings_main' => array(
+		),
 
 		/** Access Section ************************************************/
 		
@@ -87,6 +88,34 @@ function vgsr_admin_get_settings_fields_for_section( $section_id = '' ) {
 	$retval = isset( $fields[$section_id] ) ? $fields[$section_id] : false;
 
 	return (array) apply_filters( 'vgsr_admin_get_settings_fields_for_section', $retval, $section_id );
+}
+
+/**
+ * Return whether the admin page has registered settings
+ *
+ * @since 0.1.0
+ *
+ * @param string $page
+ * @return bool Does the admin page have settings?
+ */
+function vgsr_admin_page_has_settings( $page = '' ) {
+
+	// Bail when page is empty
+	if ( empty( $page ) )
+		return false;
+
+	// Loop through the available sections
+	$sections = wp_list_filter( vgsr_admin_get_settings_sections(), array( 'page' => $page ) );
+	foreach ( (array) $sections as $section_id => $section ) {
+
+		// Find out whether the section has fields
+		$fields = vgsr_admin_get_settings_fields_for_section( $section_id );
+		if ( ! empty( $fields ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /** Main Section **********************************************************/
@@ -154,7 +183,7 @@ function vgsr_setting_callback_private_reading_post_types() {
  *
  * @since 0.0.1
  *
- * @uses do_action() Calls 'vgsr_admin_page_settings_{$tab}'
+ * @uses do_action() Calls 'vgsr_admin_page-{$page}'
  */
 function vgsr_admin_page() {
 
@@ -165,12 +194,12 @@ function vgsr_admin_page() {
 
 	<div class="wrap">
 
-		<h1><?php esc_html_e( 'VGSR', 'vgsr' ); ?></h1>
+		<h1><?php esc_html_e( 'VGSR Settings', 'vgsr' ); ?></h1>
 
-		<h2 class="nav-tab-wrapper"><?php vgsr_admin_settings_tabs(); ?></h2>
+		<h2 class="nav-tab-wrapper"><?php vgsr_admin_page_tabs(); ?></h2>
 
-		<?php switch ( vgsr_admin_get_current_settings_tab() ) :
-			case 'main' : ?>
+		<?php switch ( vgsr_admin_page_get_current_page() ) :
+			case 'vgsr' : ?>
 
 		<form action="<?php echo $form_action; ?>" method="post">
 
@@ -185,9 +214,9 @@ function vgsr_admin_page() {
 			<?php
 				break;
 
-			// Default to custom tab content
+			// Default to custom page content
 			default :
-				do_action( 'vgsr_admin_page_settings_' . vgsr_admin_get_current_settings_tab() );
+				do_action( 'vgsr_admin_page-' . vgsr_admin_page_get_current_page() );
 
 		endswitch; ?>
 
@@ -201,55 +230,82 @@ function vgsr_admin_page() {
  *
  * @since 0.1.0
  */
-function vgsr_admin_settings_tabs() {
+function vgsr_admin_page_tabs() {
 
-	// Get the admin tabs
-	$tabs = vgsr_admin_get_settings_tabs();
-	$tab  = vgsr_admin_get_current_settings_tab();
+	// Get the admin pages
+	$pages = vgsr_admin_page_get_pages();
+	$page  = vgsr_admin_page_get_current_page();
 
-	// Nothing to show when tabs do not count past 1
-	if ( 2 > count( $tabs ) )
-		return;
+	// // Nothing to show when pages do not count past 1
+	// if ( 2 > count( $pages ) )
+	// 	return;
 
-	// Walk registered tabs
-	foreach ( $tabs as $slug => $label ) {
+	// Walk registered pages
+	foreach ( $pages as $slug => $label ) {
 
-		// Skip empty tabs
+		// Skip empty pages
 		if ( empty( $label ) )
 			continue;
 
 		// Print the tab item
 		printf( '<a class="nav-tab%s" href="%s">%s</a>',
-			( $tab === $slug ) ? ' nav-tab-active' : '',
-			esc_url( add_query_arg( array( 'tab' => $slug ), vgsr_admin_url() ) ),
+			( $page === $slug ) ? ' nav-tab-active' : '',
+			esc_url( add_query_arg( array( 'page' => $slug ), vgsr_admin_url() ) ),
 			$label
 		);
 	}
 }
 
 /**
- * Return the admin page tabs
+ * Return the admin page pages
  *
  * @since 0.0.7
  *
- * @uses apply_filters() Calls 'vgsr_admin_get_settings_tabs'
- * @return array Tabs as $slug => $label
+ * @uses apply_filters() Calls 'vgsr_admin_page_get_pages'
+ * @return array Tabs as $page-slug => $label
  */
-function vgsr_admin_get_settings_tabs() {
-	return (array) apply_filters( 'vgsr_admin_get_settings_tabs', array(
-		'main' => esc_html__( 'Main', 'vgsr' )
-	) );
+function vgsr_admin_page_get_pages() {
+
+	// Setup return value
+	$pages = array();
+
+	// Add the main page for 
+	if ( vgsr_admin_page_has_settings( 'vgsr' ) ) {
+		$pages['vgsr'] = esc_html__( 'Main', 'vgsr' );
+	}
+
+	return (array) apply_filters( 'vgsr_admin_page_get_pages', $pages );
 }
 
 /**
- * Return the current admin tab
+ * Return whether any admin page pages are registered
  *
  * @since 0.1.0
  *
- * @return string The current admin tab. Defaults to 'main'.
+ * @return bool Haz admin page pages?
  */
-function vgsr_admin_get_current_settings_tab() {
-	return ( isset( $_GET['tab'] ) && in_array( $_GET['tab'], array_keys( vgsr_admin_get_settings_tabs() ) ) ) ? $_GET['tab'] : 'main';
+function vgsr_admin_page_has_pages() {
+	return (bool) vgsr_admin_page_get_pages();
+}
+
+/**
+ * Return the current admin page
+ *
+ * @since 0.1.0
+ *
+ * @return string The current admin page. Defaults to the first page.
+ */
+function vgsr_admin_page_get_current_page() {
+
+	$pages = array_keys( vgsr_admin_page_get_pages() );
+	$page  = ( isset( $_GET['page'] ) && in_array( $_GET['page'], $pages ) ) ? $_GET['page'] : false;
+
+	// Default to the first page
+	if ( ! $page && $pages ) {
+		$page = reset( $pages );
+	}
+
+	return $page;
 }
 
 /**

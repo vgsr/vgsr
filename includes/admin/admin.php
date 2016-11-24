@@ -115,13 +115,17 @@ class VGSR_Admin {
 		if ( ! current_user_can( 'vgsr_settings_page' ) )
 			return;
 
+		// Bail when no admin pages were registered
+		if ( ! vgsr_admin_page_has_pages() )
+			return;
+
 		// Register admin page
 		$hook = add_submenu_page(
 			$this->parent_page,
 			_x( 'VGSR Settings', 'settings page title', 'vgsr' ),
 			_x( 'VGSR',          'settings menu title', 'vgsr' ),
 			$this->minimum_capability,
-			'vgsr',
+			vgsr_admin_page_get_current_page(),
 			'vgsr_admin_page'
 		);
 
