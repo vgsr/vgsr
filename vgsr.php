@@ -9,7 +9,7 @@
 
 /**
  * Plugin Name:       VGSR
- * Description:       Fill in the blanks for vgsr.nl
+ * Description:       Main utility plugin for vgsr.nl
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
@@ -31,33 +31,6 @@ if ( ! class_exists( 'VGSR' ) ) :
  */
 final class VGSR {
 
-	/** Magic *****************************************************************/
-
-	/**
-	 * VGSR uses many variables, several of which can be filtered to
-	 * customize the way it operates. Most of these variables are stored in a
-	 * private array that gets updated with the help of PHP magic methods.
-	 *
-	 * This is a precautionary measure, to avoid potential errors produced by
-	 * unanticipated direct manipulation of VGSR's run-time data.
-	 *
-	 * @see VGSR::setup_globals()
-	 * @var array
-	 */
-	private $data;
-
-	/** Not Magic *************************************************************/
-
-	/**
-	 * @var mixed False when not logged in; WP_User object when logged in
-	 */
-	public $current_user = false;
-
-	/**
-	 * @var obj Add-ons append to this (Akismet, BuddyPress, etc...)
-	 */
-	public $extend;
-
 	/** Singleton *************************************************************/
 
 	/**
@@ -68,7 +41,6 @@ final class VGSR {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @staticvar object $instance
 	 * @uses VGSR::setup_globals() Setup the globals needed
 	 * @uses VGSR::includes() Include the required files
 	 * @uses VGSR::setup_actions() Setup the hooks and actions
@@ -119,34 +91,6 @@ final class VGSR {
 	public function __wakeup() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'vgsr' ), '0.1' ); }
 
 	/**
-	 * Magic method for checking the existence of a certain custom field
-	 *
-	 * @since 0.0.1
-	 */
-	public function __isset( $key ) { return isset( $this->data[$key] ); }
-
-	/**
-	 * Magic method for getting VGSR variables
-	 *
-	 * @since 0.0.1
-	 */
-	public function __get( $key ) { return isset( $this->data[$key] ) ? $this->data[$key] : null; }
-
-	/**
-	 * Magic method for setting VGSR variables
-	 *
-	 * @since 0.0.1
-	 */
-	public function __set( $key, $value ) { $this->data[$key] = $value; }
-
-	/**
-	 * Magic method for unsetting VGSR variables
-	 *
-	 * @since 0.0.1
-	 */
-	public function __unset( $key ) { if ( isset( $this->data[$key] ) ) unset( $this->data[$key] ); }
-
-	/**
 	 * Magic method to prevent notices and errors from invalid method calls
 	 *
 	 * @since 0.0.1
@@ -156,15 +100,9 @@ final class VGSR {
 	/** Private Methods *******************************************************/
 
 	/**
-	 * Set some smart defaults to class variables. Allow some of them to be
-	 * filtered to allow for early overriding.
+	 * Setup default class globals
 	 *
 	 * @since 0.0.1
-	 *
-	 * @access private
-	 * @uses plugin_dir_path() To generate VGSR plugin path
-	 * @uses plugin_dir_url() To generate VGSR plugin url
-	 * @uses apply_filters() Calls various filters
 	 */
 	private function setup_globals() {
 
@@ -200,10 +138,6 @@ final class VGSR {
 		$this->themes_dir   = trailingslashit( $this->plugin_dir . 'templates' );
 		$this->themes_url   = trailingslashit( $this->plugin_url . 'templates' );
 
-		/** Users *************************************************************/
-
-		$this->current_user = new WP_User(); // Currently logged in user
-
 		/** Misc **************************************************************/
 
 		$this->domain       = 'vgsr';         // Unique identifier for retrieving translated strings
@@ -215,9 +149,6 @@ final class VGSR {
 	 * Include required files
 	 *
 	 * @since 0.0.1
-	 *
-	 * @access private
-	 * @uses is_admin() If in WordPress admin, load additional file
 	 */
 	private function includes() {
 
@@ -251,12 +182,9 @@ final class VGSR {
 	}
 
 	/**
-	 * Setup the default hooks and actions
+	 * Setup default actions and filters
 	 *
 	 * @since 0.0.1
-	 *
-	 * @access private
-	 * @uses add_action() To add various actions
 	 */
 	private function setup_actions() {
 
@@ -270,9 +198,7 @@ final class VGSR {
 
 		// Array of VGSR core actions
 		$actions = array(
-			// 'setup_current_user',       // Setup currently logged in user
-			// 'register_shortcodes',      // Register shortcodes (vgsr-login)
-			'load_textdomain',          // Load textdomain (vgsr)
+			'load_textdomain', // Load textdomain (vgsr)
 		);
 
 		// Add the actions
@@ -313,24 +239,11 @@ final class VGSR {
 		// Look in global /wp-content/languages/vgsr folder
 		load_textdomain( $this->domain, $mofile_global );
 
-		// Look in local /wp-content/plugins/vgsr/vgsr-languages/ folder
+		// Look in local /wp-content/plugins/vgsr/languages/ folder
 		load_textdomain( $this->domain, $mofile_local );
-	}
 
-	/**
-	 * Setup the currently logged-in user
-	 *
-	 * Do not to call this prematurely, I.E. before the 'init' action has
-	 * started. This function is naturally hooked into 'init' to ensure proper
-	 * execution. get_currentuserinfo() is used to check for XMLRPC_REQUEST to
-	 * avoid xmlrpc errors.
-	 *
-	 * @since 0.0.1
-	 *
-	 * @uses wp_get_current_user()
-	 */
-	public function setup_current_user() {
-		$this->current_user = wp_get_current_user();
+		// Look in global /wp-content/languages/plugins/
+		load_plugin_textdomain( $this->domain );
 	}
 }
 
@@ -356,4 +269,4 @@ function vgsr() {
 // "Dat kan alleen in Rotterdam!"
 vgsr();
 
-endif; // class_exists check
+endif; // class_exists
