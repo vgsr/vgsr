@@ -15,10 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  *
- * @uses did_action()
- * @uses get_current_user_id()
  * @uses apply_filters() Calls 'determine_current_user'
- * 
  * @return int User ID
  */
 function vgsr_get_current_user_id() {
@@ -30,18 +27,17 @@ function vgsr_get_current_user_id() {
  * 
  * @since 0.1.0
  *
- * @uses apply_filters() Calls 'vgsr_get_users'
  * @param array $args Optional. Arguments for use in `WP_User_Query`.
  * @return array Users
  */
 function vgsr_get_users( $args = array() ) {
 
+	// Define query arguments. Default to all vgsr users.
 	$args = wp_parse_args( $args, array( 'vgsr' => true ) );
 	$args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
 
-	$users = get_users( $args );
-
-	return (array) apply_filters( 'vgsr_get_users', $users, $args );
+	// Query the users
+	return get_users( $args );
 }
 
 /**
@@ -54,9 +50,11 @@ function vgsr_get_users( $args = array() ) {
  */
 function vgsr_dropdown_users( $args = array() ) {
 
+	// Define user query arguments. Default to all vgsr users.
 	$args = wp_parse_args( $args, array( 'vgsr' => true ) );
 	$args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
 
+	// Get the dropdown
 	return wp_dropdown_users( $args );
 }
 
@@ -115,6 +113,9 @@ function vgsr_pre_user_query( $query ) {
 /**
  * Return whether a given user is marked as VGSR
  *
+ * Plugins hook in the provided filter to determine whether the
+ * given user is indeed so. The function assumes not by default.
+ *
  * @since 0.0.1
  *
  * @uses apply_filters() Calls 'is_user_vgsr'
@@ -135,6 +136,9 @@ function is_user_vgsr( $user_id = 0 ) {
 /**
  * Return whether a given user is marked as Lid
  *
+ * Plugins hook in the provided filter to determine whether the
+ * given user is indeed so. The function assumes not by default.
+ *
  * @since 0.0.1
  *
  * @uses apply_filters() Calls 'is_user_lid'
@@ -154,6 +158,9 @@ function is_user_lid( $user_id = 0 ) {
 
 /**
  * Return whether a given user is marked as Oud-lid
+ *
+ * Plugins hook in the provided filter to determine whether the
+ * given user is indeed so. The function assumes not by default.
  *
  * @since 0.0.1
  *
