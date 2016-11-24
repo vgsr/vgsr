@@ -10,16 +10,27 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/** Meta *******************************************************************/
+/** General ****************************************************************/
+
+/**
+ * Return the plugin's admin page url
+ *
+ * @since 0.1.0
+ *
+ * @return string Admin page url
+ */
+function vgsr_admin_url() {
+	return add_query_arg( array( 'page' => 'vgsr' ), is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'admin.php' ) );
+}
+
+/** Site *******************************************************************/
 
 /**
  * Catch the manifest request and serve it for the main site
  *
- * @since 0.1.0
+ * @see vgsr_manifest_json()
  *
- * @uses is_main_site()
- * @uses vgsr_manifest_json()
- * @uses auth_redirect()
+ * @since 0.1.0
  */
 function vgsr_manifest_json_route() {
 

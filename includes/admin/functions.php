@@ -23,17 +23,6 @@ function vgsr_admin_menu_hook() {
 	return is_multisite() ? 'network_admin_menu' : 'admin_menu';
 }
 
-/**
- * Return the url to the plugin's admin area
- *
- * @since 0.1.0
- *
- * @return string Plugin admin url
- */
-function vgsr_admin_url() {
-	return add_query_arg( array( 'page' => 'vgsr' ), network_admin_url( vgsr()->admin->parent_page ) );
-}
-
 /** Posts *****************************************************************/
 
 /**
