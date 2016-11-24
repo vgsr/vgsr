@@ -412,10 +412,12 @@ class VGSR_BuddyPress {
 		if ( ! get_current_user_id() || is_user_vgsr() )
 			return;
 
-		// Settings
-		remove_all_actions( 'bp_notification_settings' ); // Eliminates need for Email (admin) nav, but may be too restrictive
-		bp_core_remove_subnav_item( bp_get_settings_slug(), 'notifications' );
-		bp_core_remove_subnav_item( bp_get_settings_slug(), 'profile'       ); // See BP_XProfile_Component::setup_settings_nav()
+		// Settings component
+		if ( bp_is_active( 'settings' ) ) {
+			remove_all_actions( 'bp_notification_settings' ); // Eliminates need for Email (admin) nav, but may be too restrictive
+			bp_core_remove_subnav_item( bp_get_settings_slug(), 'notifications' );
+			bp_core_remove_subnav_item( bp_get_settings_slug(), 'profile'       ); // See BP_XProfile_Component::setup_settings_nav()
+		}
 	}
 
 	/** Capabilities *******************************************************/
