@@ -117,11 +117,8 @@ class VGSR_Admin {
 		add_filter( 'vgsr_map_meta_caps',  array( $this, 'map_settings_meta_caps'     ), 10, 4 );
 
 		// Post exclusivity
-		add_filter( 'display_post_states',        array( $this, 'display_post_states'  ), 10, 2 );
-		add_filter( 'manage_posts_columns',       array( $this, 'get_post_columns'     )        );
-		add_filter( 'manage_pages_columns',       array( $this, 'get_post_columns'     )        );
-		add_filter( 'manage_posts_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
-		add_filter( 'manage_pages_custom_column', array( $this, 'post_columns_content' ), 10, 2 );
+		add_action( 'vgsr_admin_init',     array( $this, 'setup_vgsr_post_columns' )        );
+		add_filter( 'display_post_states', array( $this, 'display_post_states'     ), 10, 2 );
 
 		/** Dependencies ******************************************************/
 
@@ -388,6 +385,20 @@ class VGSR_Admin {
 	/** Posts *****************************************************************/
 
 	/**
+	 * Setup post administration column actions
+	 *
+	 * @since 0.1.0
+	 */
+	public function setup_vgsr_post_columns() {
+
+		// Walk the post types
+		foreach ( vgsr_post_types() as $post_type ) {
+			add_filter( "manage_{$post_type}_posts_columns",       array( $this, 'get_post_columns'     )        );
+			add_filter( "manage_{$post_type}_posts_custom_column", array( $this, 'post_columns_content' ), 10, 2 );
+		}
+	}
+
+	/**
 	 * Filter the post administration columns
 	 *
 	 * @since 0.0.6
@@ -400,15 +411,11 @@ class VGSR_Admin {
 		// Use screen object
 		$screen = get_current_screen();
 
-		// Only if this post type applies
-		if ( isset( $screen->post_type ) && is_vgsr_post_type( $screen->post_type ) ) {
+		// Dummy column to enable quick edit
+		$columns['vgsr'] = _x( 'VGSR', 'exclusivity title', 'vgsr' );
 
-			// Dummy column to enable quick edit
-			$columns['vgsr'] = _x( 'VGSR', 'exclusivity title', 'vgsr' );
-
-			// Hide dummy column by default
-			add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
-		}
+		// Hide dummy column by default
+		add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
 
 		return $columns;
 	}
@@ -434,21 +441,14 @@ class VGSR_Admin {
 	 *
 	 * @since 0.0.6
 	 *
-	 * @uses vgsr_is_post_vgsr()
-	 *
 	 * @param string $column Column name
 	 * @param int $post_id Post ID
 	 */
 	public function post_columns_content( $column, $post_id ) {
 
-		// Check column name
-		switch ( $column ) {
-			case 'vgsr' :
-
-				// Display whether the post is exclusive (for Quick Edit)
-				if ( vgsr_is_post_vgsr( $post_id ) ) {
-					echo '<i class="dashicons-before dashicons-yes"></i>';
-				}
+		// Display whether the post is exclusive (for Quick Edit)
+		if ( 'vgsr' === $column && vgsr_is_post_vgsr( $post_id ) ) {
+			echo '<i class="dashicons-before dashicons-yes"></i>';
 		}
 	}
 
@@ -456,8 +456,6 @@ class VGSR_Admin {
 	 * Manipulate post states
 	 *
 	 * @since 0.0.6
-	 *
-	 * @uses vgsr_is_post_vgsr()
 	 *
 	 * @param array $states Post states
 	 * @param WP_Post $post Post object
