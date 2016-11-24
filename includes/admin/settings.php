@@ -236,10 +236,6 @@ function vgsr_admin_page_tabs() {
 	$pages = vgsr_admin_page_get_pages();
 	$page  = vgsr_admin_page_get_current_page();
 
-	// // Nothing to show when pages do not count past 1
-	// if ( 2 > count( $pages ) )
-	// 	return;
-
 	// Walk registered pages
 	foreach ( $pages as $slug => $label ) {
 
