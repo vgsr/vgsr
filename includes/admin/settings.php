@@ -52,9 +52,7 @@ function vgsr_admin_get_settings_fields() {
 
 		/** Main Section **************************************************/
 		
-		'vgsr_settings_main' => array(
-			// Fields
-		),
+		'vgsr_settings_main' => array(),
 
 		/** Access Section ************************************************/
 		
@@ -98,12 +96,11 @@ function vgsr_admin_get_settings_fields_for_section( $section_id = '' ) {
  * 
  * @since 0.0.1
  */
-function vgsr_admin_setting_callback_main_section() {
-?>
+function vgsr_admin_setting_callback_main_section() { ?>
 
 	<p><?php esc_html_e( 'Set the main functionality options for VGSR.', 'vgsr' ); ?></p>
 
-<?php
+	<?php
 }
 
 /** Access Section ********************************************************/
@@ -115,7 +112,7 @@ function vgsr_admin_setting_callback_main_section() {
  */
 function vgsr_admin_setting_callback_access_section() { ?>
 
-	<p><?php esc_html_e( 'Tweak here the settings for accessing your site contents.', 'vgsr' ); ?></p>
+	<p><?php esc_html_e( "Tweak here the settings about access to your site's contents.", 'vgsr' ); ?></p>
 
 	<?php
 }
@@ -153,52 +150,46 @@ function vgsr_setting_callback_private_reading_post_types() {
 /** Settings Page *************************************************************/
 
 /**
- * The main settings page
+ * The main plugin settings page
  *
  * @since 0.0.1
  *
- * @uses is_multisite()
- * @uses vgsr_admin_page_tabs()
- * @uses settings_fields() To output the hidden fields for the form
- * @uses do_settings_sections() To output the settings sections
- * @uses submit_button()
- * @uses do_action() Calls 'vgsr_admin_page_{$tab}'
+ * @uses do_action() Calls 'vgsr_admin_page_settings_{$tab}'
  */
 function vgsr_admin_page() {
 
-	// Define the form destination
-	$destination = is_multisite() ? 'edit.php?action=vgsr' : 'options.php';
+	// Define the form action
+	$form_action = is_network_admin() ? vgsr_admin_url() : 'options.php';
 
-	// Get admin page tabs
-	$tabs = vgsr_admin_page_tabs();
-	$tab  = isset( $_GET['tab'] ) && in_array( $_GET['tab'], array_keys( $tabs ) ) ? $_GET['tab'] : 'main'; ?>
+	?>
 
 	<div class="wrap">
-		<?php screen_icon(); ?>
 
-		<h2 class="nav-tab-wrapper">
-			<?php esc_html_e( 'VGSR', 'vgsr' ); ?>
-			<?php foreach ( $tabs as $slug => $label ) :
-				printf( '<a class="nav-tab%s" href="%s">%s</a>',
-					( $tab == $slug ) ? ' nav-tab-active' : '',
-					add_query_arg( array( 'page' => 'vgsr', 'tab' => $slug ), self_admin_url( is_multisite() ? 'settings.php' : 'options-general.php' ) ),
-					$label
-				);
-			endforeach; ?>
-		</h2>
+		<h1><?php esc_html_e( 'VGSR', 'vgsr' ); ?></h1>
 
-		<?php // The main admin page ?>
-		<?php if ( 'main' == $tab ) : ?>
+		<h2 class="nav-tab-wrapper"><?php vgsr_admin_settings_tabs(); ?></h2>
 
-		<form action="<?php echo $destination; ?>" method="post">
+		<?php switch ( vgsr_admin_get_current_settings_tab() ) :
+			case 'main' : ?>
+
+		<form action="<?php echo $form_action; ?>" method="post">
+
 			<?php settings_fields( 'vgsr' ); ?>
+
 			<?php do_settings_sections( 'vgsr' ); ?>
+
 			<?php submit_button(); ?>
+
 		</form>
 
-		<?php else :
-			do_action( "vgsr_admin_page_{$tab}" );
-		endif; ?>
+			<?php
+				break;
+
+			// Default to custom tab content
+			default :
+				do_action( 'vgsr_admin_page_settings_' . vgsr_admin_get_current_settings_tab() );
+
+		endswitch; ?>
 
 	</div>
 
@@ -206,79 +197,98 @@ function vgsr_admin_page() {
 }
 
 /**
+ * Display the admin settings page tabs items
+ *
+ * @since 0.1.0
+ */
+function vgsr_admin_settings_tabs() {
+
+	// Get the admin tabs
+	$tabs = vgsr_admin_get_settings_tabs();
+	$tab  = vgsr_admin_get_current_settings_tab();
+
+	// Nothing to show when tabs do not count past 1
+	if ( 2 > count( $tabs ) )
+		return;
+
+	// Walk registered tabs
+	foreach ( $tabs as $slug => $label ) {
+
+		// Skip empty tabs
+		if ( empty( $label ) )
+			continue;
+
+		// Print the tab item
+		printf( '<a class="nav-tab%s" href="%s">%s</a>',
+			( $tab === $slug ) ? ' nav-tab-active' : '',
+			esc_url( add_query_arg( array( 'tab' => $slug ), vgsr_admin_url() ) ),
+			$label
+		);
+	}
+}
+
+/**
  * Return the admin page tabs
  *
  * @since 0.0.7
  *
- * @uses apply_filters() Calls 'vgsr_admin_page_tabs'
- * 
+ * @uses apply_filters() Calls 'vgsr_admin_get_settings_tabs'
  * @return array Tabs as $slug => $label
  */
-function vgsr_admin_page_tabs() {
-	return apply_filters( 'vgsr_admin_page_tabs', array(
-		'main' => __( 'Main', 'vgsr' ),
+function vgsr_admin_get_settings_tabs() {
+	return (array) apply_filters( 'vgsr_admin_get_settings_tabs', array(
+		'main' => esc_html__( 'Main', 'vgsr' )
 	) );
+}
+
+/**
+ * Return the current admin tab
+ *
+ * @since 0.1.0
+ *
+ * @return string The current admin tab. Defaults to 'main'.
+ */
+function vgsr_admin_get_current_settings_tab() {
+	return ( isset( $_GET['tab'] ) && in_array( $_GET['tab'], array_keys( vgsr_admin_get_settings_tabs() ) ) ) ? $_GET['tab'] : 'main';
+}
+
+/**
+ * Save admin settings
+ *
+ * @see bp_core_admin_settings_save()
+ *
+ * @since 1.0.0
+ */
+function vgsr_admin_settings_save() {
+	global $wp_settings_fields;
+
+	// Core settings are submitted
+	if ( is_network_admin() && isset( $_GET['page'] ) && 'vgsr' == $_GET['page'] && ! empty( $_POST['submit'] ) ) {
+		check_admin_referer( 'vgsr-options' );
+
+		// Because many settings are saved with checkboxes, and thus will have no values
+		// in the $_POST array when unchecked, we loop through the registered settings.
+		if ( isset( $wp_settings_fields['vgsr'] ) ) {
+			foreach ( (array) $wp_settings_fields['vgsr'] as $section => $settings ) {
+				foreach ( $settings as $setting_name => $setting ) {
+					$value = isset( $_POST[ $setting_name ] ) ? $_POST[ $setting_name ] : '';
+
+					update_network_option( null, $setting_name, $value );
+				}
+			}
+		}
+
+		wp_safe_redirect( add_query_arg( array( 'updated' => 'true' ), vgsr_admin_url() ) );
+		die;
+	}
 }
 
 /** Helpers *******************************************************************/
 
 /**
- * Contextual help for VGSR settings page
- *
- * @since 0.0.1
- * 
- * @uses get_current_screen()
- */
-function vgsr_admin_page_help() {
-
-	$current_screen = get_current_screen();
-
-	// Bail if current screen could not be found
-	if ( empty( $current_screen ) )
-		return;
-
-	// Overview
-	$current_screen->add_help_tab( array(
-		'id'      => 'overview',
-		'title'   => __( 'Overview', 'vgsr' ),
-		'content' => '<p>' . __( 'This screen provides access to all of the VGSR settings.',                            'vgsr' ) . '</p>' .
-					 '<p>' . __( 'Please see the additional help tabs for more information on each indiviual section.', 'vgsr' ) . '</p>'
-	) );
-
-	// Main Settings
-	$current_screen->add_help_tab( array(
-		'id'      => 'main_settings',
-		'title'   => __( 'Main Settings', 'vgsr' ),
-		'content' => '<p>' . __( 'In the Main Settings you have a number of options:', 'vgsr' ) . '</p>' .
-					 '<p>' .
-						'<ul>' .
-							'<li>' . __( 'You can choose to lock a post after a certain number of minutes. "Locking post editing" will prevent the author from editing some amount of time after saving a post.',              'vgsr' ) . '</li>' .
-							'<li>' . __( '"Throttle time" is the amount of time required between posts from a single author. The higher the throttle time, the longer a user will need to wait between posting to the forum.', 'vgsr' ) . '</li>' .
-							'<li>' . __( 'Favorites are a way for users to save and later return to topics they favor. This is enabled by default.',                                                                           'vgsr' ) . '</li>' .
-							'<li>' . __( 'Subscriptions allow users to subscribe for notifications to topics that interest them. This is enabled by default.',                                                                 'vgsr' ) . '</li>' .
-							'<li>' . __( 'Topic-Tags allow users to filter topics between forums. This is enabled by default.',                                                                                                'vgsr' ) . '</li>' .
-							'<li>' . __( '"Anonymous Posting" allows guest users who do not have accounts on your site to both create topics as well as replies.',                                                             'vgsr' ) . '</li>' .
-							'<li>' . __( 'The Fancy Editor brings the luxury of the Visual editor and HTML editor from the traditional WordPress dashboard into your theme.',                                                  'vgsr' ) . '</li>' .
-							'<li>' . __( 'Auto-embed will embed the media content from a URL directly into the replies. For example: links to Flickr and YouTube.',                                                            'vgsr' ) . '</li>' .
-						'</ul>' .
-					 '</p>' .
-					 '<p>' . __( 'You must click the Save Changes button at the bottom of the screen for new settings to take effect.', 'vgsr' ) . '</p>'
-	) );
-
-	// Help Sidebar
-	$current_screen->set_help_sidebar(
-		'<p><strong>' . __( 'For more information:', 'vgsr' ) . '</strong></p>' .
-		'<p>' . __( '<a href="http://codex.vgsr.nl" target="_blank">VGSR Documentation</a>',       'vgsr' ) . '</p>' .
-		'<p>' . __( '<a href="http://www.vgsr.nl/forum/" target="_blank">VGSR Support Forums</a>', 'vgsr' ) . '</p>'
-	);
-}
-
-/**
  * Output settings API option
  *
  * @since 0.0.1
- *
- * @uses vgsr_get_form_option()
  *
  * @param string $option
  * @param string $default
@@ -287,23 +297,23 @@ function vgsr_admin_page_help() {
 function vgsr_form_option( $option, $default = '' , $slug = false ) {
 	echo vgsr_get_form_option( $option, $default, $slug );
 }
+
 	/**
 	 * Return settings API option
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses get_option()
-	 * @uses esc_attr()
-	 * @uses apply_filters()
+	 * @uses apply_filters() Calls 'vgsr_get_form_option'
 	 *
 	 * @param string $option
 	 * @param string $default
 	 * @param bool $slug
+	 * @return mixed Option form value
 	 */
 	function vgsr_get_form_option( $option, $default = '', $slug = false ) {
 
 		// Get the option and sanitize it
-		$value = get_option( $option, $default );
+		$value = get_network_option( null, $option, $default );
 
 		// Slug?
 		if ( true === $slug ) {

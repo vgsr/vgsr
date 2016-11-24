@@ -4,7 +4,7 @@
  * VGSR Admin Actions
  *
  * @package VGSR
- * @subpackage Admin
+ * @subpackage Administration
  *
  * This file contains the actions that are used through-out VGSR Admin. They
  * are consolidated here to make searching for them easier, and to help developers
@@ -35,87 +35,17 @@ defined( 'ABSPATH' ) || exit;
  *
  *           v--WordPress Actions       v--VGSR Sub-actions
  */
-add_action( 'admin_menu',              'vgsr_admin_menu'      );
+add_action( vgsr_admin_menu_hook(),    'vgsr_admin_menu'      );
 add_action( 'admin_init',              'vgsr_admin_init'      );
 add_action( 'admin_head',              'vgsr_admin_head'      );
 add_action( 'admin_footer',            'vgsr_admin_footer'    );
 add_action( 'admin_notices',           'vgsr_admin_notices'   );
 
 // Hook on to admin_init
-add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings' );
-
-// Initialize the admin area
-add_action( 'vgsr_init', 'vgsr_admin' );
+add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings'      );
+add_action( 'vgsr_admin_init', 'vgsr_admin_settings_save',     100 );
 
 // Posts - Exclusivity
 add_action( 'post_submitbox_misc_actions', 'vgsr_is_post_vgsr_meta'             );
 add_action( 'save_post',                   'vgsr_is_post_vgsr_meta_save'        );
 add_action( 'quick_edit_custom_box',       'vgsr_post_vgsr_quick_edit',   10, 2 );
-
-/** Sub-Actions ***************************************************************/
-
-/**
- * Piggy back admin_init action
- * 
- * @since 0.0.1
- *
- * @uses do_action() Calls 'vgsr_admin_init'
- */
-function vgsr_admin_init() {
-	do_action( 'vgsr_admin_init' );
-}
-
-/**
- * Piggy back admin_menu action
- * 
- * @since 0.0.1
- *
- * @uses do_action() Calls 'vgsr_admin_menu'
- */
-function vgsr_admin_menu() {
-	do_action( 'vgsr_admin_menu' );
-}
-
-/**
- * Piggy back admin_head action
- * 
- * @since 0.0.1
- *
- * @uses do_action() Calls 'vgsr_admin_head'
- */
-function vgsr_admin_head() {
-	do_action( 'vgsr_admin_head' );
-}
-
-/**
- * Piggy back admin_footer action
- * 
- * @since 0.0.1
- *
- * @uses do_action() Calls 'vgsr_admin_footer'
- */
-function vgsr_admin_footer() {
-	do_action( 'vgsr_admin_footer' );
-}
-
-/**
- * Piggy back admin_notices action
- * 
- * @since 0.0.1
- *
- * @uses do_action() Calls 'vgsr_admin_notices'
- */
-function vgsr_admin_notices() {
-	do_action( 'vgsr_admin_notices' );
-}
-
-/**
- * Dedicated action to register admin settings
- * 
- * @since 0.0.1
- *
- * @uses do_action() Calls 'vgsr_register_admin_settings'
- */
-function vgsr_register_admin_settings() {
-	do_action( 'vgsr_register_admin_settings' );
-}
