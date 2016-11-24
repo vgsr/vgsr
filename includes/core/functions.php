@@ -23,6 +23,49 @@ function vgsr_admin_url() {
 	return add_query_arg( array( 'page' => 'vgsr' ), is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'admin.php' ) );
 }
 
+/** Login ******************************************************************/
+
+/**
+ * Return the site's title for the login logo
+ *
+ * @since 0.1.0
+ *
+ * @param string $title Login header title
+ * @return string Login header title
+ */
+function vgsr_login_header_title( $title ) {
+	return __( 'Vereniging van Gereformeerde Studenten te Rotterdam', 'vgsr' );
+}
+
+/**
+ * Add additional scripts for the login page
+ *
+ * @since 0.1.0
+ */
+function vgsr_login_enqueue_scripts() {
+
+	// Define style url
+	$style = array();
+
+	// Replace the WP logo
+	$style[] = ".login h1 a { background-image: url('" . vgsr()->assets_url . "images/logo.svg'); -webkit-background-size: 94px; background-size: 94px; width: 94px; height: 94px; }";
+
+	/**
+	 * Firefox does not render letter-spacing and word-spacing correctly
+	 * on svg textpaths, so fall back to an image.
+	 *
+	 * @link https://bugzilla.mozilla.org/show_bug.cgi?id=371787
+	 */	
+	$style[] = "@-moz-document url-prefix() {";
+	$style[] = ".login h1 a { background-image: url('" . vgsr()->assets_url . "images/logo.png'; ?>'); }";
+	$style[] = "}";
+
+	// Append additional styles
+	if ( ! empty( $style ) ) {
+		wp_add_inline_style( 'login', implode( "\n", $style ) );
+	}
+}
+
 /** Site *******************************************************************/
 
 /**
@@ -63,8 +106,6 @@ function vgsr_manifest_json_route() {
  * the website should be installed on the device as a web app.
  *
  * @since 0.1.0
- *
- * @uses is_main_site()
  */
 function vgsr_manifest_meta_tag() {
 
@@ -86,10 +127,6 @@ function vgsr_manifest_meta_tag() {
  * @link https://medium.com/@franciov/how-to-make-your-web-app-installable-8b71571605e
  *
  * @since 0.1.0
- *
- * @uses has_site_icon()
- * @uses get_site_icon_url()
- * @uses wp_send_json()
  */
 function vgsr_manifest_json() {
 
@@ -160,18 +197,17 @@ function vgsr_manifest_json() {
  *
  * @since 0.1.0
  *
- * @uses get_user_by()
- * @uses is_user_vgsr()
- *
  * @param int|string $approved Approved status
  * @param array $commentdata New comment data
  * @return int|string Approved status
  */
 function vgsr_pre_comment_approved( $approved, $commentdata ) {
 
-	// Approve a VGSR user's comments without further moderation.
+	// Approve a vgsr user's comments without further moderation.
 	if ( ! $approved && ! empty( $commentdata['user_id'] ) ) {
 		$user = get_user_by( 'id', $commentdata['user_id'] );
+
+		// Approve the vgsr user's comment
 		if ( $user && is_user_vgsr( $user->ID ) ) {
 			$approved = 1;
 		}

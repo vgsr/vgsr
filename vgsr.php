@@ -223,15 +223,12 @@ final class VGSR {
 
 		/** Core **************************************************************/
 
-		require( $this->includes_dir . 'core/sub-actions.php'   );
 		require( $this->includes_dir . 'core/functions.php'     );
 		require( $this->includes_dir . 'core/options.php'       );
+		require( $this->includes_dir . 'core/sub-actions.php'   );
 		require( $this->includes_dir . 'core/update.php'        );
 
 		/** Components ********************************************************/
-
-		// Common
-		require( $this->includes_dir . 'common/template.php'    );
 
 		// Posts
 		require( $this->includes_dir . 'posts/functions.php'    );
