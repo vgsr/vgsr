@@ -35,31 +35,22 @@ defined( 'ABSPATH' ) || exit;
  * For more information on how this works, see the 'Plugin Dependency' section
  * near the bottom of this file.
  *
- *           v--WordPress Actions    v--VGSR Sub-actions
+ *          v--WordPress Actions     v--VGSR Sub-actions
  */
-add_action( 'plugins_loaded',        'vgsr_loaded',           20 );
-add_action( 'init',                  'vgsr_init',              0 ); // Early for vgsr_register
-add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menu'       );
-add_action( 'wp_head',               'vgsr_manifest_meta_tag'    );
-
-/**
- * vgsr_loaded - Attached to 'plugins_loaded' above
- *
- * Attach various loader actions to the vgsr_loaded action.
- * The load order helps to execute code at the correct time.
- *                                                    v---Load order
- */
-add_action( 'vgsr_loaded', 'vgsr_constants',          2  );
-add_action( 'vgsr_loaded', 'vgsr_boot_strap_globals', 4  );
-add_action( 'vgsr_loaded', 'vgsr_includes',           6  );
-add_action( 'vgsr_loaded', 'vgsr_setup_globals',      8  );
+add_filter( 'request',               'vgsr_request',           10    );
+add_action( 'plugins_loaded',        'vgsr_loaded',            20    );
+add_action( 'init',                  'vgsr_init',               0    ); // Early for vgsr_register
+add_action( 'add_admin_bar_menus',   'vgsr_admin_bar_menus'          );
+add_action( 'wp_head',               'vgsr_head'                     );
+add_filter( 'map_meta_cap',          'vgsr_map_meta_caps',     10, 4 );
+add_action( 'wp_footer',             'vgsr_footer'                   );
 
 /**
  * vgsr_init - Attached to 'init' above
  *
  * Attach various initialization actions to the init action.
  * The load order helps to execute code at the correct time.
- *                                                 v---Load order
+ *                                                   v---Load order
  */
 add_action( 'vgsr_init', 'vgsr_load_textdomain',     0   );
 add_action( 'vgsr_init', 'vgsr_register',            0   );
@@ -71,15 +62,43 @@ if ( is_admin() ) {
 	add_action( 'vgsr_init', 'vgsr_admin' );
 }
 
+// Manifest
+add_action( 'vgsr_head',               'vgsr_manifest_meta_tag'     );
+
+// Login
+add_action( 'login_enqueue_scripts',   'vgsr_login_enqueue_scripts' );
+add_filter( 'login_headerurl',         'get_home_url'               );
+add_filter( 'login_headertitle',       'vgsr_login_header_title'    );
+
 // Users
-add_action( 'pre_user_query', 'vgsr_pre_user_query' );
+add_action( 'pre_user_query',          'vgsr_pre_user_query'                 );
+add_filter( 'wp_dropdown_users_args',  'vgsr_dropdown_users_args',     20, 2 ); // Since WP 4.4
+
+// Comments
+add_filter( 'pre_comment_approved',    'vgsr_pre_comment_approved',    20, 2 );
 
 /**
- * vgsr_ready - attached to end 'vgsr_init' above
+ * Post exclusivity
+ */
+add_action( 'pre_get_posts',           '_vgsr_post_query'                    );
+add_action( 'vgsr_register',           '_vgsr_post_update_hierarchy',   0    );
+add_action( 'save_post',               '_vgsr_post_update_hierarchy'         );
+// Query filters --v
+add_filter( 'vgsr_request',            '_vgsr_post_query'                    );
+add_filter( 'getarchives_where',       '_vgsr_post_get_archives',      10, 2 );
+add_filter( 'get_next_post_where',     '_vgsr_post_get_adjacent_post'        );
+add_filter( 'get_previous_post_where', '_vgsr_post_get_adjacent_post'        );
+add_filter( 'list_pages',              '_vgsr_post_list_pages',        10, 2 );
+add_filter( 'get_pages',               '_vgsr_post_get_pages',         10, 2 );
+add_filter( 'wp_nav_menu_objects',     '_vgsr_post_nav_menu_objects',  10, 2 );
+add_filter( 'comments_clauses',        '_vgsr_post_comment_query',     10, 2 );
+add_filter( 'comment_feed_where',      '_vgsr_post_comment_query',     10, 2 );
+
+/**
+ * Extensions
  *
- * Attach actions to the ready action after VGSR has fully initialized.
- * The load order helps to execute code at the correct time.
- *                                                     v---Load order
+ * Attach actions to the ready action after VGSR has fully initialized
+ * or at their plugin's loader hooks, so they fire at the right time.
  */
 add_action( 'vgsr_ready',     'vgsr_setup_ancienniteit',    10 ); // Ancienniteit for users
 add_action( 'bbp_loaded',     'vgsr_setup_bbpress',         0  ); // Forum integration
@@ -87,13 +106,3 @@ add_action( 'bp_core_loaded', 'vgsr_setup_buddypress',      10 ); // Social netw
 add_action( 'vgsr_ready',     'vgsr_setup_event_organiser', 10 ); // Events integration
 add_action( 'vgsr_ready',     'vgsr_setup_gravityforms',    10 ); // Forms integration
 add_action( 'vgsr_ready',     'vgsr_setup_wpseo',           10 ); // SEO integration
-
-// Login page
-add_action( 'login_enqueue_scripts', 'vgsr_login_enqueue_scripts' );
-
-/**
- * Posts Exclusivity
- */
-add_action( 'pre_get_posts', '_vgsr_post_query'               );
-add_action( 'vgsr_register', '_vgsr_post_update_hierarchy', 0 );
-add_action( 'save_post',     '_vgsr_post_update_hierarchy'    );

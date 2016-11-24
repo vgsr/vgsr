@@ -154,6 +154,8 @@ final class VGSR {
 
 		/** Core **************************************************************/
 
+		require( $this->includes_dir . 'core/actions.php'       );
+		require( $this->includes_dir . 'core/extend.php'        );
 		require( $this->includes_dir . 'core/functions.php'     );
 		require( $this->includes_dir . 'core/options.php'       );
 		require( $this->includes_dir . 'core/sub-actions.php'   );
@@ -167,12 +169,6 @@ final class VGSR {
 		// Users
 		require( $this->includes_dir . 'users/capabilities.php' );
 		require( $this->includes_dir . 'users/functions.php'    );
-
-		/** Hooks *************************************************************/
-
-		require( $this->includes_dir . 'core/extend.php'  );
-		require( $this->includes_dir . 'core/actions.php' );
-		require( $this->includes_dir . 'core/filters.php' );
 
 		/** Admin *************************************************************/
 

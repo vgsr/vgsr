@@ -182,14 +182,11 @@ function is_user_oudlid( $user_id = 0 ) {
 /** Admin Bar *************************************************************/
 
 /**
- * Hook various filters to modify the admin bar
+ * Modify the admin bar, after full setup
  *
  * @since 0.1.0
- *
- * @uses add_action()
- * @uses is_multisite()
  */
-function vgsr_admin_bar_menu() {
+function vgsr_admin_bar_menus() {
 
 	// Modify WP Logo menu
 	add_action( 'admin_bar_menu', 'vgsr_admin_bar_wp_menu', 10 );
