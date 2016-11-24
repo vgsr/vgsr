@@ -231,7 +231,6 @@ final class VGSR {
 		/** Components ********************************************************/
 
 		// Common
-		require( $this->includes_dir . 'common/functions.php'   );
 		require( $this->includes_dir . 'common/template.php'    );
 
 		// Posts
