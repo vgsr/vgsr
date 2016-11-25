@@ -4,7 +4,7 @@
  * VGSR Options
  *
  * @package VGSR
- * @subpackage Options
+ * @subpackage Core
  */
 
 // Exit if accessed directly
@@ -16,7 +16,8 @@ defined( 'ABSPATH' ) || exit;
  * These option
  *
  * @since 0.0.1
- * 
+ *
+ * @uses apply_filters() Calls 'vgsr_get_default_options'
  * @return array Filtered option names and values
  */
 function vgsr_get_default_options() {
@@ -41,15 +42,14 @@ function vgsr_get_default_options() {
  *
  * @since 0.0.1
  * 
- * @uses vgsr_get_default_options() To get default options
- * @uses add_option() Adds default options
  * @uses do_action() Calls 'vgsr_add_options'
  */
 function vgsr_add_options() {
 
 	// Add default options
-	foreach ( vgsr_get_default_options() as $key => $value )
-		add_option( $key, $value );
+	foreach ( vgsr_get_default_options() as $key => $value ) {
+		add_network_option( $key, $value );
+	}
 
 	// Allow previously activated plugins to append their own options.
 	do_action( 'vgsr_add_options' );
@@ -63,15 +63,14 @@ function vgsr_add_options() {
  *
  * @since 0.0.1
  * 
- * @uses vgsr_get_default_options() To get default options
- * @uses delete_option() Removes default options
  * @uses do_action() Calls 'vgsr_delete_options'
  */
 function vgsr_delete_options() {
 
 	// Add default options
-	foreach ( array_keys( vgsr_get_default_options() ) as $key )
-		delete_option( $key );
+	foreach ( array_keys( vgsr_get_default_options() ) as $key ) {
+		delete_network_option( $key );
+	}
 
 	// Allow previously activated plugins to append their own options.
 	do_action( 'vgsr_delete_options' );
@@ -83,15 +82,14 @@ function vgsr_delete_options() {
  *
  * @since 0.0.1
  * 
- * @uses vgsr_get_default_options() To get default options
- * @uses add_filter() To add filters to 'pre_option_{$key}'
  * @uses do_action() Calls 'vgsr_add_option_filters'
  */
 function vgsr_setup_option_filters() {
 
 	// Add filters to each VGSR option
-	foreach ( array_keys( vgsr_get_default_options() ) as $key )
+	foreach ( array_keys( vgsr_get_default_options() ) as $key ) {
 		add_filter( 'pre_option_' . $key, 'vgsr_pre_get_option' );
+	}
 
 	// Allow previously activated plugins to append their own options.
 	do_action( 'vgsr_setup_option_filters' );
@@ -111,9 +109,10 @@ function vgsr_pre_get_option( $value = '' ) {
 	// Remove the filter prefix
 	$option = str_replace( 'pre_option_', '', current_filter() );
 
-	// Check the options global for preset value
-	if ( isset( vgsr()->options[$option] ) )
+	// Check the options global for a preset value
+	if ( isset( vgsr()->options[$option] ) ) {
 		$value = vgsr()->options[$option];
+	}
 
 	// Always return a value, even if false
 	return $value;
