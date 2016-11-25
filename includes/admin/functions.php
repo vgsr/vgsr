@@ -29,10 +29,6 @@ function vgsr_admin_menu_hook() {
  * Display the Exclusivity post meta field
  *
  * @since 0.0.6
- *
- * @uses is_vgsr_post_type()
- * @uses get_post_type_object()
- * @uses vgsr_is_post_vgsr()
  */
 function vgsr_is_post_vgsr_meta() {
 
@@ -72,8 +68,8 @@ function vgsr_is_post_vgsr_meta() {
  *
  * @since 0.0.6
  *
- * @uses is_vgsr_post_type()
- * @uses wp_nonce_field()
+ * @param string $column_name Column name
+ * @param string $post_type Post type
  */
 function vgsr_post_vgsr_quick_edit( $column_name, $post_type ) {
 
@@ -127,9 +123,7 @@ function vgsr_post_vgsr_quick_edit( $column_name, $post_type ) {
  *
  * @since 0.0.6
  *
- * @uses get_post_type_object()
- * @uses update_post_meta()
- * @uses delete_post_meta()
+ * @param int $post_id Post ID
  */
 function vgsr_is_post_vgsr_meta_save( $post_id ) {
 

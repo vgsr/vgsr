@@ -334,7 +334,7 @@ class VGSR_BuddyPress {
 	 * Define the default component for non-vgsr displayed users
 	 *
 	 * When active, the Activity component is set as the default component in
-	 * BP_Members_Component::setup_canonical_stack(). For non-vgsr displayed
+	 * {@see BP_Members_Component::setup_canonical_stack()}. For non-vgsr displayed
 	 * users, with the activity component being exclusive, this results in a
 	 * 404 when visiting 'members/<non-vgsr-user>'. This is solved by making
 	 * the profile component default for this situation.

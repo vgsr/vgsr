@@ -13,6 +13,7 @@
  * There are a few common places that additional actions can currently be found
  *
  *  - VGSR: In {@link VGSR::setup_actions()} in vgsr.php
+ *  - VGSR: More in core/actions.php
  *  - Admin: More in {@link VGSR_Admin::setup_actions()} in admin.php
  */
 
@@ -30,9 +31,6 @@ defined( 'ABSPATH' ) || exit;
  * provide a safe way for plugins to execute code *only* when VGSR is
  * installed and activated, without needing to do complicated guesswork.
  *
- * For more information on how this works, see the 'Plugin Dependency' section
- * near the bottom of this file.
- *
  *           v--WordPress Actions       v--VGSR Sub-actions
  */
 add_action( vgsr_admin_menu_hook(),    'vgsr_admin_menu'      );
@@ -45,7 +43,9 @@ add_action( 'admin_notices',           'vgsr_admin_notices'   );
 add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings'      );
 add_action( 'vgsr_admin_init', 'vgsr_admin_settings_save',     100 );
 
-// Posts - Exclusivity
+/**
+ * Posts exclusivity
+ */
 add_action( 'post_submitbox_misc_actions', 'vgsr_is_post_vgsr_meta'             );
 add_action( 'save_post',                   'vgsr_is_post_vgsr_meta_save'        );
 add_action( 'quick_edit_custom_box',       'vgsr_post_vgsr_quick_edit',   10, 2 );

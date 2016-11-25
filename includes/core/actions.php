@@ -14,8 +14,7 @@
  *
  *  - VGSR: In {@link VGSR::setup_actions()} in vgsr.php
  *  - Admin: More in {@link VGSR_Admin::setup_actions()} in admin.php
- *
- * @see /core/filters.php
+ *  - Admin: More in admin/actions.php
  */
 
 // Exit if accessed directly
@@ -32,10 +31,7 @@ defined( 'ABSPATH' ) || exit;
  * provide a safe way for plugins to execute code *only* when VGSR is
  * installed and activated, without needing to do complicated guesswork.
  *
- * For more information on how this works, see the 'Plugin Dependency' section
- * near the bottom of this file.
- *
- *          v--WordPress Actions     v--VGSR Sub-actions
+ *           v--WordPress Actions     v--VGSR Sub-actions
  */
 add_filter( 'request',               'vgsr_request',           10    );
 add_action( 'plugins_loaded',        'vgsr_loaded',            20    );
