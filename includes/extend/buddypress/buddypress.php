@@ -185,6 +185,11 @@ class VGSR_BuddyPress {
 	 */
 	public function active_components( $components ) {
 
+		// Default to array
+		if ( empty( $components ) ) {
+			$components = array();
+		}
+
 		// If the user is not logged-in, completely unload BP
 		if ( ! get_current_user_id() ) {
 			$components = array();
