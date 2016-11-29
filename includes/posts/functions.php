@@ -124,7 +124,12 @@ function is_vgsr_post_type( $post_type = '' ) {
 /**
  * Return the post types that can be made exclusive
  *
- * Defaults to all public registered post types.
+ * Defaults to all public registered post types. Post types that handle
+ * exclusivity themselves should register their with 'vgsr' => true:
+ *
+ * When the current user is vgsr, the post type might be public, but the
+ * post type is still exclusive in its own right. These post types do not
+ * need any additional vgsr treatment, so leave them out of this collection.
  *
  * @since 0.0.7
  * @since 0.1.0 Applied custom WP_List_Util implementation, and added
@@ -137,24 +142,26 @@ function vgsr_post_types() {
 	global $wp_post_types;
 
 	// Since WP 4.7
-	$util = new WP_List_Util( $wp_post_types );
+	if ( class_exists( 'WP_List_Util' ) ) {
+		$util = new WP_List_Util( $wp_post_types );
 
-	// Only public post types
-	$util->filter( array( 'public' => true ) );
+		// Only public post types, but leave out vgsr post types
+		$util->filter( array( 'public' => true )        );
+		$util->filter( array( 'vgsr'   => true ), 'NOT' );
 
-	/**
-	 * Exclude self-aware vgsr post types
-	 *
-	 * When the current user is vgsr, the post type might be public,
-	 * but the post type is still exclusive in its own right. These
-	 * post types do not need any additional vgsr treatment, so leave
-	 * them out of this collection.
-	 */
-	$util->filter( array( 'vgsr' => true ), 'NOT' );
+		$util->pluck( 'name' );
 
-	$util->pluck( 'name' );
+		$post_types = $util->get_output();
 
-	return apply_filters( 'vgsr_post_types', $util->get_output() );
+	// Pre-WP 4.7
+	} else {
+		$public_types = get_post_types( array( 'public' => true ) );
+		$vgsr_types   = get_post_types( array( 'vgsr'   => true ) );
+
+		$post_types = array_diff( $public_types, $vgsr_types );
+	}
+
+	return apply_filters( 'vgsr_post_types', $post_types );
 }
 
 /** Exclusivity: Query Filters **************************************************/
