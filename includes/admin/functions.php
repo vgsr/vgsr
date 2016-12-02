@@ -44,20 +44,49 @@ function vgsr_is_post_vgsr_meta() {
 	if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->publish_posts ) )
 		return; ?>
 
-	<div class="misc-pub-section misc-pub-vgsr dashicons-before dashicons-flag">
+	<div class="misc-pub-section misc-pub-vgsr">
 		<style>
-			.misc-pub-vgsr:before {
+			.misc-pub-vgsr input[type="checkbox"] {
+				display: none;
+			}
+
+			.misc-pub-vgsr label:before {
+				content: '\f154'; /* dashicons-unlock */
 				position: relative;
 				top: 0;
 				left: -1px;
 				padding: 0 2px 0 0;
+				color: #ddd;
+				-webkit-transition: all .1s ease-in-out;
+				transition: all .1s ease-in-out;
+   			}
+
+			.misc-pub-vgsr input[type="checkbox"]:not(:checked) + label span.post-is-open,
+			.misc-pub-vgsr input[type="checkbox"]:checked + label span.post-is-vgsr {
+				display: inline;
+			}
+
+			.misc-pub-vgsr input[type="checkbox"]:checked + label span.post-is-open,
+			.misc-pub-vgsr input[type="checkbox"]:not(:checked) + label span.post-is-vgsr {
+				display: none;
+			}
+
+			.misc-pub-vgsr input[type="checkbox"]:checked + label span span {
+				font-weight: 600;
+			}
+
+			.misc-pub-vgsr input[type="checkbox"]:checked + label:before {
+				content: '\f155'; /* dashicons-lock */
 				color: #888;
 			}
 		</style>
 
-		<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
-		<label for="post_vgsr"><?php _ex( 'VGSR', 'exclusivity label', 'vgsr' ); ?>:</label>
 		<input type="checkbox" id="post_vgsr" name="vgsr_post_vgsr" value="1" <?php checked( vgsr_is_post_vgsr( $post->ID ) ); ?>/>
+		<label for="post_vgsr" class="dashicons-before">
+			<span class="post-is-open"><?php _e( 'Show to all site visitors', 'vgsr' ); ?></span>
+			<span class="post-is-vgsr"><?php _e( 'Show only to <span>VGSR members</span>', 'vgsr' ); ?></span>
+		</label>
+		<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
 	</div>
 
 	<?php
