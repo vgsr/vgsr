@@ -82,8 +82,9 @@ class VGSR_Admin {
 
 		/** General Actions ***************************************************/
 
-		add_action( 'vgsr_admin_menu',              array( $this, 'admin_menu'        ) ); // Add menu item to settings menu
-		add_action( 'vgsr_register_admin_settings', array( $this, 'register_settings' ) ); // Add settings
+		add_action( 'vgsr_admin_menu',              array( $this, 'admin_menu'        ) );
+		add_action( 'vgsr_register_admin_settings', array( $this, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts',        array( $this, 'enqueue_scripts'   ) );
 
 		/** Filters ***********************************************************/
 
@@ -214,6 +215,41 @@ class VGSR_Admin {
 					register_setting( $page, $field_id, $field['sanitize_callback'] );
 				}
 			}
+		}
+	}
+
+	/**
+	 * Enqueue or output admin scripts
+	 *
+	 * @since 0.1.0
+	 */
+	public function enqueue_scripts() {
+
+		// Define local variable
+		$screen = get_current_screen();
+		$styles = array();
+
+		// List view
+		if ( 'edit' === $screen->base ) {
+			$styles[] = ".fixed .column-vgsr { width: 5%; }";
+
+		// Single edit of vgsr post type
+		} elseif ( 'post' === $screen->base && is_vgsr_post_type( $screen->post_type ) ) {
+
+			// Exclusivity meta
+			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"] { display: none; }";
+			$styles[] = ".misc-pub-vgsr label:before { content: '\\f154'; position: relative; top: 0; left: -1px; padding: 0 2px 0 0; color: #ddd; -webkit-transition: all .1s ease-in-out; transition: all .1s ease-in-out; }";
+
+			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:not(:checked) + label span.post-is-open, .misc-pub-vgsr input[type=\"checkbox\"]:checked + label span.post-is-vgsr { display: inline; }";
+			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label span.post-is-open, .misc-pub-vgsr input[type=\"checkbox\"]:not(:checked) + label span.post-is-vgsr { display: none; }";
+
+			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label span span { font-weight: 600; }";
+			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label:before { content: '\\f155'; color: #888; }";
+		}
+
+		// Add styles to the screen
+		if ( ! empty( $styles ) ) {
+			wp_add_inline_style( 'common', implode( "\n", $styles ) );
 		}
 	}
 
@@ -349,42 +385,6 @@ class VGSR_Admin {
 			return; ?>
 
 		<div class="misc-pub-section misc-pub-vgsr">
-			<style>
-				.misc-pub-vgsr input[type="checkbox"] {
-					display: none;
-				}
-
-				.misc-pub-vgsr label:before {
-					content: '\f154'; /* dashicons-unlock */
-					position: relative;
-					top: 0;
-					left: -1px;
-					padding: 0 2px 0 0;
-					color: #ddd;
-					-webkit-transition: all .1s ease-in-out;
-					transition: all .1s ease-in-out;
-	   			}
-
-				.misc-pub-vgsr input[type="checkbox"]:not(:checked) + label span.post-is-open,
-				.misc-pub-vgsr input[type="checkbox"]:checked + label span.post-is-vgsr {
-					display: inline;
-				}
-
-				.misc-pub-vgsr input[type="checkbox"]:checked + label span.post-is-open,
-				.misc-pub-vgsr input[type="checkbox"]:not(:checked) + label span.post-is-vgsr {
-					display: none;
-				}
-
-				.misc-pub-vgsr input[type="checkbox"]:checked + label span span {
-					font-weight: 600;
-				}
-
-				.misc-pub-vgsr input[type="checkbox"]:checked + label:before {
-					content: '\f155'; /* dashicons-lock */
-					color: #888;
-				}
-			</style>
-
 			<input type="checkbox" id="post_vgsr" name="vgsr_post_vgsr" value="1" <?php checked( vgsr_is_post_vgsr( $post->ID ) ); ?>/>
 			<label for="post_vgsr" class="dashicons-before">
 				<span class="post-is-open"><?php _e( 'Show to all site visitors', 'vgsr' ); ?></span>
