@@ -300,14 +300,16 @@ class VGSR_Admin {
 	 */
 	public function get_post_columns( $columns ) {
 
-		// Use screen object
-		$screen = get_current_screen();
+		// Only when the user is vgsr
+		if ( is_user_vgsr() ) {
+			$screen = get_current_screen();
 
-		// Dummy column to enable quick edit
-		$columns['vgsr'] = _x( 'VGSR', 'exclusivity title', 'vgsr' );
+			// We need this column to enable quick edit
+			$columns['vgsr'] = _x( 'VGSR', 'exclusivity title', 'vgsr' );
 
-		// Hide dummy column by default
-		add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
+			// Hide dummy column by default
+			add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
+		}
 
 		return $columns;
 	}
