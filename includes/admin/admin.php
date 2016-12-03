@@ -231,7 +231,7 @@ class VGSR_Admin {
 
 		// List view
 		if ( 'edit' === $screen->base ) {
-			$styles[] = ".fixed .column-vgsr { width: 5%; }";
+			$styles[] = ".fixed .column-vgsr { width: 5%; text-align: center; }";
 
 		// Single edit of vgsr post type
 		} elseif ( 'post' === $screen->base && is_vgsr_post_type( $screen->post_type ) ) {
