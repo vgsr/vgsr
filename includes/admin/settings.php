@@ -154,20 +154,19 @@ function vgsr_admin_setting_callback_access_section() { ?>
  * @uses vgsr_get_private_reading_post_types()
  */
 function vgsr_setting_callback_private_reading_post_types() {
-	global $wp_post_types;
 
 	// Get the saved post types
 	$option = vgsr_get_private_reading_post_types(); ?>
 
-	<p><?php _e( 'Select the post types of which VGSR users will read posts that are privately published.', 'vgsr' ); ?></p>
+	<p><?php _e( 'Select which post types can be accessed by VGSR members when privately published.', 'vgsr' ); ?></p>
 	<ul>
-		<?php foreach ( $wp_post_types as $post_type ) : ?>
+		<?php foreach ( vgsr_post_types( array( 'public' => true ) ) as $post_type ) :
+			$post_type_object = get_post_type_object( $post_type );
+		?>
 
 		<li>
-			<label>
-				<input type="checkbox" name="_vgsr_private_reading_post_types[]" value="<?php echo $post_type->name; ?>" <?php checked( in_array( $post_type->name, $option ) ); ?>/> 
-				<?php echo $post_type->labels->name; ?>
-			</label>
+			<input type="checkbox" id="vgsr_private_reading_post_type-<?php echo $post_type; ?>" name="_vgsr_private_reading_post_types[]" value="<?php echo $post_type; ?>" <?php checked( in_array( $post_type, $option ) ); ?>/>
+			<label for="vgsr_private_reading_post_type-<?php echo $post_type; ?>"><?php echo $post_type_object->labels->name; ?></label>
 		</li>
 
 		<?php endforeach; ?>
