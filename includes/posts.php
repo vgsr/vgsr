@@ -189,6 +189,10 @@ function _vgsr_post_query( $query ) {
 		if ( $query->is_main_query() )
 			return;
 
+		// Bail when suppressing filters
+		if ( true === $query->get( 'suppress_filters' ) )
+			return $query;
+
 		// Setup query vars
 		$query = &$query->query_vars;
 
@@ -202,15 +206,11 @@ function _vgsr_post_query( $query ) {
 	}
 
 	// Setup meta query
-	$meta_query = isset( $query['meta_query'] ) ? $query['meta_query'] : array();
-
-	// Handle post mark
+	$meta_query   = isset( $query['meta_query'] ) ? $query['meta_query'] : array();
 	$meta_query[] = array(
 		'key'     => '_vgsr_post_vgsr_only',
 		'compare' => 'NOT EXISTS', // Empty values are deleted, so only selected ones exist
 	);
-
-	// Set meta query
 	$query['meta_query'] = $meta_query;
 
 	//
@@ -376,8 +376,9 @@ function _vgsr_post_comment_query( $clause, $query ) {
 	if ( is_user_vgsr() || ( is_a( $query, 'WP_Query' ) && $query->is_singular ) )
 		return $clause;
 
-	// Exclude posts
-	if ( ( $post__not_in = _vgsr_post_get_hierarchy() ) && ! empty( $post__not_in ) ) {
+	// Get exclusive post ids
+	$post__not_in = _vgsr_post_get_hierarchy();
+	if ( ! empty( $post__not_in ) ) {
 
 		// Logic to work with collection of clauses
 		if ( is_array( $clause ) ) {
