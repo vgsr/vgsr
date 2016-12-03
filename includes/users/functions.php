@@ -191,23 +191,16 @@ function vgsr_admin_bar_menus() {
 	// Modify WP Logo menu
 	add_action( 'admin_bar_menu', 'vgsr_admin_bar_wp_menu', 10 );
 
-	// Network context specifically
-	if ( is_multisite() ) {
-
-		// Modify My Sites nodes
-		add_action( 'admin_bar_menu', 'vgsr_admin_bar_my_sites_menu', 20 );
-	}
+	// Modify My Sites nodes
+	add_action( 'admin_bar_menu', 'vgsr_admin_bar_my_sites_menu', 20 );
 }
 
 /**
  * Modify the WP Logo admin bar menu
  *
- * @since 0.1.0
- *
  * @see wp_admin_bar_wp_menu()
- * 
- * @uses current_user_can()
- * @uses WP_Admin_Bar::remove_node()
+ *
+ * @since 0.1.0
  * 
  * @param WP_Admin_Bar $wp_admin_bar
  */
@@ -224,19 +217,17 @@ function vgsr_admin_bar_wp_menu( $wp_admin_bar ) {
 /**
  * Modify the My Sites admin bar menu
  *
- * @since 0.1.0
- *
  * @see wp_admin_bar_my_sites_menu()
  *
- * @uses switch_to_blog()
- * @uses WP_Admin_Bar::get_node()
- * @uses home_url()
- * @uses WP_Admin_Bar::add_node()
- * @uses restore_current_blog()
- * 
+ * @since 0.1.0
+ *
  * @param WP_Admin_Bar $wp_admin_bar
  */
 function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
+
+	// Bail when not in Multisite
+	if ( ! is_multisite() )
+		return;
 
 	// Walk user blogs under My Sites
 	foreach ( $wp_admin_bar->user->blogs as $blog ) {
@@ -245,11 +236,9 @@ function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
 		// Node exists
 		if ( $node = $wp_admin_bar->get_node( 'blog-' . $blog->userblog_id ) ) {
 
-			// Remove the site's wp-logo icon
+			// Remove the logo icon, and link to site front page
 			$node->title = str_replace( '<div class="blavatar"></div>', '', $node->title );
-
-			// Change node link to the site's front page instead of its admin page
-			$node->href = home_url( '/' );
+			$node->href  = home_url( '/' );
 
 			// Overwrite node
 			$wp_admin_bar->add_node( $node );
