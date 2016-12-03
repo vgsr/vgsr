@@ -342,7 +342,7 @@ class VGSR_Admin {
 
 		// Display whether the post is exclusive (for Quick Edit)
 		if ( 'vgsr' === $column && vgsr_is_post_vgsr( $post_id ) ) {
-			echo '<i class="dashicons-before dashicons-yes"></i>';
+			echo '<div class="post-is-vgsr"><i class="dashicons-before dashicons-star-filled"></i></div>';
 		}
 	}
 
@@ -438,7 +438,7 @@ class VGSR_Admin {
 					    _input = _field.find( 'input[name="vgsr_post_vgsr"]' ).attr( 'checked', false );
 
 					// Check an exlusive post
-					if ( $( '#post-' + id + ' td.column-vgsr i.dashicons-yes' ).length ) {
+					if ( $( '#post-' + id + ' td.column-vgsr .post-is-vgsr' ).length ) {
 						_input.attr( 'checked', 'checked' );
 					}
 
