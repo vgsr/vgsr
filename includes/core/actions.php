@@ -58,20 +58,24 @@ if ( is_admin() ) {
 	add_action( 'vgsr_init', 'vgsr_admin' );
 }
 
-// Manifest
-add_action( 'vgsr_head',               'vgsr_manifest_meta_tag'     );
-
 // Login
-add_action( 'login_enqueue_scripts',   'vgsr_login_enqueue_scripts' );
-add_filter( 'login_headerurl',         'get_home_url'               );
-add_filter( 'login_headertitle',       'vgsr_login_header_title'    );
+add_action( 'login_enqueue_scripts', 'vgsr_login_enqueue_scripts' );
+add_filter( 'login_headerurl',       'get_home_url'               );
+add_filter( 'login_headertitle',     'vgsr_login_header_title'    );
+
+// Manifest
+add_action( 'vgsr_head', 'vgsr_manifest_meta_tag' );
 
 // Users
-add_action( 'pre_user_query',          'vgsr_pre_user_query'                 );
-add_filter( 'wp_dropdown_users_args',  'vgsr_dropdown_users_args',     20, 2 ); // Since WP 4.4
+add_action( 'pre_user_query',         'vgsr_pre_user_query'             );
+add_filter( 'wp_dropdown_users_args', 'vgsr_dropdown_users_args', 20, 2 ); // Since WP 4.4
+
+// Categories
+add_filter( 'the_category_list', 'vgsr_the_category_list', 10, 2 );
+add_filter( 'the_category',      'vgsr_the_category'             );
 
 // Comments
-add_filter( 'pre_comment_approved',    'vgsr_pre_comment_approved',    20, 2 );
+add_filter( 'pre_comment_approved', 'vgsr_pre_comment_approved', 20, 2 );
 
 /**
  * Post exclusivity
