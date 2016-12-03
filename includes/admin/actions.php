@@ -42,10 +42,3 @@ add_action( 'admin_notices',           'vgsr_admin_notices'   );
 // Hook on to admin_init
 add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings'      );
 add_action( 'vgsr_admin_init', 'vgsr_admin_settings_save',     100 );
-
-/**
- * Posts exclusivity
- */
-add_action( 'post_submitbox_misc_actions', 'vgsr_is_post_vgsr_meta'             );
-add_action( 'save_post',                   'vgsr_is_post_vgsr_meta_save'        );
-add_action( 'quick_edit_custom_box',       'vgsr_post_vgsr_quick_edit',   10, 2 );
