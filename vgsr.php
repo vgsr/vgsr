@@ -44,7 +44,6 @@ final class VGSR {
 	 * @uses VGSR::setup_globals() Setup the globals needed
 	 * @uses VGSR::includes() Include the required files
 	 * @uses VGSR::setup_actions() Setup the hooks and actions
-	 * @see vgsr()
 	 * @return The one true VGSR
 	 */
 	public static function instance() {
@@ -154,21 +153,14 @@ final class VGSR {
 
 		/** Core **************************************************************/
 
-		require( $this->includes_dir . 'core/actions.php'       );
-		require( $this->includes_dir . 'core/extend.php'        );
-		require( $this->includes_dir . 'core/functions.php'     );
-		require( $this->includes_dir . 'core/options.php'       );
-		require( $this->includes_dir . 'core/sub-actions.php'   );
-		require( $this->includes_dir . 'core/update.php'        );
-
-		/** Components ********************************************************/
-
-		// Posts
-		require( $this->includes_dir . 'posts/functions.php'    );
-
-		// Users
-		require( $this->includes_dir . 'users/capabilities.php' );
-		require( $this->includes_dir . 'users/functions.php'    );
+		require( $this->includes_dir . 'actions.php'     );
+		require( $this->includes_dir . 'extend.php'      );
+		require( $this->includes_dir . 'functions.php'   );
+		require( $this->includes_dir . 'options.php'     );
+		require( $this->includes_dir . 'posts.php'       );
+		require( $this->includes_dir . 'sub-actions.php' );
+		require( $this->includes_dir . 'update.php'      );
+		require( $this->includes_dir . 'users.php'       );
 
 		/** Admin *************************************************************/
 
