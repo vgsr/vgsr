@@ -1,0 +1,225 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: VGSR\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-12-03 01:34+0000\n"
+"PO-Revision-Date: 2016-12-03 12:11+0000\n"
+"Last-Translator: laurens <lmoffereins@gmail.com>\n"
+"Language-Team: Dutch\n"
+"Language: nl-NL\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco - https://localise.biz/"
+
+#: vgsr.php:83 vgsr.php:90
+msgid "Cheatin&#8217; huh?"
+msgstr ""
+
+#: includes/functions.php:37
+msgid "Vereniging van Gereformeerde Studenten te Rotterdam"
+msgstr ""
+
+#: includes/admin/admin.php:129
+msgctxt "settings page title"
+msgid "VGSR Settings"
+msgstr "VGSR Instellingen"
+
+#: includes/admin/admin.php:130
+msgctxt "settings menu title"
+msgid "VGSR"
+msgstr ""
+
+#: includes/admin/admin.php:271
+msgid "Settings"
+msgstr "Instellingen"
+
+#: includes/admin/admin.php:308
+#: includes/extend/gravityforms/gravityforms.php:514
+#: includes/extend/gravityforms/gravityforms.php:515
+msgctxt "exclusivity title"
+msgid "VGSR"
+msgstr ""
+
+#: includes/admin/admin.php:362 includes/admin/admin.php:424
+msgctxt "exclusivity label"
+msgid "VGSR"
+msgstr ""
+
+#: includes/admin/admin.php:366
+#: includes/extend/gravityforms/gravityforms.php:411
+#: includes/extend/gravityforms/gravityforms.php:461
+msgctxt "exclusivity label"
+msgid "vgsr"
+msgstr ""
+
+#: includes/admin/admin.php:392
+msgid "Show to all site visitors"
+msgstr "Toon aan alle sitegebruikers"
+
+#: includes/admin/admin.php:393
+msgid "Show only to <span>VGSR members</span>"
+msgstr "Toon alleen aan <span>leden der VGSR</span>"
+
+#: includes/admin/settings.php:28
+msgid "Main Settings"
+msgstr "Hoofdinstellingen"
+
+#: includes/admin/settings.php:35
+msgid "Access Settings"
+msgstr "Toegangsinstellingen"
+
+#: includes/admin/settings.php:130
+msgid "Set the main functionality options for VGSR."
+msgstr "Stel hier de hoofdzaken in voor de VGSR."
+
+#: includes/admin/settings.php:144
+msgid "Tweak here the settings about access to your site's contents."
+msgstr "Wijzig hier de instellingen voor de toegang tot de site's inhoud."
+
+#: includes/admin/settings.php:161
+msgid ""
+"Select which post types can be accessed by VGSR members when privately "
+"published."
+msgstr ""
+"Selecteer van welke post typen leden der VGSR berichten kunnen zien die "
+"privé gepubliceerd zijn."
+
+#: includes/admin/settings.php:196
+msgid "VGSR Settings"
+msgstr "VGSR Instellingen"
+
+#: includes/admin/settings.php:269
+msgid "Main"
+msgstr "Hoofd"
+
+#: includes/extend/ancienniteit.php:51
+msgid "Force seniority"
+msgstr "Forceer anciënniteit"
+
+#: includes/extend/ancienniteit.php:70
+msgid "Return VGSR members always sorted by seniority."
+msgstr "Geef leden der VGSR altijd gesorteerd op anciënniteit."
+
+#: includes/extend/bbpress/settings.php:25
+msgid "bbPress Settings"
+msgstr "bbPress Instellingen"
+
+#: includes/extend/bbpress/settings.php:46
+msgid "Hide profile root"
+msgstr "Verberg de profiel root"
+
+#: includes/extend/bbpress/settings.php:54
+msgid "Breadcrumbs Home"
+msgstr "Kruimelpad Home"
+
+#: includes/extend/bbpress/settings.php:76
+msgid "bbPress manipulations for VGSR."
+msgstr "bbPress aanpassingen voor de VGSR."
+
+#: includes/extend/bbpress/settings.php:113
+#, php-format
+msgid "Remove forums root slug for user profile pages. Turns %1$s into %2$s."
+msgstr ""
+"Verwijder de forum root slug voor gebruikersprofielen. Wijzigt %1$s in %2$s."
+
+#: includes/extend/bbpress/settings.php:130
+msgid ""
+"Overwrite the forums breadcrumbs home text. Keep empty to default to the "
+"home page title."
+msgstr ""
+"Overschrijf de tekst van het kruimelpad home voor het forum. Houdt dit leeg "
+"voor de standaard home pagina titel."
+
+#: includes/extend/buddypress/actions.php:46
+#, php-format
+msgid "Member promoted to %s."
+msgstr "Gebruiker ingesteld als %s."
+
+#: includes/extend/buddypress/actions.php:48
+msgid "There was a problem promoting this member."
+msgstr "Er is iets mislukt bij het bijwerken van deze gebruiker."
+
+#: includes/extend/buddypress/buddypress.php:590
+msgid "Edit this user in the admin."
+msgstr "Bewerk deze gebruiker in de admin."
+
+#: includes/extend/buddypress/buddypress.php:591
+msgid "Dashboard Profile"
+msgstr "Dashboardprofiel"
+
+#: includes/extend/buddypress/buddypress.php:605
+#: includes/extend/buddypress/buddypress.php:621
+msgid "Change the member type of this member."
+msgstr "Wijzig het ledentype van deze gebruiker."
+
+#: includes/extend/buddypress/buddypress.php:606
+#: includes/extend/buddypress/buddypress.php:622
+#, php-format
+msgid "Promote to %s"
+msgstr "Instellen als %s"
+
+#: includes/extend/buddypress/functions.php:51
+#: includes/extend/buddypress/functions.php:53
+msgid "Leden"
+msgstr "Leden"
+
+#: includes/extend/buddypress/functions.php:52
+msgid "Lid"
+msgstr "Lid"
+
+#: includes/extend/buddypress/functions.php:60
+#: includes/extend/buddypress/functions.php:62
+msgid "Oud-leden"
+msgstr "Oud-leden"
+
+#: includes/extend/buddypress/functions.php:61
+msgid "Oud-lid"
+msgstr "Oud-lid"
+
+#: includes/extend/buddypress/functions.php:69
+#: includes/extend/buddypress/functions.php:71
+msgid "Ex-leden"
+msgstr "Ex-leden"
+
+#: includes/extend/buddypress/functions.php:70
+msgid "Ex-lid"
+msgstr "Ex-lid"
+
+#. Name of the plugin
+#: includes/extend/gravityforms/gravityforms.php:326
+msgid "VGSR"
+msgstr "VGSR"
+
+#: includes/extend/gravityforms/gravityforms.php:329
+msgid "Make this an exclusive form"
+msgstr "Maak dit formulier exclusief"
+
+#: includes/extend/gravityforms/gravityforms.php:443
+msgid "Make this an exclusive field"
+msgstr "Maak dit veld exclusief"
+
+#: includes/extend/gravityforms/gravityforms.php:514
+msgid "Make this form exclusively available to VGSR members."
+msgstr "Maak dit formulier alleen toegankelijk voor leden der VGSR."
+
+#: includes/extend/gravityforms/gravityforms.php:515
+msgid "Make this field exclusively available to VGSR members."
+msgstr "Maak dit veld alleen toegankelijk voor leden der VGSR."
+
+#. Description of the plugin
+msgid "Main utility plugin for vgsr.nl"
+msgstr "Hoofdzaken om vgsr.nl in de lucht te houden"
+
+#. URI of the plugin
+msgid "https://github.com/vgsr/vgsr"
+msgstr ""
+
+#. Author of the plugin
+msgid "Laurens Offereins"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://github.com/lmoffereins"
+msgstr ""
