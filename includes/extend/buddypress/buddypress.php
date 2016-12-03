@@ -162,9 +162,10 @@ class VGSR_BuddyPress {
 
 		// Define exclusive BP components
 		if ( ! isset( $this->components ) ) {
-			$this->components = apply_filters( 'vgsr_components', array(
+			$this->components = apply_filters( 'vgsr_bp_components', array(
 				'activity',
 				'blogs',
+				'forums',
 				'friends',
 				'groups',
 				'messages',
