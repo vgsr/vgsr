@@ -345,7 +345,7 @@ class VGSR_Admin {
 			return;
 
 		// Bail when user is not capable
-		if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->publish_posts ) )
+		if ( ! is_user_vgsr() || ! current_user_can( get_post_type_object( $post->post_type )->cap->publish_posts ) )
 			return; ?>
 
 		<div class="misc-pub-section misc-pub-vgsr">
@@ -407,7 +407,7 @@ class VGSR_Admin {
 	public function vgsr_post_quick_edit( $column_name, $post_type ) {
 
 		// Bail when this is not our column or post cannot be exclusive
-		if ( 'vgsr' !== $column_name || ! is_vgsr_post_type( $post_type ) )
+		if ( 'vgsr' !== $column_name || ! is_vgsr_post_type( $post_type ) || ! is_user_vgsr() )
 			return;
 
 		?>
