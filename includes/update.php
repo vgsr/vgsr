@@ -191,7 +191,7 @@ function vgsr_version_updater() {
 	/** 0.1.0 Branch ********************************************************/
 
 	// 0.1.0
-	if ( $raw_db_version < 010 ) {
+	if ( $raw_db_version < 10 ) {
 
 		// Do stuff
 	}
