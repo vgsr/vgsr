@@ -88,7 +88,8 @@ class VGSR_BuddyPress {
 	private function setup_actions() {
 
 		// General
-		add_filter( 'bp_init', array( $this, 'bp_init' ), 11 );
+		add_action( 'bp_init',       array( $this, 'bp_init'       ), 11 );
+		add_filter( 'is_buddypress', array( $this, 'is_buddypress' )     );
 
 		// Define member types and define user checks
 		add_action( 'bp_register_member_types',        array( $this, 'register_member_types' )        );
@@ -96,7 +97,7 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'           ), 10, 2 );
 		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'        ), 10, 2 );
 		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'        ), 10, 2 );
-		add_filter( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'  ), 10, 2 );
+		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'  ), 10, 2 );
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
@@ -115,7 +116,6 @@ class VGSR_BuddyPress {
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 
 		// Hide BuddyPress for non-vgsr
-		add_filter( 'is_buddypress',  array( $this, 'is_buddypress'   )     );
 		add_action( 'bp_core_loaded', array( $this, 'hide_buddypress' ), 20 );
 		add_action( 'bp_setup_nav',   array( $this, 'bp_setup_nav'    ), 99 );
 	}
@@ -150,10 +150,12 @@ class VGSR_BuddyPress {
 	 */
 	public function is_buddypress( $is ) {
 
+		/**
+		 * Define true for all directory pages, whether their component
+		 * is active or not. By default, an inactive component's directory
+		 * page has no content, but continues to live as an ordinary page.
+		 */
 		if ( ! $is && is_page() ) {
-			// Define true for all directory pages, whether their component
-			// is active or not. By default, an inactive component's directory
-			// page has no content, but continues to live as an ordinary page.
 			$is = in_array( get_queried_object_id(), (array) bp_core_get_directory_page_ids( 'all' ) );
 		}
 
