@@ -87,12 +87,16 @@ class VGSR_BuddyPress {
 	 */
 	private function setup_actions() {
 
+		// General
+		add_filter( 'bp_init', array( $this, 'bp_init' ), 11 );
+
 		// Define member types and define user checks
-		add_action( 'bp_register_member_types', array( $this, 'register_member_types' )        );
-		add_filter( 'is_user_vgsr',             array( $this, 'is_user_vgsr'          ), 10, 2 );
-		add_filter( 'is_user_lid',              array( $this, 'is_user_lid'           ), 10, 2 );
-		add_filter( 'is_user_oudlid',           array( $this, 'is_user_oudlid'        ), 10, 2 );
-		add_filter( 'vgsr_pre_user_query',      array( $this, 'pre_user_query'        ), 10, 2 );
+		add_action( 'bp_register_member_types',        array( $this, 'register_member_types' )        );
+		add_filter( 'is_user_vgsr',                    array( $this, 'is_user_vgsr'          ), 10, 2 );
+		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'           ), 10, 2 );
+		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'        ), 10, 2 );
+		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'        ), 10, 2 );
+		add_filter( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'  )        );
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
@@ -114,6 +118,24 @@ class VGSR_BuddyPress {
 		add_filter( 'is_buddypress',  array( $this, 'is_buddypress'   )     );
 		add_action( 'bp_core_loaded', array( $this, 'hide_buddypress' ), 20 );
 		add_action( 'bp_setup_nav',   array( $this, 'bp_setup_nav'    ), 99 );
+	}
+
+	/** General ************************************************************/
+
+	/**
+	 * Setup general BP manipulations for VGSR
+	 *
+	 * @since 0.1.2
+	 */
+	public function bp_init() {
+
+		// Get BuddyPress
+		$bp = buddypress();
+
+		// Do not allow simple users to edit their member type(s)
+		if ( ! current_user_can( 'bp_moderate' ) ) {
+			remove_action( 'bp_members_admin_load', array( $bp->members->admin, 'process_member_type_update' ) );
+		}
 	}
 
 	/** Hide BP ************************************************************/
@@ -564,6 +586,22 @@ class VGSR_BuddyPress {
 		// When assigning Oud-lid or Ex-lid member types, remove the Lid member type
 		if ( in_array( $member_type, array( vgsr_bp_oudlid_member_type(), vgsr_bp_exlid_member_type() ) ) ) {
 			bp_remove_member_type( $user_id, vgsr_bp_lid_member_type() );
+		}
+	}
+
+	/**
+	 * Modifty the metaboxes on the user's Extended Profile admin page
+	 *
+	 * @since 0.1.2
+	 *
+	 * @param bool $is_self_profile Whether or not it is the current user's profile.
+	 * @param int $user_id Current user ID.
+	 */
+	public function admin_user_metaboxes( $is_self_profile, $user_id ) {
+
+		// Do not allow simple users to edit their member type(s)
+		if ( ! current_user_can( 'bp_moderate' ) ) {
+			remove_meta_box( 'bp_members_admin_member_type', null, 'side' );
 		}
 	}
 
