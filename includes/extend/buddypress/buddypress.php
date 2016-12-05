@@ -96,7 +96,7 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'           ), 10, 2 );
 		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'        ), 10, 2 );
 		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'        ), 10, 2 );
-		add_filter( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'  )        );
+		add_filter( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'  ), 10, 2 );
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
