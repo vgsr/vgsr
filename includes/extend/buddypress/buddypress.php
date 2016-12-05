@@ -629,38 +629,6 @@ class VGSR_BuddyPress {
 			'link_text'         => __( 'Dashboard Profile', 'vgsr' ),
 			'link_class'        => 'dashboard-profile'
 		) );
-
-		// Promote to Lid action
-		if ( ! is_user_vgsr( bp_displayed_user_id() ) ) {
-			$mt = bp_get_member_type_object( vgsr_bp_lid_member_type() );
-
-			bp_button( array(
-				'id'                => 'promote_member_lid',
-				'component'         => 'members',
-				'must_be_logged_in' => true,
-				'block_self'        => true,
-				'link_href'         => vgsr_bp_get_member_type_promote_url( $mt->name ),
-				'link_title'        => __( 'Change the member type of this member.', 'vgsr' ),
-				'link_text'         => sprintf( __( 'Promote to %s', 'vgsr' ), $mt->labels['singular_name'] ),
-				'link_class'        => 'promote-member confirm'
-			) );
-		}
-
-		// Promote to Oud-lid action
-		if ( ! is_user_oudlid( bp_displayed_user_id() ) ) {
-			$mt = bp_get_member_type_object( vgsr_bp_oudlid_member_type() );
-
-			bp_button( array(
-				'id'                => 'promote_member_oudlid',
-				'component'         => 'members',
-				'must_be_logged_in' => true,
-				'block_self'        => true,
-				'link_href'         => vgsr_bp_get_member_type_promote_url( $mt->name ),
-				'link_title'        => __( 'Change the member type of this member.', 'vgsr' ),
-				'link_text'         => sprintf( __( 'Promote to %s', 'vgsr' ), $mt->labels['singular_name'] ),
-				'link_class'        => 'promote-member confirm'
-			) );
-		}
 	}
 
 	/**

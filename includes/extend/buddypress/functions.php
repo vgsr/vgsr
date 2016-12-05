@@ -115,6 +115,8 @@ function vgsr_bp_exlid_member_type() {
  *
  * @since 0.1.0
  *
+ * @todo Front-end member type promotion buttons are removed.
+ *
  * @param string $member_type Member type
  * @param int $user_id User ID. Defaults to displayed user.
  * @param bool $append Whether to append or override the member type. Defaults to override.
@@ -127,6 +129,8 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 	 * Return the promote to member type url
 	 *
 	 * @since 0.1.0
+	 *
+	 * @todo Front-end member type promotion buttons are removed.
 	 *
 	 * @uses apply_filters() Calls 'vgsr_bp_get_member_type_promote_url'
 	 *

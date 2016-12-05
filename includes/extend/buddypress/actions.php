@@ -15,6 +15,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  *
+ * @todo Front-end member type promotion buttons are removed.
+ *
  * @return false|null Returns false on failure. Otherwise redirects backc to the
  *                    member's home page.
  */
