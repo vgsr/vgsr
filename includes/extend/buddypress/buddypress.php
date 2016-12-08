@@ -75,7 +75,6 @@ class VGSR_BuddyPress {
 	private function includes() {
 		require( $this->includes_dir . 'actions.php'   );
 		require( $this->includes_dir . 'activity.php'  );
-		require( $this->includes_dir . 'filters.php'   );
 		require( $this->includes_dir . 'functions.php' );
 		require( $this->includes_dir . 'settings.php'  );
 	}

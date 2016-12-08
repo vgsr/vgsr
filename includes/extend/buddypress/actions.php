@@ -10,47 +10,13 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Handle promoting a member to a given member type
- *
- * @since 0.1.0
- *
- * @todo Front-end member type promotion buttons are removed.
- *
- * @return false|null Returns false on failure. Otherwise redirects backc to the
- *                    member's home page.
- */
-function vgsr_bp_member_promote_member_type() {
+// Activity
+add_filter( 'bp_after_has_activities_parse_args',               'vgsr_bp_activity_comments_in_stream'              );
+add_filter( 'bp_activity_custom_post_type_post_action',         'vgsr_bp_activity_post_type_post_action',    10, 2 );
+add_filter( 'bp_blogs_format_activity_action_new_blog_post',    'vgsr_bp_activity_post_type_post_action',    10, 2 );
+add_filter( 'bp_activity_custom_post_type_comment_action',      'vgsr_bp_activity_post_type_comment_action', 10, 2 );
+add_filter( 'bp_blogs_format_activity_action_new_blog_comment', 'vgsr_bp_activity_post_type_comment_action', 10, 2 );
 
-	// Bail when this is not an action for a user
-	if ( ! bp_is_user() )
-		return;
-
-	$action = ! empty( $_GET['action']   ) ? $_GET['action'] : '';
-	$nonce  = ! empty( $_GET['_wpnonce'] ) ? $_GET['_wpnonce'] : '';
-	$type   = ! empty( $_GET['type']     ) ? bp_get_member_type_object( $_GET['type'] ) : '';
-	$append = ! empty( $_GET['append']   ) ? intval( $_GET['append'] ) : true;
-
-	// Bail if no action or no ID
-	if ( 'vgsr_promote' !== $action || empty( $type ) || empty( $nonce ) )
-		return;
-
-	// Check the nonce
-	if ( ! bp_verify_nonce_request( 'vgsr_promote_member_type_' . $type->name ) )
-		return;
-
-	// Check user moderation cap
-	if ( ! bp_current_user_can( 'bp_moderate' ) )
-		return;
-
-	// Execute promotion
-	if ( bp_set_member_type( bp_displayed_user_id(), $type->name, (bool) $append ) ) {
-		bp_core_add_message( sprintf( __( 'Member promoted to %s.', 'vgsr' ), $type->labels['singular_name'] ) );
-	} else {
-		bp_core_add_message( __( 'There was a problem promoting this member.', 'vgsr' ), 'error' );
-	}
-
-	// Redirect back to the member's home page
-	bp_core_redirect( bp_displayed_user_domain() );
-}
-add_action( 'bp_actions', 'vgsr_bp_member_promote_member_type' );
+// Plugin Settings
+add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
+add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'   );
