@@ -211,12 +211,185 @@ function is_user_oudlid( $user = 0, $by = 'slug' ) {
 	return (bool) apply_filters( 'is_user_oudlid', false, vgsr_get_user_id( $user, $by ) );
 }
 
-	// Default to current user
-	if ( empty( $user_id ) ) {
-		$user_id = vgsr_get_current_user_id();
+/** Attributes ************************************************************/
+
+/**
+ * Return the user's lastname
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_user_lastname'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return string User lastname.
+ */
+function vgsr_get_user_lastname( $user = 0 ) {
+	$user     = vgsr_get_user( $user );
+	$lastname = '';
+
+	if ( $user ) {
+		$lastname = $user->last_name;
+
+		if ( ! $lastname ) {
+			$lastname = $user->user_login;
+		}
 	}
 
-	return (bool) apply_filters( 'is_user_oudlid', false, $user_id );
+	return apply_filters( 'vgsr_get_user_lastname', $lastname, $user );
+}
+
+/**
+ * Return the user's fullname
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_user_fullname'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return string User fullname.
+ */
+function vgsr_get_user_fullname( $user = 0 ) {
+	$user     = vgsr_get_user( $user );
+	$fullname = '';
+
+	if ( $user ) {
+		$fullname = sprintf( '%s %s', $user->first_name, $user->last_name );
+	}
+
+	return apply_filters( 'vgsr_get_user_fullname', $fullname, $user );
+}
+
+/**
+ * Return the user's gender
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_user_gender'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return bool|null True when male (1), False when female (0), Null when unknown.
+ */
+function vgsr_get_user_gender( $user = 0 ) {
+	$user   = vgsr_get_user( $user );
+	$gender = null;
+
+	// Get gender from meta
+	if ( $user ) {
+		$meta = $user->get( 'gender' );
+
+		if ( is_numeric( $meta ) ) {
+			$gender = (bool) $meta;
+		}
+	}
+
+	return apply_filters( 'vgsr_get_user_gender', $gender, $user );
+}
+
+/** Formalities ***********************************************************/
+
+/**
+ * Return the user's salutation text
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_salutation'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return string User's salutation.
+ */
+function vgsr_get_salutation( $user = 0 ) {
+	$user   = vgsr_get_user( $user );
+	$gender = vgsr_get_user_gender( $user );
+	$salut  = '';
+
+	// VGSR salutation
+	if ( $user && is_user_vgsr( $user ) ) {
+		if ( null !== $gender ) {
+			$salut = $gender
+				? 'Waarde amice %s,'
+				: 'Waarde amica %s,';
+		} else {
+			$salut = 'Waarde amica aut amice %s,';
+		}
+
+	// Default salutation
+	} else {
+		if ( null !== $gender ) {
+			$salut = $gender
+				? __( 'Dear mr. %s,',  'vgsr' )
+				: __( 'Dear mrs. %s,', 'vgsr' );
+		} else {
+			$salut = __( 'Dear mr. or mrs. %s,', 'vgsr' );
+		}
+	}
+
+	// Parse with last name
+	$salut = sprintf( $salut, ucfirst( vgsr_get_user_lastname( $user ) ) );
+
+	return apply_filters( 'vgsr_get_salutation', $salut, $user );
+}
+
+/**
+ * Return the user's salutation wrappend in paragraph tags
+ *
+ * @since 1.0.0
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return string User's paragraphed salutation.
+ */
+function vgsr_get_salutation_p( $user = 0 ) {
+	return '<p>' . vgsr_get_salutation( $user ) . "</p>\n";
+}
+
+/**
+ * Return the user's closing text
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_closing'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return string User's closing.
+ */
+function vgsr_get_closing( $args = array() ) {
+	$close = '';
+
+	// Parse arguments
+	$args = wp_parse_args( $args, array(
+		'addressed' => false,
+		'author'    => vgsr_get_user(),
+	) );
+
+	$args['addressed'] = vgsr_get_user( $args['addressed'] );
+	$args['author']    = vgsr_get_user( $args['author'] );
+
+	// VGSR closing
+	if ( $args['addressed'] && is_user_vgsr( $args['addressed'] ) ) {
+		$close = 'Met amicale groet,';
+
+	// Default closing
+	} else {
+		$close = __( 'Sincerely,', 'vgsr' );
+	}
+
+	// Append author
+	if ( $args['author'] ) {
+		$close .= "\n\n" . vgsr_get_user_fullname( $args['author'] );
+	}
+
+	return apply_filters( 'vgsr_get_closing', $close, $args );
+}
+
+/**
+ * Return the user's closing wrappend in paragraph tags
+ *
+ * @since 1.0.0
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return string User's paragraphed closing.
+ */
+function vgsr_get_closing_p( $user = 0 ) {
+	return wpautop( vgsr_get_closing( array( 'addressed' => $user ) ) );
 }
 
 /** Admin Bar *************************************************************/
