@@ -214,7 +214,7 @@ function is_user_oudlid( $user = 0, $by = 'slug' ) {
 /** Attributes ************************************************************/
 
 /**
- * Return the user's lastname
+ * Return the user's lastname, defaults to user login name.
  *
  * @since 1.0.0
  *
@@ -239,7 +239,7 @@ function vgsr_get_user_lastname( $user = 0 ) {
 }
 
 /**
- * Return the user's fullname
+ * Return the user's fullname, defaults to user display name.
  *
  * @since 1.0.0
  *
@@ -254,6 +254,10 @@ function vgsr_get_user_fullname( $user = 0 ) {
 
 	if ( $user ) {
 		$fullname = sprintf( '%s %s', $user->first_name, $user->last_name );
+
+		if ( ! $fullname ) {
+			$fullname = $user->display_name;
+		}
 	}
 
 	return apply_filters( 'vgsr_get_user_fullname', $fullname, $user );
