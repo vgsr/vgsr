@@ -338,7 +338,7 @@ function vgsr_get_salutation( $user = 0 ) {
  * @return string User's paragraphed salutation.
  */
 function vgsr_get_salutation_p( $user = 0 ) {
-	return '<p>' . vgsr_get_salutation( $user ) . "</p>\n";
+	return wpautop( vgsr_get_salutation( $user ) ) . "\n";
 }
 
 /**
@@ -389,7 +389,7 @@ function vgsr_get_closing( $args = array() ) {
  * @return string User's paragraphed closing.
  */
 function vgsr_get_closing_p( $user = 0 ) {
-	return wpautop( vgsr_get_closing( array( 'addressed' => $user ) ) );
+	return wpautop( vgsr_get_closing( array( 'addressed' => $user ) ) ) . "\n";
 }
 
 /** Admin Bar *************************************************************/
