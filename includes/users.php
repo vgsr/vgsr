@@ -11,11 +11,58 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Return the user object for the given user
+ *
+ * @since 1.0.0
+ *
+ * @param  WP_User|int|string $user Optional. User object or user ID|slug|name|email. Defaults to the current user.
+ * @param  string             $by   Optional. Type of input to get the user by for string values. Defaults to 'slug'.
+ * @return WP_User|bool User object or False when not found.
+ */
+function vgsr_get_user( $user = 0, $by = 'slug' ) {
+
+	// Get user from id
+	if ( $user && is_numeric( $user ) ) {
+		$user = get_user_by( 'id', $user );
+
+	// Get user from slug
+	} elseif ( is_string( $user ) ) {
+		$user = get_user_by( $by, $user );
+
+	// Default to current user
+	} elseif ( 0 === $user ) {
+		$user = get_user_by( 'id', vgsr_get_current_user_id() );
+	}
+
+	// Get id from user object
+	if ( ! is_a( $user, 'WP_User' ) || ! $user->exists() ) {
+		$user = false;
+	}
+
+	return $user;
+}
+
+/**
+ * Return the exising user's ID for the given user
+ *
+ * @since 1.0.0
+ *
+ * @param  WP_User|int|string $user Optional. User object or user ID|slug|name|email. Defaults to the current user.
+ * @param  string             $by   Optional. Type of input to get the user by for string values. Defaults to 'slug'.
+ * @return int User ID
+ */
+function vgsr_get_user_id( $user = 0, $by = 'slug' ) {
+	$user = vgsr_get_user( $user, $by );
+	return $user ? $user->ID : 0;
+}
+
+/**
  * Return the current user ID even when it isn't set yet
  *
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'determine_current_user'
+ *
  * @return int User ID
  */
 function vgsr_get_current_user_id() {
@@ -120,17 +167,12 @@ function vgsr_pre_user_query( $query ) {
  *
  * @uses apply_filters() Calls 'is_user_vgsr'
  * 
- * @param int $user_id User ID. Defaults to current user
- * @return boolean User is VGSR
+ * @param  WP_User|int|string $user Optional. User object or user ID|slug|name|email. Defaults to the current user.
+ * @param  string             $by   Optional. Type of input to get the user by for string values. Defaults to 'slug'.
+ * @return bool User is VGSR
  */
-function is_user_vgsr( $user_id = 0 ) {
-
-	// Default to current user
-	if ( empty( $user_id ) ) {
-		$user_id = vgsr_get_current_user_id();
-	}
-
-	return (bool) apply_filters( 'is_user_vgsr', false, $user_id );
+function is_user_vgsr( $user = 0, $by = 'slug' ) {
+	return (bool) apply_filters( 'is_user_vgsr', false, vgsr_get_user_id( $user, $by ) );
 }
 
 /**
@@ -143,17 +185,12 @@ function is_user_vgsr( $user_id = 0 ) {
  *
  * @uses apply_filters() Calls 'is_user_lid'
  * 
- * @param int $user_id User ID. Defaults to current user
- * @return boolean User is Lid
+ * @param  WP_User|int|string $user Optional. User object or user ID|slug|name|email. Defaults to the current user.
+ * @param  string             $by   Optional. Type of input to get the user by for string values. Defaults to 'slug'.
+ * @return bool User is Lid
  */
-function is_user_lid( $user_id = 0 ) {
-
-	// Default to current user
-	if ( empty( $user_id ) ) {
-		$user_id = vgsr_get_current_user_id();
-	}
-
-	return (bool) apply_filters( 'is_user_lid', false, $user_id );
+function is_user_lid( $user = 0, $by = 'slug' ) {
+	return (bool) apply_filters( 'is_user_lid', false, vgsr_get_user_id( $user, $by ) );
 }
 
 /**
@@ -166,10 +203,13 @@ function is_user_lid( $user_id = 0 ) {
  *
  * @uses apply_filters() Calls 'is_user_oudlid'
  * 
- * @param int $user_id User ID. Defaults to current user
- * @return boolean User is Oud-lid
+ * @param  WP_User|int|string $user Optional. User object or user ID|slug|name|email. Defaults to the current user.
+ * @param  string             $by   Optional. Type of input to get the user by for string values. Defaults to 'slug'.
+ * @return bool User is Oud-lid
  */
-function is_user_oudlid( $user_id = 0 ) {
+function is_user_oudlid( $user = 0, $by = 'slug' ) {
+	return (bool) apply_filters( 'is_user_oudlid', false, vgsr_get_user_id( $user, $by ) );
+}
 
 	// Default to current user
 	if ( empty( $user_id ) ) {
