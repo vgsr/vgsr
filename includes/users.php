@@ -101,6 +101,11 @@ function vgsr_dropdown_users( $args = array() ) {
 	$args = wp_parse_args( $args, array( 'vgsr' => true ) );
 	$args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
 
+	// Default to network users
+	if ( ! isset( $args['blog_id'] ) ) {
+		$args['blog_id'] = 0;
+	}
+
 	// Get the dropdown
 	return wp_dropdown_users( $args );
 }
@@ -116,7 +121,7 @@ function vgsr_dropdown_users( $args = array() ) {
  */
 function vgsr_dropdown_users_args( $query_args = array(), $args = array() ) {
 
-	// Add 'vgsr' argument to query args
+	// Parse vgsr argument
 	if ( isset( $args['vgsr'] ) && $args['vgsr'] ) {
 		$query_args['vgsr'] = in_array( $args['vgsr'], array( 'lid', 'oud-lid' ) ) ? $args['vgsr'] : true;
 	}
