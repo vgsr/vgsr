@@ -5,40 +5,20 @@
  *
  * @package VGSR
  * @subpackage Administration
- *
- * This file contains the actions that are used through-out VGSR Admin. They
- * are consolidated here to make searching for them easier, and to help developers
- * understand at a glance the order in which things occur.
- *
- * There are a few common places that additional actions can currently be found
- *
- *  - VGSR: In {@link VGSR::setup_actions()} in vgsr.php
- *  - VGSR: More in core/actions.php
- *  - Admin: More in {@link VGSR_Admin::setup_actions()} in admin.php
  */
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Attach VGSR to WordPress
- *
- * VGSR uses its own internal actions to help aid in third-party plugin
- * development, and to limit the amount of potential future code changes when
- * updates to WordPress core occur.
- *
- * These actions exist to create the concept of 'plugin dependencies'. They
- * provide a safe way for plugins to execute code *only* when VGSR is
- * installed and activated, without needing to do complicated guesswork.
- *
- *           v--WordPress Actions       v--VGSR Sub-actions
- */
-add_action( vgsr_admin_menu_hook(),    'vgsr_admin_menu'      );
-add_action( 'admin_init',              'vgsr_admin_init'      );
-add_action( 'admin_head',              'vgsr_admin_head'      );
-add_action( 'admin_footer',            'vgsr_admin_footer'    );
-add_action( 'admin_notices',           'vgsr_admin_notices'   );
+/** Sub-actions ***************************************************************/
 
-// Hook on to admin_init
-add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings'      );
-add_action( 'vgsr_admin_init', 'vgsr_admin_settings_save',     100 );
+add_action( vgsr_admin_menu_hook(), 'vgsr_admin_menu',              10 );
+add_action( 'admin_init',           'vgsr_admin_init',              10 );
+add_action( 'admin_head',           'vgsr_admin_head',              10 );
+add_action( 'admin_footer',         'vgsr_admin_footer',            10 );
+add_action( 'admin_notices',        'vgsr_admin_notices',           10 );
+
+/** Settings ******************************************************************/
+
+add_action( 'vgsr_admin_init',      'vgsr_register_admin_settings', 10 );
+add_action( 'vgsr_admin_init',      'vgsr_admin_settings_save',    100 );

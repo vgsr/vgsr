@@ -87,6 +87,8 @@ function vgsr_get_users( $args = array() ) {
 	return get_users( $args );
 }
 
+/** Template **************************************************************/
+
 /**
  * Create dropdown HTML element of vgsr users
  *
