@@ -357,7 +357,7 @@ function vgsr_get_ancienniteit( $user = 0 ) {
 		$ancienniteit = $user->get( 'ancienniteit' );
 
 		// Default to the jaargroep * 1000
-		if ( ! $ancienniteit) {
+		if ( ! $ancienniteit ) {
 			$ancienniteit = vgsr_get_jaargroep( $user ) * 1000;
 		}
 	}
@@ -381,6 +381,11 @@ function vgsr_get_jaargroep( $user = 0 ) {
 
 	if ( $user ) {
 		$jaargroep = $user->get( 'jaargroep' );
+
+		// Default to the ancienniteit / 1000
+		if ( ! $jaargroep && $ancienniteit = vgsr_get_ancienniteit( $user ) ) {
+			$jaargroep = floor( $ancienniteit / 1000 );
+		}
 	}
 
 	return (int) apply_filters( 'vgsr_get_jaargroep', $jaargroep, $user );
