@@ -131,34 +131,73 @@ function vgsr_dropdown_users_args( $query_args = array(), $args = array() ) {
 	return $query_args;
 }
 
+/** Query *****************************************************************/
+
+/**
+ * Modify the user query before parsing the query vars
+ * 
+ * @since 1.0.0
+ *
+ * @param  WP_User_Query $users_query
+ */
+function vgsr_pre_get_users( $users_query ) {
+
+	// Bail when not querying vgsr users
+	if ( ! $users_query->get( 'vgsr' ) )
+		return;
+
+	// Since we cannot filter query vars before parsing the defaults,
+	// assume 'login' as the default orderby value. Circumvent this by
+	// providing the alternate orderby value 'user_login'.
+	if ( 'login' === $users_query->get( 'orderby' ) ) {
+
+		// Default to anciënniteit
+		$users_query->set( 'orderby', 'ancienniteit' );
+	}
+}
+
 /**
  * Modify the user query when querying vgsr users
  *
  * @since 0.1.0
  *
+ * @global $wpdb WPDB
+ *
  * @uses apply_filters() Calls 'vgsr_pre_user_query'
- * @param WP_User_Query $query
+ *
+ * @param  WP_User_Query $users_query
  */
-function vgsr_pre_user_query( $query ) {
-
-	// Bail when not querying vgsr users
-	if ( ! $query->get( 'vgsr' ) )
-		return;
+function vgsr_pre_user_query( $users_query ) {
+	global $wpdb;
 
 	// Enable plugin filtering
 	$sql_clauses = array( 'join' => '', 'where' => '' );
-	$sql_clauses = apply_filters( 'vgsr_pre_user_query', $sql_clauses, $query );
+	$sql_clauses = apply_filters( 'vgsr_pre_user_query', $sql_clauses, $users_query );
 
 	// Append JOIN statement
 	if ( ! empty( $sql_clauses['join'] ) ) {
 		$join = preg_replace( '/^\s*/', '', $sql_clauses['where'] );
-		$query->query_join .= " $join";
+		$users_query->query_from .= " $join";
 	}
 
 	// Append WHERE statement
 	if ( ! empty( $sql_clauses['where'] ) ) {
 		$where = preg_replace( '/^\s*AND\s*/', '', $sql_clauses['where'] );
-		$query->query_where .= " AND $where";
+		$users_query->query_where .= " AND $where";
+	}
+
+	// Parse ordering by anciënniteit
+	if ( 'ancienniteit' === $users_query->get( 'orderby' ) ) {
+
+		// Apply ordering by meta query
+		if ( apply_filters( 'vgsr_use_ancienniteit_meta', true ) ) {
+
+			// Join with anciënniteit meta column to use only in ordering. Force
+			// order null values after meta values.
+			$order                      = 'ASC' === strtoupper( $users_query->get( 'order' ) ) ? 'ASC' : 'DESC';
+			$users_query->query_from   .= $wpdb->prepare( " LEFT JOIN {$wpdb->usermeta} AS ancm ON {$wpdb->users}.ID = ancm.user_id AND ancm.meta_key = %s", 'ancienniteit' );
+			$users_query->query_orderby = str_replace( 'ORDER BY', sprintf( 'ORDER BY CASE WHEN ancm.meta_value IS NULL THEN 1 ELSE 0 END, ancm.meta_value %s,', $order ), $users_query->query_orderby );
+		}
 	}
 }
 
@@ -296,6 +335,53 @@ function vgsr_get_gender( $user = 0 ) {
 	return apply_filters( 'vgsr_get_gender', $gender, $user );
 }
 
+/**
+ * Return the user's anciënniteit
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_ancienniteit'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return int User anciënniteit
+ */
+function vgsr_get_ancienniteit( $user = 0 ) {
+	$user         = vgsr_get_user( $user );
+	$ancienniteit = 0;
+
+	if ( $user ) {
+		$ancienniteit = $user->get( 'ancienniteit' );
+
+		// Default to the jaargroep * 1000
+		if ( ! $ancienniteit) {
+			$ancienniteit = vgsr_get_jaargroep( $user ) * 1000;
+		}
+	}
+
+	return (int) apply_filters( 'vgsr_get_ancienniteit', $ancienniteit, $user );
+}
+
+/**
+ * Return the user's jaargroep
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_jaargroep'
+ *
+ * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @return int User jaargroep
+ */
+function vgsr_get_jaargroep( $user = 0 ) {
+	$user      = vgsr_get_user( $user );
+	$jaargroep = 0;
+
+	if ( $user ) {
+		$jaargroep = $user->get( 'jaargroep' );
+	}
+
+	return (int) apply_filters( 'vgsr_get_jaargroep', $jaargroep, $user );
+}
+
 /** Formalities ***********************************************************/
 
 /**
@@ -401,6 +487,30 @@ function vgsr_get_closing( $args = array() ) {
  */
 function vgsr_get_closing_p( $user = 0 ) {
 	return wpautop( vgsr_get_closing( array( 'addressed' => $user ) ) ) . "\n";
+}
+
+/** Anciënniteit **********************************************************/
+
+/**
+ * Compare two users based on anciënniteit
+ *
+ * @since 1.0.0
+ *
+ * @param  WP_User|int $a User object or ID.
+ * @param  WP_User|int $b User object or ID.
+ * @return int Comparison result
+ */
+function vgsr_cmp_ancienniteit( $a, $b ) {
+	$_a = vgsr_get_ancienniteit( $a );
+	$_a = vgsr_get_ancienniteit( $b );
+
+	if ( 0 !== $_a && 0 !== $_b ) {
+		return $_a > $_b ? 1 : -1;
+	} elseif ( $_b > 0 ) {
+		return 1;
+	} else {
+		return -1;
+	}
 }
 
 /** Admin Bar *************************************************************/

@@ -13,26 +13,6 @@ defined( 'ABSPATH' ) || exit;
 /** Extend *****************************************************************/
 
 /**
- * Loads the Ancienniteit component
- * 
- * @since 0.0.3
- *
- * @return When Ancienniteit is not active
- */
-function vgsr_setup_ancienniteit() {
-
-	// Bail if no Ancienniteit
-	if ( ! class_exists( 'Ancienniteit' ) )
-		return;
-
-	// Include the Ancienniteit component
-	require( vgsr()->extend_dir . 'ancienniteit.php' );
-
-	// Instantiate Ancienniteit for VGSR
-	vgsr()->extend->ancienniteit = new VGSR_Ancienniteit;
-}
-
-/**
  * Loads the bbPress component
  * 
  * @since 0.0.1
