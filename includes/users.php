@@ -223,12 +223,12 @@ function is_user_oudlid( $user = 0, $by = 'slug' ) {
  *
  * @since 1.0.0
  *
- * @uses apply_filters() Calls 'vgsr_get_user_lastname'
+ * @uses apply_filters() Calls 'vgsr_get_lastname'
  *
  * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
  * @return string User lastname.
  */
-function vgsr_get_user_lastname( $user = 0 ) {
+function vgsr_get_lastname( $user = 0 ) {
 	$user     = vgsr_get_user( $user );
 	$lastname = '';
 
@@ -240,7 +240,7 @@ function vgsr_get_user_lastname( $user = 0 ) {
 		}
 	}
 
-	return apply_filters( 'vgsr_get_user_lastname', $lastname, $user );
+	return apply_filters( 'vgsr_get_lastname', $lastname, $user );
 }
 
 /**
@@ -248,12 +248,12 @@ function vgsr_get_user_lastname( $user = 0 ) {
  *
  * @since 1.0.0
  *
- * @uses apply_filters() Calls 'vgsr_get_user_fullname'
+ * @uses apply_filters() Calls 'vgsr_get_fullname'
  *
  * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
  * @return string User fullname.
  */
-function vgsr_get_user_fullname( $user = 0 ) {
+function vgsr_get_fullname( $user = 0 ) {
 	$user     = vgsr_get_user( $user );
 	$fullname = '';
 
@@ -265,7 +265,7 @@ function vgsr_get_user_fullname( $user = 0 ) {
 		}
 	}
 
-	return apply_filters( 'vgsr_get_user_fullname', $fullname, $user );
+	return apply_filters( 'vgsr_get_fullname', $fullname, $user );
 }
 
 /**
@@ -273,12 +273,12 @@ function vgsr_get_user_fullname( $user = 0 ) {
  *
  * @since 1.0.0
  *
- * @uses apply_filters() Calls 'vgsr_get_user_gender'
+ * @uses apply_filters() Calls 'vgsr_get_gender'
  *
  * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
  * @return bool|null True when male (1), False when female (0), Null when unknown.
  */
-function vgsr_get_user_gender( $user = 0 ) {
+function vgsr_get_gender( $user = 0 ) {
 	$user   = vgsr_get_user( $user );
 	$gender = null;
 
@@ -291,7 +291,7 @@ function vgsr_get_user_gender( $user = 0 ) {
 		}
 	}
 
-	return apply_filters( 'vgsr_get_user_gender', $gender, $user );
+	return apply_filters( 'vgsr_get_gender', $gender, $user );
 }
 
 /** Formalities ***********************************************************/
@@ -308,7 +308,7 @@ function vgsr_get_user_gender( $user = 0 ) {
  */
 function vgsr_get_salutation( $user = 0 ) {
 	$user   = vgsr_get_user( $user );
-	$gender = vgsr_get_user_gender( $user );
+	$gender = vgsr_get_gender( $user );
 	$salut  = '';
 
 	// VGSR salutation
@@ -333,7 +333,7 @@ function vgsr_get_salutation( $user = 0 ) {
 	}
 
 	// Parse with last name
-	$salut = sprintf( $salut, ucfirst( vgsr_get_user_lastname( $user ) ) );
+	$salut = sprintf( $salut, ucfirst( vgsr_get_lastname( $user ) ) );
 
 	return apply_filters( 'vgsr_get_salutation', $salut, $user );
 }
@@ -383,7 +383,7 @@ function vgsr_get_closing( $args = array() ) {
 
 	// Append author
 	if ( $args['author'] ) {
-		$close .= "\n\n" . vgsr_get_user_fullname( $args['author'] );
+		$close .= "\n\n" . vgsr_get_fullname( $args['author'] );
 	}
 
 	return apply_filters( 'vgsr_get_closing', $close, $args );
