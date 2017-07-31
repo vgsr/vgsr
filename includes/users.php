@@ -338,6 +338,10 @@ function vgsr_get_gender( $user = 0 ) {
 /**
  * Return the user's anciënniteit
  *
+ * Expect anciënniteit to be represented by 'YYYYPPP' where 'YYYY' represents
+ * the user's jaargroep and 'PPP' represents the user's position within the
+ * jaargroep.
+ *
  * @since 1.0.0
  *
  * @uses apply_filters() Calls 'vgsr_get_ancienniteit'
