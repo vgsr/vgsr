@@ -132,7 +132,7 @@ class VGSR_BuddyPress {
 		$bp = buddypress();
 
 		// Do not allow simple users to edit their member type(s)
-		if ( ! current_user_can( 'bp_moderate' ) ) {
+		if ( ! current_user_can( 'bp_moderate' ) && is_admin() ) {
 			remove_action( 'bp_members_admin_load', array( $bp->members->admin, 'process_member_type_update' ) );
 		}
 	}
