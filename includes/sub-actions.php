@@ -21,8 +21,6 @@
  * Runs on VGSR activation
  *
  * @since 0.1.0
- *
- * @uses register_uninstall_hook() To register our own uninstall hook
  * @uses do_action() Calls 'vgsr_activation' hook
  */
 function vgsr_activation() {

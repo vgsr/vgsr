@@ -150,8 +150,6 @@ function vgsr_admin_setting_callback_access_section() { ?>
  * Private reading post types settings field
  *
  * @since 0.0.6
- *
- * @uses vgsr_get_private_reading_post_types()
  */
 function vgsr_setting_callback_private_reading_post_types() {
 

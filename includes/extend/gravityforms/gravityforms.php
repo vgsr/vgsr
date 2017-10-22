@@ -130,8 +130,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 *
-	 * @uses GFFormsModel::get_form_meta()
-	 * 
 	 * @param array|int $form Form object or form ID
 	 * @param string $meta_key Form meta key
 	 * @return mixed Form setting's value or NULL when not found
@@ -154,9 +152,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 *
-	 * @uses GFFormsModel::get_form_meta()
-	 * @uses GFFormsModel::get_field()
-	 * 
 	 * @param array|int $field Field object or field ID
 	 * @param string $meta_key Field meta key
 	 * @param array|int $form Form object or form ID
@@ -190,8 +185,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 *
-	 * @uses VGSR_GravityForms::get_form_meta()
-	 * @uses VGSR_GravityForms::is_field_vgsr()
 	 * @uses apply_filters() Calls 'vgsr_gf_is_form_vgsr'
 	 *
 	 * @param array|int $form Form object or form ID
@@ -227,7 +220,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 *
-	 * @uses VGSR_GravityForms::get_field_meta()
 	 * @uses apply_filters() Calls 'vgsr_gf_is_field_vgsr'
 	 *
 	 * @param array|int $field Field object or Field ID
@@ -243,9 +235,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 * 
-	 * @uses VGSR_GravityForms::is_form_vgsr()
-	 * @uses is_user_vgsr()
-	 *
 	 * @param string $content The form HTML content
 	 * @param array $form Form meta data
 	 * @return string Form HTML
@@ -264,10 +253,6 @@ class VGSR_GravityForms {
 	 * Do not display exclusive fields to non-vgsr users
 	 *
 	 * @since 0.0.7
-	 *
-	 * @uses is_admin()
-	 * @uses VGSR_GravityForms::is_field_vgsr()
-	 * @uses is_user_vgsr()
 	 *
 	 * @param string $content The field HTML content
 	 * @param array $field Field meta data
@@ -295,7 +280,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 *
-	 * @uses call_user_func_array() To call __() indirectly
 	 * @param string $string String to be translated
 	 * @return string Translation
 	 */
@@ -309,10 +293,6 @@ class VGSR_GravityForms {
 	 * Manipulate the form settings sections
 	 *
 	 * @since 0.0.6
-	 *
-	 * @uses gform_tooltip()
-	 * @uses VGSR_GravityForms::get_form_meta()
-	 * @uses VGSR_GravityForms::i18n()
 	 *
 	 * @param array $settings Form settings sections
 	 * @param object $form Form object
@@ -362,8 +342,6 @@ class VGSR_GravityForms {
 	 * 
 	 * @since 0.0.6
 	 *
-	 * @uses VGSR_GravityForms::is_form_vgsr()
-	 * 
 	 * @param array $actions Form actions
 	 * @param int $form_id Form ID
 	 * @return array Form actions
@@ -424,9 +402,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 *
-	 * @uses VGSR_GravityForms::is_form_vgsr()
-	 * @uses gform_tooltip()
-	 *
 	 * @param int $position Settings position
 	 * @param int $form_id Form ID
 	 */
@@ -474,9 +449,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.7
 	 *
-	 * @uses VGSR_GravityForms::is_form_vgsr()
-	 * @uses VGSR_GravityForms::is_field_vgsr()
-	 * 
 	 * @param string $classes Classes
 	 * @param array $field Field object
 	 * @param array $form Form object
@@ -525,9 +497,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @uses VGSR_GravityForms::is_form_vgsr()
-	 * @uses is_user_vgsr()
-	 *
 	 * @param array     $instance The current widget instance's settings.
 	 * @param WP_Widget $widget   The current widget instance.
 	 * @param array     $args     An array of default widget arguments.
@@ -572,9 +541,6 @@ class VGSR_GravityForms {
 	 *
 	 * @since 0.0.6
 	 * 
-	 * @uses VGSR_GravityForms::is_form_vgsr()
-	 * @uses is_user_vgsr()
-	 *
 	 * @param bool $hide Whether to hide the form
 	 * @param object $form Form data
 	 * @return bool Whether to hide the form

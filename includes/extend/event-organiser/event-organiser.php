@@ -22,8 +22,6 @@ class VGSR_Event_Organiser {
 	 * Setup the Search class
 	 *
 	 * @since 1.0.0
-	 *
-	 * @uses VGSR_Event_Organiser::setup_actions()
 	 */
 	public function __construct() {
 		$this->setup_actions();
@@ -52,8 +50,6 @@ class VGSR_Event_Organiser {
 	 * Manipulate the query arguments before WP_Query is run
 	 *
 	 * @since 1.0.0
-	 *
-	 * @uses eventorganiser_is_event_query()
 	 *
 	 * @param WP_Query $query
 	 */

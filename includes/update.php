@@ -15,7 +15,6 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.0.1
  *
- * @uses vgsr_get_db_version() To get VGSR's database version
  * @return bool True if update, False if not
  */
 function vgsr_is_install() {
@@ -27,8 +26,6 @@ function vgsr_is_install() {
  *
  * @since 0.0.1
  *
- * @uses vgsr_get_db_version_raw() To get VGSR's database version
- * @uses vgsr_get_db_version() To get VGSR's current database version
  * @return bool True if update, False if not
  */
 function vgsr_is_update() {
@@ -145,9 +142,6 @@ function vgsr_is_deactivation( $basename = '' ) {
  * Update the DB to the latest version
  *
  * @since 0.0.1
- * 
- * @uses update_option()
- * @uses vgsr_get_db_version() To get VGSR's database version
  */
 function vgsr_version_bump() {
 	update_site_option( 'vgsr_db_version', vgsr_get_db_version() );
@@ -157,10 +151,6 @@ function vgsr_version_bump() {
  * Setup the VGSR updater
  *
  * @since 0.0.1
- *
- * @uses vgsr_version_updater()
- * @uses vgsr_version_bump()
- * @uses flush_rewrite_rules()
  */
 function vgsr_setup_updater() {
 

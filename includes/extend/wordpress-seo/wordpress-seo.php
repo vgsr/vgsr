@@ -31,8 +31,6 @@ class VGSR_WPSEO {
 	 * Class constructor
 	 *
 	 * @since 1.0.0
-	 *
-	 * @uses VGSR_WPSEO::setup_actions()
 	 */
 	public function __construct() {
 		$this->setup_globals();
@@ -61,16 +59,6 @@ class VGSR_WPSEO {
 	 * Modify the crumbs collection
 	 *
 	 * @since 1.0.0
-	 *
-	 * @uses is_buddypress()
-	 * @uses bp_is_user()
-	 * @uses bp_get_member_type()
-	 * @uses bp_displayed_user_id()
-	 * @uses bp_get_current_member_type()
-	 * @uses bp_get_member_type_object()
-	 * @uses bp_get_directory_title()
-	 * @uses bp_get_members_directory_permalink()
-	 * @uses apply_filters() Calls 'bp_members_member_type_base'
 	 *
 	 * @param array $crumbs Crumbs
 	 * @return array Crumbs

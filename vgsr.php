@@ -41,9 +41,6 @@ final class VGSR {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses VGSR::setup_globals() Setup the globals needed
-	 * @uses VGSR::includes() Include the required files
-	 * @uses VGSR::setup_actions() Setup the hooks and actions
 	 * @return The one true VGSR
 	 */
 	public static function instance() {
@@ -212,7 +209,6 @@ final class VGSR {
 	 * @since 0.0.1
 	 *
 	 * @uses apply_filters() Calls 'plugin_locale' with {@link get_locale()} value
-	 * @uses load_textdomain() To load the textdomain
 	 */
 	public function load_textdomain() {
 

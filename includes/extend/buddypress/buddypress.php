@@ -51,8 +51,6 @@ class VGSR_BuddyPress {
 	 * Define default class globals
 	 *
 	 * @since 0.1.0
-	 * 
-	 * @uses apply_filters() Calls 'vgsr_components'
 	 */
 	private function setup_globals() {
 		$vgsr = vgsr();

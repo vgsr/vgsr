@@ -146,7 +146,7 @@ class VGSR_Admin {
 	 *
 	 * @uses apply_filters() Calls 'vgsr_map_settings_meta_caps'
 	 *
-	 * @param array $caps Capabilities for meta capability
+ 	 * @param array $caps Capabilities for meta capability
 	 * @param string $cap Capability name
 	 * @param int $user_id User id
 	 * @param mixed $args Arguments
@@ -500,8 +500,6 @@ endif; // class_exists
  * Load the VGSR Admin
  *
  * @since 0.0.1
- *
- * @uses VGSR_Admin
  */
 function vgsr_admin() {
 	vgsr()->admin = new VGSR_Admin;

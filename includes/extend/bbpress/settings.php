@@ -84,10 +84,6 @@ function vgsr_bbp_setting_callback_bbpress_section() { ?>
  * @since 0.0.1
  *
  * @todo Check rewrite rules to work properly
- *
- * @uses bbp_get_user_profile_url()
- * @uses remove_filter()
- * @uses add_filter()
  */
 function vgsr_bbp_setting_callback_hide_profile_root() {
 
@@ -119,10 +115,6 @@ function vgsr_bbp_setting_callback_hide_profile_root() {
  * Breadcrumbs home text settings field
  *
  * @since 0.0.1
- *
- * @uses bbp_get_user_profile_url()
- * @uses remove_filter()
- * @uses add_filter()
  */
 function vgsr_bbp_setting_callback_breadcrumbs_home() { ?>
 
@@ -140,7 +132,6 @@ function vgsr_bbp_setting_callback_breadcrumbs_home() { ?>
  * @since 0.0.1
  *
  * @param int $default Optional. Default value
- * @uses get_option()
  * @return bool Hide root slug
  */
 function vgsr_bbp_hide_profile_root( $default = 0 ) {
@@ -153,7 +144,6 @@ function vgsr_bbp_hide_profile_root( $default = 0 ) {
  * @since 0.0.1
  *
  * @param string $default Optional. Default value
- * @uses get_option()
  * @return string Breadcrumbs home
  */
 function vgsr_bbp_breadcrumbs_home( $default = '' ) {

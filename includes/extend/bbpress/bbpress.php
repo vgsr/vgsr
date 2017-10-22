@@ -107,8 +107,6 @@ class VGSR_BBPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses vgsr_bbp_hide_profile_root()
-	 * @uses get_option()
 	 * @param string $slug User slug
 	 * @return string $slug
 	 */
@@ -127,7 +125,6 @@ class VGSR_BBPress {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @uses vgsr_bbp_breadcrumbs_home()
 	 * @param array $args Parse args
 	 * @return array $args
 	 */

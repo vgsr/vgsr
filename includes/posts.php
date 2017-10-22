@@ -58,8 +58,6 @@ function vgsr_is_post_vgsr( $post_id = 0, $check_ancestors = false ) {
  *
  * @see get_post_ancestors()
  *
- * @uses vgsr_is_post_vgsr()
- *
  * @param int $post_id Post ID
  * @return bool A parent post is exclusive
  */
@@ -98,8 +96,6 @@ function vgsr_post_check_ancestors( $post_id = 0 ) {
  * Return whether posts of the given post type can be made exclusive
  *
  * @since 0.0.7
- *
- * @uses vgsr_post_types()
  *
  * @param string|WP_Post|int $post_type Post type name or Post object or ID
  * @return bool Post type can be made exclusive
