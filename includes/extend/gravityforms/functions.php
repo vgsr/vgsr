@@ -98,15 +98,16 @@ function vgsr_gf_get_field_meta( $field, $meta_key, $form = '' ) {
  * @uses apply_filters() Calls 'vgsr_gf_is_form_vgsr'
  *
  * @param array|int $form Form object or form ID
+ * @param bool $check_fields Optional. Whether to check fields for exclusivity.
  * @return bool Form is exclusive
  */
-function vgsr_gf_is_form_vgsr( $form ) {
+function vgsr_gf_is_form_vgsr( $form, $check_fields = true ) {
 
 	// Form itself is exclusive
 	$exclusive = (bool) vgsr_gf_get_form_meta( $form, vgsr_gf_get_meta_key() );
 
 	// Or maybe *all* fields are exclusive
-	if ( ! $exclusive ) {
+	if ( ! $exclusive && $check_fields ) {
 
 		// Assume all fields are exclusive
 		$exclusive = true;
@@ -122,7 +123,7 @@ function vgsr_gf_is_form_vgsr( $form ) {
 		}
 	}
 
-	return (bool) apply_filters( 'vgsr_gf_is_form_vgsr', $exclusive, $form );
+	return (bool) apply_filters( 'vgsr_gf_is_form_vgsr', $exclusive, $form, $check_fields );
 }
 
 /**
