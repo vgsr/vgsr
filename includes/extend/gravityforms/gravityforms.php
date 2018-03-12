@@ -18,14 +18,6 @@ if ( ! class_exists( 'VGSR_GravityForms' ) ) :
  */
 class VGSR_GravityForms {
 
-	/**
-	 * The plugin setting's meta key
-	 *
-	 * @since 0.0.7
-	 * @var string
-	 */
-	private $meta_key = 'vgsrOnly';
-
 	/** Setup Methods ******************************************************/
 
 	/**
@@ -45,12 +37,11 @@ class VGSR_GravityForms {
 	 * @since 0.0.6
 	 */
 	private function setup_globals() {
-		$vgsr = vgsr();
 
 		/** Paths **********************************************************/
 
-		$this->includes_dir = trailingslashit( $vgsr->extend_dir . 'gravityforms' );
-		$this->includes_url = trailingslashit( $vgsr->extend_url . 'gravityforms' );
+		$this->includes_dir = trailingslashit( vgsr()->extend_dir . 'gravityforms' );
+		$this->includes_url = trailingslashit( vgsr()->extend_url . 'gravityforms' );
 	}
 
 	/**
@@ -59,7 +50,7 @@ class VGSR_GravityForms {
 	 * @since 0.0.6
 	 */
 	private function includes() {
-		// require( $this->includes_dir . 'settings.php' );
+		require( $this->includes_dir . 'functions.php' );
 	}
 
 	/**
@@ -126,111 +117,6 @@ class VGSR_GravityForms {
 	/** Public Methods *****************************************************/
 
 	/**
-	 * Return the given form's meta value
-	 *
-	 * @since 0.0.7
-	 *
-	 * @param array|int $form Form object or form ID
-	 * @param string $meta_key Form meta key
-	 * @return mixed Form setting's value or NULL when not found
-	 */
-	public function get_form_meta( $form, $meta_key ) {
-
-		// Get form metadata
-		if ( ! is_array( $form ) && is_numeric( $form ) ) {
-			$form = GFFormsModel::get_form_meta( (int) $form );
-		} elseif ( ! is_array( $form ) ) {
-			return null;
-		}
-
-		// Get form setting
-		return isset( $form[ $meta_key ] ) ? $form[ $meta_key ] : null;
-	}
-
-	/**
-	 * Return the given field's meta value
-	 *
-	 * @since 0.0.7
-	 *
-	 * @param array|int $field Field object or field ID
-	 * @param string $meta_key Field meta key
-	 * @param array|int $form Form object or form ID
-	 * @return mixed Field setting's value or NULL when not found
-	 */
-	public function get_field_meta( $field, $meta_key, $form = '' ) {
-
-		// Get field metadata
-		if ( is_numeric( $field ) && ! empty( $form ) ) {
-
-			// Form ID provided
-			if ( is_numeric( $form ) ) {
-				$form = GFFormsModel::get_form_meta( (int) $form );
-			}
-
-			// Read the field from the form's data
-			$field = GFFormsModel::get_field( $form, $field );
-
-		} elseif ( ! is_array( $field ) && ! is_object( $field ) ) {
-			return null;
-		}
-
-		$field = (array) $field;
-
-		// Get field setting
-		return isset( $field[ $meta_key ] ) ? $field[ $meta_key ] : null;
-	}
-
-	/**
-	 * Return whether the given form is exclusive
-	 *
-	 * @since 0.0.6
-	 *
-	 * @uses apply_filters() Calls 'vgsr_gf_is_form_vgsr'
-	 *
-	 * @param array|int $form Form object or form ID
-	 * @return bool Form is exclusive
-	 */
-	public function is_form_vgsr( $form ) {
-
-		// Form itself is exclusive
-		$exclusive = (bool) $this->get_form_meta( $form, $this->meta_key );
-
-		// Or maybe *all* fields are exclusive
-		if ( ! $exclusive ) {
-
-			// Assume all fields are exclusive
-			$exclusive = true;
-
-			// Walk all fields
-			foreach ( $this->get_form_meta( $form, 'fields' ) as $field ) {
-
-				// Break when a field is not exclusive
-				if ( ! $this->is_field_vgsr( $field ) ) {
-					$exclusive = false;
-					break;
-				}
-			}
-		}
-
-		return (bool) apply_filters( 'vgsr_gf_is_form_vgsr', $exclusive, $form );
-	}
-
-	/**
-	 * Return whether the given field is exclusive
-	 *
-	 * @since 0.0.7
-	 *
-	 * @uses apply_filters() Calls 'vgsr_gf_is_field_vgsr'
-	 *
-	 * @param array|int $field Field object or Field ID
-	 * @param array|int $form Form object or form ID
-	 * @return bool Field is exclusive
-	 */
-	public function is_field_vgsr( $field, $form = '' ) {
-		return (bool) apply_filters( 'vgsr_gf_is_field_vgsr', (bool) $this->get_field_meta( $field, $this->meta_key, $form ), $field, $form );
-	}
-
-	/**
 	 * Do not display exclusive forms to non-vgsr users
 	 *
 	 * @since 0.0.7
@@ -242,7 +128,7 @@ class VGSR_GravityForms {
 	public function handle_form_display( $content, $form ) {
 
 		// Return empty content when user is not VGSR
-		if ( ! empty( $form ) && $this->is_form_vgsr( $form ) && ! is_user_vgsr() ) {
+		if ( ! empty( $form ) && vgsr_gf_is_form_vgsr( $form ) && ! is_user_vgsr() ) {
 			$content = '';
 		}
 
@@ -264,11 +150,11 @@ class VGSR_GravityForms {
 	public function handle_field_display( $content, $field, $value, $empty, $form_id ) {
 
 		// Bail when form is already exclusive
-		if ( $this->is_form_vgsr( $form_id ) )
+		if ( vgsr_gf_is_form_vgsr( $form_id ) )
 			return $content;
 
 		// On the front end, return empty content when user is not VGSR
-		if ( ! is_admin() && ! empty( $field ) && $this->is_field_vgsr( $field, $form_id ) && ! is_user_vgsr() ) {
+		if ( ! is_admin() && ! empty( $field ) && vgsr_gf_is_field_vgsr( $field, $form_id ) && ! is_user_vgsr() ) {
 			$content = '';
 		}
 
@@ -305,8 +191,8 @@ class VGSR_GravityForms {
 		<tr>
 			<th><?php _e( 'VGSR', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_setting' ); ?></th>
 			<td>
-				<input type="checkbox" id="vgsr_form_vgsr" name="vgsr_form_vgsr" value="1" <?php checked( $this->get_form_meta( $form, $this->meta_key ) ); ?> />
-				<label for="vgsr_form_vgsr"><?php _e( 'Make this an exclusive form', 'vgsr' ); ?></label>
+				<input type="checkbox" id="vgsr_form_vgsr" name="vgsr_form_vgsr" value="1" <?php checked( vgsr_gf_get_form_meta( $form, vgsr_gf_get_meta_key() ) ); ?> />
+				<label for="vgsr_form_vgsr"><?php esc_html_e( 'Make this an exclusive form', 'vgsr' ); ?></label>
 			</td>
 		</tr>
 
@@ -316,7 +202,7 @@ class VGSR_GravityForms {
 		$section = $this->i18n( 'Restrictions' );
 
 		// Append the field to the section and end the output buffer
-		$settings[ $section ][ $this->meta_key ] = ob_get_clean();
+		$settings[ $section ][ vgsr_gf_get_meta_key() ] = ob_get_clean();
 
 		return $settings;
 	}
@@ -332,7 +218,7 @@ class VGSR_GravityForms {
 	public function update_form_settings( $settings ) {
 
 		// Sanitize form from $_POST var
-		$settings[ $this->meta_key ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
+		$settings[ vgsr_gf_get_meta_key() ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
 
 		return $settings;
 	}
@@ -349,7 +235,7 @@ class VGSR_GravityForms {
 	public function admin_form_actions( $actions, $form_id ) {
 
 		// Form is exclusive
-		if ( $this->is_form_vgsr( $form_id ) ) {
+		if ( vgsr_gf_is_form_vgsr( $form_id ) ) {
 
 			// Output hidden reference element. Used in JS
 			echo '<span class="form_is_vgsr hidden"></span>';
@@ -408,32 +294,32 @@ class VGSR_GravityForms {
 	public function register_field_setting( $position, $form_id ) {
 
 		// Bail when not after the Visibility settings or the form is already exclusive
-		if ( 450 != $position || $this->is_form_vgsr( $form_id ) )
+		if ( 450 != $position || vgsr_gf_is_form_vgsr( $form_id ) )
 			return;
 
 		?>
 
 		<li class="vgsr_setting">
-			<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php echo $this->meta_key; ?>', this.checked );" />
-			<label for="vgsr_form_field_vgsr" class="inline"><?php _e( 'Make this an exclusive field', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
+			<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php vgsr_gf_meta_key(); ?>', this.checked );" />
+			<label for="vgsr_form_field_vgsr" class="inline"><?php esc_html_e( 'Make this an exclusive field', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
 
 			<script type="text/javascript">
 				// Hook to GF's field settings load trigger
 				jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
-					jQuery( '#vgsr_form_field_vgsr' ).attr( 'checked', typeof field.<?php echo $this->meta_key; ?> === 'undefined' ? false : field.<?php echo $this->meta_key; ?> );
+					jQuery( '#vgsr_form_field_vgsr' ).attr( 'checked', typeof field.<?php vgsr_gf_meta_key(); ?> === 'undefined' ? false : field.<?php vgsr_gf_meta_key(); ?> );
 				});
 
 				// Mark selected field
 				jQuery( '#vgsr_form_field_vgsr' ).on( 'change', function() {
 					jQuery( '.field_selected' ).removeClass( 'vgsr' ).filter( function() {
-						return !! GetSelectedField()[ '<?php echo $this->meta_key; ?>' ];
+						return !! GetSelectedField()[ '<?php vgsr_gf_meta_key(); ?>' ];
 					} ).addClass( 'vgsr' );
 				});
 			</script>
 
 			<style type="text/css">
 				.vgsr .gfield_label .gfield_required:before {
-					content: '\2014  <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
+					content: '\2014 <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
 					color: #888;
 					text-transform: uppercase;
 					margin-right: 5px;
@@ -457,7 +343,7 @@ class VGSR_GravityForms {
 	public function add_field_class( $classes, $field, $form ) {
 
 		// Field is exclusive, not the form
-		if ( ! $this->is_form_vgsr( $form ) && $this->is_field_vgsr( $field, $form ) ) {
+		if ( ! vgsr_gf_is_form_vgsr( $form ) && vgsr_gf_is_field_vgsr( $field, $form ) ) {
 			$classes .= ' vgsr';
 		}
 
@@ -508,7 +394,7 @@ class VGSR_GravityForms {
 		if ( is_a( $widget, 'GFWidget' ) && isset( $instance['form_id'] ) ) {
 
 			// The form is exclusive and the user is not VGSR
-			if ( $this->is_form_vgsr( $instance['form_id'] ) && ! is_user_vgsr() ) {
+			if ( vgsr_gf_is_form_vgsr( $instance['form_id'] ) && ! is_user_vgsr() ) {
 				$instance = false;
 			}
 		}
@@ -548,7 +434,7 @@ class VGSR_GravityForms {
 	public function gf_pages_hide_form_vgsr( $hide, $form ) {
 
 		// Set form to hide when the current user is not VGSR
-		if ( $this->is_form_vgsr( $form->id ) && ! is_user_vgsr() ) {
+		if ( vgsr_gf_is_form_vgsr( $form->id ) && ! is_user_vgsr() ) {
 			$hide = true;
 		}
 
