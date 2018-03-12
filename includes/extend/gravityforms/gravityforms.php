@@ -76,6 +76,7 @@ class VGSR_GravityForms {
 		add_filter( 'gform_field_content',           array( $this, 'handle_field_display'   ), 10, 5 );
 		add_action( 'gform_field_advanced_settings', array( $this, 'register_field_setting' ), 10, 2 );
 		add_filter( 'gform_field_css_class',         array( $this, 'add_field_class'        ), 10, 3 );
+		add_action( 'gform_editor_js',               array( $this, 'print_editor_scripts'   )        );
 
 		// Widgets
 		add_filter( 'widget_display_callback', array( $this, 'handle_widget_display' ), 5, 3 );
@@ -294,37 +295,14 @@ class VGSR_GravityForms {
 	public function register_field_setting( $position, $form_id ) {
 
 		// Bail when not after the Visibility settings or the form is already exclusive
-		if ( 450 != $position || vgsr_gf_is_form_vgsr( $form_id ) )
+		if ( 450 !== $position || vgsr_gf_is_form_vgsr( $form_id, false ) )
 			return;
 
 		?>
 
-		<li class="vgsr_setting">
+		<li class="vgsr_only_setting field_setting">
 			<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php vgsr_gf_meta_key(); ?>', this.checked );" />
-			<label for="vgsr_form_field_vgsr" class="inline"><?php esc_html_e( 'Make this an exclusive field', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
-
-			<script type="text/javascript">
-				// Hook to GF's field settings load trigger
-				jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
-					jQuery( '#vgsr_form_field_vgsr' ).attr( 'checked', typeof field.<?php vgsr_gf_meta_key(); ?> === 'undefined' ? false : field.<?php vgsr_gf_meta_key(); ?> );
-				});
-
-				// Mark selected field
-				jQuery( '#vgsr_form_field_vgsr' ).on( 'change', function() {
-					jQuery( '.field_selected' ).removeClass( 'vgsr' ).filter( function() {
-						return !! GetSelectedField()[ '<?php vgsr_gf_meta_key(); ?>' ];
-					} ).addClass( 'vgsr' );
-				});
-			</script>
-
-			<style type="text/css">
-				.vgsr .gfield_label .gfield_required:before {
-					content: '\2014 <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
-					color: #888;
-					text-transform: uppercase;
-					margin-right: 5px;
-				}
-			</style>
+			<label for="vgsr_form_field_vgsr" class="inline"><?php printf( esc_html__( 'VGSR: %s', 'vgsr' ), esc_html__( 'Make this an exclusive field', 'vgsr' ) ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
 		</li>
 
 		<?php
@@ -343,11 +321,50 @@ class VGSR_GravityForms {
 	public function add_field_class( $classes, $field, $form ) {
 
 		// Field is exclusive, not the form
-		if ( ! vgsr_gf_is_form_vgsr( $form ) && vgsr_gf_is_field_vgsr( $field, $form ) ) {
-			$classes .= ' vgsr';
+		if ( ! vgsr_gf_is_form_vgsr( $form, false ) && vgsr_gf_is_field_vgsr( $field, $form ) ) {
+			$classes .= ' vgsr-only';
 		}
 
 		return $classes;
+	}
+
+	/**
+	 * Print scripts and styles for the form editor
+	 *
+	 * @since 0.2.0
+	 */
+	public function print_editor_scripts() { ?>
+
+		<script type="text/javascript">
+
+			// Enable vgsr setting input for all field types
+			for ( var i in fieldSettings ) {
+				fieldSettings[i] += ', .vgsr_only_setting';
+			}
+
+			// Hook to GF's field settings load trigger
+			jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
+				jQuery( '#vgsr_form_field_vgsr' ).attr( 'checked', typeof field.<?php vgsr_gf_meta_key(); ?> === 'undefined' ? false : field.<?php vgsr_gf_meta_key(); ?> );
+			});
+
+			// Mark selected field
+			jQuery( '#vgsr_form_field_vgsr' ).on( 'change', function() {
+				jQuery( '.field_selected' ).removeClass( 'vgsr-only' ).filter( function() {
+					return !! GetSelectedField()[ '<?php vgsr_gf_meta_key(); ?>' ];
+				} ).addClass( 'vgsr-only' );
+			});
+		</script>
+
+		<style type="text/css">
+			.gfield.vgsr-only .gfield_label .gfield_required:before {
+				content: '\2014  <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
+				color: #888;
+				text-transform: uppercase;
+				margin-right: 5px;
+			}
+		</style>
+
+		<?php
 	}
 
 	/** Tooltips ***********************************************************/
