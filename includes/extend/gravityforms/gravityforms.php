@@ -189,7 +189,7 @@ class VGSR_GravityForms {
 		ob_start(); ?>
 
 		<tr>
-			<th><?php _e( 'VGSR', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_setting' ); ?></th>
+			<th><?php esc_html_e( 'VGSR', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_setting' ); ?></th>
 			<td>
 				<input type="checkbox" id="vgsr_form_vgsr" name="vgsr_form_vgsr" value="1" <?php checked( vgsr_gf_get_form_meta( $form, vgsr_gf_get_meta_key() ) ); ?> />
 				<label for="vgsr_form_vgsr"><?php esc_html_e( 'Make this an exclusive form', 'vgsr' ); ?></label>
@@ -369,8 +369,8 @@ class VGSR_GravityForms {
 
 		// Append our tooltips
 		$tips = array_merge( $tips, array(
-			'vgsr_form_setting'  => sprintf( $format, _x( 'VGSR', 'exclusivity title', 'vgsr' ), __( 'Make this form exclusively available to VGSR members.',  'vgsr' ) ),
-			'vgsr_field_setting' => sprintf( $format, _x( 'VGSR', 'exclusivity title', 'vgsr' ), __( 'Make this field exclusively available to VGSR members.', 'vgsr' ) ),
+			'vgsr_form_setting'  => sprintf( $format, esc_html_x( 'VGSR', 'exclusivity title', 'vgsr' ), esc_html__( 'Make this form exclusively available to VGSR members.',  'vgsr' ) ),
+			'vgsr_field_setting' => sprintf( $format, esc_html_x( 'VGSR', 'exclusivity title', 'vgsr' ), esc_html__( 'Make this field exclusively available to VGSR members.', 'vgsr' ) ),
 		) );
 
 		return $tips;
