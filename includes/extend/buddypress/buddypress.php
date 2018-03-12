@@ -24,7 +24,7 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 * @var array
 	 */
-	protected $components;
+	protected $components = array();
 
 	/**
 	 * Holds all users per member type
@@ -32,7 +32,7 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 * @var array
 	 */
-	protected $member_type_users;
+	protected $member_type_users = array();
 
 	/** Setup Methods ******************************************************/
 
@@ -53,16 +53,15 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 */
 	private function setup_globals() {
-		$vgsr = vgsr();
 
 		/** Paths **********************************************************/
 
-		$this->includes_dir = trailingslashit( $vgsr->extend_dir . 'buddypress' );
-		$this->includes_url = trailingslashit( $vgsr->extend_url . 'buddypress' );
+		$this->includes_dir = trailingslashit( vgsr()->extend_dir . 'buddypress' );
+		$this->includes_url = trailingslashit( vgsr()->extend_url . 'buddypress' );
 
-		/** Identifiers ****************************************************/
+		/** Misc ***********************************************************/
 
-		$this->member_type_users = array();
+		$this->minimum_capability = is_multisite() ? 'manage_network_options' : 'manage_options';
 	}
 
 	/**
@@ -112,9 +111,11 @@ class VGSR_BuddyPress {
 		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 
-		// Hide BuddyPress for non-vgsr
-		add_action( 'bp_core_loaded', array( $this, 'hide_buddypress' ), 20 );
-		add_action( 'bp_setup_nav',   array( $this, 'bp_setup_nav'    ), 99 );
+		// Hide BuddyPress for non-vgsr, not for admins
+		if ( ! current_user_can( $this->minimum_capability ) ) {
+			add_action( 'bp_core_loaded', array( $this, 'hide_buddypress' ), 20 );
+			add_action( 'bp_setup_nav',   array( $this, 'bp_setup_nav'    ), 99 );
+		}
 	}
 
 	/** General ************************************************************/
@@ -232,7 +233,7 @@ class VGSR_BuddyPress {
 	public function block_components() {
 
 		// Current user is non-vgsr and page is BP but not their profile, so 404
-		if ( ! is_user_vgsr() && is_buddypress() && ! bp_is_my_profile() ) {
+		if ( is_buddypress() && ! bp_is_my_profile() && ! is_user_vgsr() ) {
 
 			// 404 and prevent components from loading their templates
 			remove_all_actions( 'bp_template_redirect' );
@@ -325,18 +326,23 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 */
 	public function unhook_theme_compat() {
+
+		// Friends component
 		if ( vgsr_bp_is_vgsr_component( 'friends' ) ) {
 			remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
 		}
 
+		// Activity component
 		if ( vgsr_bp_is_vgsr_component( 'activity' ) ) {
 			remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
 		}
 
+		// Messages component
 		if ( vgsr_bp_is_vgsr_component( 'messages' ) ) {
 			remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
 		}
 
+		// Groups component
 		if ( vgsr_bp_is_vgsr_component( 'groups' ) ) {
 			remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
 			remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
@@ -346,6 +352,7 @@ class VGSR_BuddyPress {
 			remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
 		}
 
+		// Blogs component
 		if ( vgsr_bp_is_vgsr_component( 'blogs' ) ) {
 			remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
 			remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
