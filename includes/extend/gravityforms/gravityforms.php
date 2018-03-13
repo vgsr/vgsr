@@ -192,7 +192,7 @@ class VGSR_GravityForms {
 		<tr>
 			<th><?php esc_html_e( 'VGSR', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_setting' ); ?></th>
 			<td>
-				<input type="checkbox" id="vgsr_form_vgsr" name="vgsr_form_vgsr" value="1" <?php checked( vgsr_gf_get_form_meta( $form, vgsr_gf_get_meta_key() ) ); ?> />
+				<input type="checkbox" id="vgsr_form_vgsr" name="vgsr_form_vgsr" value="1" <?php checked( vgsr_gf_get_form_meta( $form, vgsr_gf_get_exclusivity_meta_key() ) ); ?> />
 				<label for="vgsr_form_vgsr"><?php esc_html_e( 'Make this an exclusive form', 'vgsr' ); ?></label>
 			</td>
 		</tr>
@@ -203,7 +203,7 @@ class VGSR_GravityForms {
 		$section = $this->i18n( 'Restrictions' );
 
 		// Append the field to the section and end the output buffer
-		$settings[ $section ][ vgsr_gf_get_meta_key() ] = ob_get_clean();
+		$settings[ $section ][ vgsr_gf_get_exclusivity_meta_key() ] = ob_get_clean();
 
 		return $settings;
 	}
@@ -219,7 +219,7 @@ class VGSR_GravityForms {
 	public function update_form_settings( $settings ) {
 
 		// Sanitize form from $_POST var
-		$settings[ vgsr_gf_get_meta_key() ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
+		$settings[ vgsr_gf_get_exclusivity_meta_key() ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
 
 		return $settings;
 	}
@@ -301,7 +301,7 @@ class VGSR_GravityForms {
 		?>
 
 		<li class="vgsr_only_setting field_setting">
-			<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php vgsr_gf_meta_key(); ?>', this.checked );" />
+			<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php vgsr_gf_exclusivity_meta_key(); ?>', this.checked );" />
 			<label for="vgsr_form_field_vgsr" class="inline"><?php printf( esc_html__( 'VGSR: %s', 'vgsr' ), esc_html__( 'Make this an exclusive field', 'vgsr' ) ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
 		</li>
 
@@ -336,22 +336,21 @@ class VGSR_GravityForms {
 	public function print_editor_scripts() { ?>
 
 		<script type="text/javascript">
-
-			// Enable vgsr setting input for all field types
+			// Enable vgsr-only setting input for all field types
 			for ( var i in fieldSettings ) {
 				fieldSettings[i] += ', .vgsr_only_setting';
 			}
 
 			// Hook to GF's field settings load trigger
 			jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
-				jQuery( '#vgsr_form_field_vgsr' ).attr( 'checked', typeof field.<?php vgsr_gf_meta_key(); ?> === 'undefined' ? false : field.<?php vgsr_gf_meta_key(); ?> );
+				jQuery('#vgsr_form_field_vgsr').attr( 'checked', typeof field.<?php vgsr_gf_exclusivity_meta_key(); ?> === 'undefined' ? false : field.<?php vgsr_gf_exclusivity_meta_key(); ?> );
 			});
 
 			// Mark selected field
-			jQuery( '#vgsr_form_field_vgsr' ).on( 'change', function() {
-				jQuery( '.field_selected' ).removeClass( 'vgsr-only' ).filter( function() {
-					return !! GetSelectedField()[ '<?php vgsr_gf_meta_key(); ?>' ];
-				} ).addClass( 'vgsr-only' );
+			jQuery('#vgsr_form_field_vgsr').on( 'change', function() {
+				jQuery('.field_selected').removeClass('vgsr-only').filter( function() {
+					return !! GetSelectedField()['<?php vgsr_gf_exclusivity_meta_key(); ?>'];
+				}).addClass('vgsr-only');
 			});
 		</script>
 

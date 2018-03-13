@@ -17,8 +17,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.2.0
  */
-function vgsr_gf_meta_key() {
-	echo vgsr_gf_get_meta_key();
+function vgsr_gf_exclusivity_meta_key() {
+	echo vgsr_gf_get_exclusivity_meta_key();
 }
 
 	/**
@@ -26,11 +26,11 @@ function vgsr_gf_meta_key() {
 	 *
 	 * @since 0.2.0
 	 *
-	 * @uses apply_filters() Calls 'vgsr_gf_get_meta_key'
+	 * @uses apply_filters() Calls 'vgsr_gf_get_exclusivity_meta_key'
 	 * @return string Meta key
 	 */
-	function vgsr_gf_get_meta_key() {
-		return apply_filters( 'vgsr_gf_get_meta_key', 'vgsrOnly' );
+	function vgsr_gf_get_exclusivity_meta_key() {
+		return apply_filters( 'vgsr_gf_get_exclusivity_meta_key', 'vgsrOnly' );
 	}
 
 /**
@@ -104,7 +104,7 @@ function vgsr_gf_get_field_meta( $field, $meta_key, $form = '' ) {
 function vgsr_gf_is_form_vgsr( $form, $check_fields = true ) {
 
 	// Form itself is exclusive
-	$exclusive = (bool) vgsr_gf_get_form_meta( $form, vgsr_gf_get_meta_key() );
+	$exclusive = (bool) vgsr_gf_get_form_meta( $form, vgsr_gf_get_exclusivity_meta_key() );
 
 	// Or maybe *all* fields are exclusive
 	if ( ! $exclusive && $check_fields ) {
@@ -138,6 +138,6 @@ function vgsr_gf_is_form_vgsr( $form, $check_fields = true ) {
  * @return bool Field is exclusive
  */
 function vgsr_gf_is_field_vgsr( $field, $form = '' ) {
-	return (bool) apply_filters( 'vgsr_gf_is_field_vgsr', (bool) vgsr_gf_get_field_meta( $field, vgsr_gf_get_meta_key(), $form ), $field, $form );
+	return (bool) apply_filters( 'vgsr_gf_is_field_vgsr', (bool) vgsr_gf_get_field_meta( $field, vgsr_gf_get_exclusivity_meta_key(), $form ), $field, $form );
 }
 
