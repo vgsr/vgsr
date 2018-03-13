@@ -235,6 +235,12 @@ class VGSR_BuddyPress {
 		// Current user is non-vgsr and page is BP but not their profile, so 404
 		if ( is_buddypress() && ! bp_is_my_profile() && ! is_user_vgsr() ) {
 
+			// For members directory redirect to own profile
+			if ( bp_is_members_directory() ) {
+				wp_redirect( bp_core_get_user_domain( bp_loggedin_user_id() ) );
+				exit;
+			}
+
 			// 404 and prevent components from loading their templates
 			remove_all_actions( 'bp_template_redirect' );
 			bp_do_404();
