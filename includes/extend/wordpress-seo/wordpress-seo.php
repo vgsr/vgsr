@@ -65,7 +65,9 @@ class VGSR_WPSEO {
 	 */
 	public function breadcrumb_links( $crumbs ) {
 
-		// Categories taxonomy crumbs
+		/** Categories **************************************************/
+
+		// Categories for posts
 		if ( isset( $this->options['post_types-post-maintax'] ) && 'category' == $this->options['post_types-post-maintax'] ) {
 			foreach ( $crumbs as $k => $crumb ) {
 
@@ -76,7 +78,8 @@ class VGSR_WPSEO {
 			}
 		}
 
-		// Support BuddyPress pages
+		/** BuddyPress **************************************************/
+
 		if ( function_exists( 'buddypress' ) && is_buddypress() ) {
 
 			/**
@@ -106,10 +109,10 @@ class VGSR_WPSEO {
 					array_splice( $crumbs, count( $crumbs ) - 1, 0, array( $crumb ) );
 				}
 			}
-		}
 
-		// Support Event Organiser pages
-		if ( defined( 'EVENT_ORGANISER_VER' ) && ( is_post_type_archive( 'event' ) || is_singular( 'event' ) ) ) {
+		/** Event Organiser *********************************************/
+
+		} elseif ( defined( 'EVENT_ORGANISER_VER' ) && ( is_post_type_archive( 'event' ) || is_singular( 'event' ) ) ) {
 
 			/**
 			 * Add year/month/day event archives to the event breadcrumb trail.
@@ -201,6 +204,8 @@ class VGSR_WPSEO {
 			// Insert event ancestor crumbs before the last one
 			array_splice( $crumbs, count( $crumbs ) - 1, 0, array_reverse( $ancestors ) );
 		}
+
+		$crumbs = array_values( $crumbs );
 
 		return $crumbs;
 	}
