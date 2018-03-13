@@ -110,6 +110,17 @@ class VGSR_WPSEO {
 				}
 			}
 
+			// Do not link to default members directory for non-vgsr users
+			if ( ! is_user_vgsr() ) {
+				foreach ( $crumbs as $k => $crumb ) {
+					if ( isset( $crumb['id'] ) && bp_core_get_directory_page_id( 'members' ) == $crumb['id'] ) {
+						$crumbs[ $k ] = array(
+							'text' => get_the_title( $crumb['id'] )
+						);
+					}
+				}
+			}
+
 		/** Event Organiser *********************************************/
 
 		} elseif ( defined( 'EVENT_ORGANISER_VER' ) && ( is_post_type_archive( 'event' ) || is_singular( 'event' ) ) ) {
