@@ -111,6 +111,29 @@ function vgsr_bp_exlid_member_type() {
 }
 
 /**
+ * Return whether the member type is a vgsr one
+ *
+ * @since 0.2.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_is_vgsr_member_type'
+ *
+ * @param  string $member_type Optional. Member type to check. Defaults to the current directory member type
+ * @return bool Is vgsr member type?
+ */
+function vgsr_bp_is_vgsr_member_type( $member_type = '' ) {
+
+	// Default to current directory member type
+	if ( ! $member_type ) {
+		$member_type = bp_get_current_member_type();
+	}
+
+	$types = vgsr_bp_member_types();
+	$is    = in_array( $member_type, array_keys( $types ) );
+
+	return (bool) apply_filters( 'vgsr_bp_is_vgsr_member_type', $is, $member_type );
+}
+
+/**
  * Output the promote to member type url
  *
  * @since 0.1.0
