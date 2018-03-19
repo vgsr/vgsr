@@ -89,7 +89,8 @@ class VGSR_WPSEO {
 			// Get effective member type
 			$member_type = bp_is_user() ? bp_get_member_type( bp_displayed_user_id() ) : bp_get_current_member_type();
 			$member_type = bp_get_member_type_object( $member_type );
-			if ( $member_type && $member_type->has_directory ) {
+
+			if ( $member_type && $member_type->has_directory && vgsr_bp_is_vgsr_member_type( $member_type->name ) && is_user_vgsr() ) {
 
 				// Member type directory
 				if ( bp_get_current_member_type() ) {
