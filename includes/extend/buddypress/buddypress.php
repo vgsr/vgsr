@@ -102,13 +102,15 @@ class VGSR_BuddyPress {
 		add_action( 'bp_set_member_type',                array( $this, 'set_member_type'            ), 10, 3 );
 		add_action( 'bp_member_header_actions',          array( $this, 'add_member_header_actions'  )        );
 		add_action( 'bp_members_directory_member_types', array( $this, 'add_members_directory_tabs' )        );
+		add_action( 'bp_before_directory_members_tabs',  array( $this, 'add_member_count_filter'    ), 99    );
+		add_action( 'bp_members_directory_member_types', array( $this, 'remove_member_count_filter' ),  0    );
 		add_filter( 'bp_legacy_theme_ajax_querystring',  array( $this, 'legacy_ajax_querystring'    ), 10, 7 );
 
 		// Pages & Templates
 		add_filter( 'bp_get_template_part',                      array( $this, 'get_template_part'          ), 20, 3 );
 		add_filter( 'bp_get_button',                             array( $this, 'get_button'                 ), 20, 2 );
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
-		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  9    );
+		add_filter( 'bp_get_total_member_count',                 array( $this, 'total_member_count'         ),  2    );
 		add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'dummy_post_set_post_parent' ), 11    );
 
 		// Hide BuddyPress for non-vgsr, not for admins
@@ -644,23 +646,47 @@ class VGSR_BuddyPress {
 	}
 
 	/**
+	 * Add filter to modify the total member count
+	 *
+	 * @since 0.2.0
+	 */
+	public function add_member_count_filter() {
+		add_filter( 'bp_get_total_member_count', 'vgsr_bp_get_total_vgsr_member_count', 5 );
+	}
+
+	/**
+	 * Remove filter to modify the total member count
+	 *
+	 * @since 0.2.0
+	 */
+	public function remove_member_count_filter() {
+		remove_filter( 'bp_get_total_member_count', 'vgsr_bp_get_total_vgsr_member_count', 5 );
+	}
+
+
+	/**
 	 * Add additional query tabs to the Members directory
 	 *
 	 * @since 0.1.0
 	 */
 	public function add_members_directory_tabs() {
 
-		// Bail when current user is non-vgsr
-		if ( ! is_user_vgsr() )
-			return;
+		// When the user is vgsr
+		if ( is_user_vgsr() ) {
 
-		// Add tabs for Lid and Oud-lid member type
-		vgsr_bp_members_member_type_tab( vgsr_bp_lid_member_type()    );
-		vgsr_bp_members_member_type_tab( vgsr_bp_oudlid_member_type() );
+			// Add tabs for Lid and Oud-lid member type
+			vgsr_bp_members_member_type_tab( vgsr_bp_lid_member_type()    );
+			vgsr_bp_members_member_type_tab( vgsr_bp_oudlid_member_type() );
+		}
+
+		// For admins
+		if ( current_user_can( 'bp_moderate' ) ) {
+			echo '<li class="selected" id="members-all_profiles"><a href="<?php bp_members_directory_permalink(); ?>">' . sprintf( __( 'All Profiles %s', 'vgsr' ), '<span>' . bp_get_total_member_count() . '</span>' ) . '</a></li>';
+		}
 	}
 
 	/**
-	 * Modify the ajax query string from the legacy theme
+	 * Modify the ajax query string from the legacy template pack
 	 *
 	 * @since 0.1.0
 	 *
@@ -675,14 +701,23 @@ class VGSR_BuddyPress {
 	 */
 	public function legacy_ajax_querystring( $query_string, $object, $object_filter, $object_scope, $object_page, $object_search_terms, $object_extras ) {
 
-		// Handle the members member type scope
-		if ( 'members' == $object && 0 == strpos( $object_scope, 'vgsr_member_type_' ) ) {
-			$member_type = str_replace( 'vgsr_member_type_', '', $object_scope );
-			$member_type = bp_get_member_type_object( $member_type );
+		// Handle the members page queries
+		if ( 'members' === $object ) {
 
-			// Query only member type'd users
-			if ( ! empty( $member_type ) ) {
-				$query_string .= "&member_type__in={$member_type->name}";
+			// Default scope All Members to all vgsr member types
+			if ( 'all' === $object_scope ) {
+				foreach ( array_keys( vgsr_bp_member_types() ) as $member_type ) {
+					$query_string .= "&member_type__in[]={$member_type}";
+				}
+
+			// Single member type
+			} elseif ( 0 === strpos( $object_scope, 'vgsr_member_type_' ) ) {
+				$member_type   = str_replace( 'vgsr_member_type_', '', $object_scope );
+				$query_string .= "&member_type__in={$member_type}";
+
+			// Default scope All Profiles to all members
+			} elseif ( current_user_can( 'bp_moderate' ) && 'all_profiles' === $object_scope ) {
+				$query_string = str_replace( '&scope=all_profiles', '', $query_string );
 			}
 		}
 
