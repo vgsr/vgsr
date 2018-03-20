@@ -237,7 +237,7 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 /** Members ****************************************************************/
 
 /**
- * Modify the total member count
+ * Return the actual total member count
  *
  * @since 0.1.0
  *
@@ -262,6 +262,19 @@ function vgsr_bp_get_total_member_count( $args = array() ) {
 	}
 
 	return $count;
+}
+
+/**
+ * Return the total vgsr member count
+ *
+ * @since 0.2.0
+ *
+ * @return int Total vgsr member count
+ */
+function vgsr_bp_get_total_vgsr_member_count() {
+	return vgsr_bp_get_total_member_count( array(
+		'member_type__in' => array_keys( vgsr_bp_member_types() )
+	) );
 }
 
 /** Options ****************************************************************/
