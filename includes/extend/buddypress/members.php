@@ -87,6 +87,79 @@ function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter
 }
 
 /**
+ * Return the query argument value from the current Members query
+ *
+ * @since 0.2.0
+ *
+ * @param string $arg Query arg key
+ * @return mixed The current members query scope
+ */
+function vgsr_bp_members_get_query_arg( $arg = '' ) {
+
+	// Get the current member query's args
+	$query_vars = wp_parse_args( bp_ajax_querystring( 'members' ) );
+	$scope = null;
+
+	// Get the availabel argument value
+	if ( isset( $query_vars[ $arg ] ) ) {
+		$scope = $query_vars[ $arg ];
+	}
+
+	return $scope;
+}
+
+/**
+ * Modify the pagination count of the members query
+ *
+ * @see bp_get_members_pagination_count()
+ *
+ * @since 0.2.0
+ *
+ * @param string $pag Members pagination count
+ * @return string Members pagination count
+ */
+function vgsr_bp_members_pagination_count( $pag ) {
+
+	// In the All Profiles scope
+	if ( 'all_profiles' === vgsr_bp_members_get_query_arg( 'scope' ) ) {
+		global $members_template;
+
+		$start_num = intval( ( $members_template->pag_page - 1 ) * $members_template->pag_num ) + 1;
+		$from_num  = bp_core_number_format( $start_num );
+		$to_num    = bp_core_number_format( ( $start_num + ( $members_template->pag_num - 1 ) > $members_template->total_member_count ) ? $members_template->total_member_count : $start_num + ( $members_template->pag_num - 1 ) );
+		$total     = bp_core_number_format( $members_template->total_member_count );
+
+		if ( 'active' == $members_template->type ) {
+			if ( 1 == $members_template->total_member_count ) {
+				$pag = __( 'Viewing 1 active profile', 'vgsr' );
+			} else {
+				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s active profile', 'Viewing %1$s - %2$s of %3$s active profiles', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
+			}
+		} elseif ( 'popular' == $members_template->type ) {
+			if ( 1 == $members_template->total_member_count ) {
+				$pag = __( 'Viewing 1 profile with friends', 'vgsr' );
+			} else {
+				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s profile with friends', 'Viewing %1$s - %2$s of %3$s profiles with friends', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
+			}
+		} elseif ( 'online' == $members_template->type ) {
+			if ( 1 == $members_template->total_member_count ) {
+				$pag = __( 'Viewing 1 online profile', 'vgsr' );
+			} else {
+				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s online profile', 'Viewing %1$s - %2$s of %3$s online profiles', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
+			}
+		} else {
+			if ( 1 == $members_template->total_member_count ) {
+				$pag = __( 'Viewing 1 profile', 'vgsr' );
+			} else {
+				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s profile', 'Viewing %1$s - %2$s of %3$s profiles', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
+			}
+		}
+	}
+
+	return $pag;
+}
+
+/**
  * Display additional member profile action links
  *
  * @since 0.1.0

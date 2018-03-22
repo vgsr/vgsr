@@ -22,6 +22,7 @@ add_action( 'bp_members_directory_member_types', 'vgsr_bp_members_directory_tabs
 add_action( 'bp_before_directory_members_tabs',  'vgsr_bp_add_member_count_filter',    99    );
 add_action( 'bp_members_directory_member_types', 'vgsr_bp_remove_member_count_filter',  0    );
 add_filter( 'bp_legacy_theme_ajax_querystring',  'vgsr_bp_legacy_ajax_querystring',    10, 7 );
+add_filter( 'bp_members_pagination_count',       'vgsr_bp_members_pagination_count'          );
 add_action( 'bp_member_header_actions',          'vgsr_bp_add_member_header_actions'         );
 
 // Plugin Settings
