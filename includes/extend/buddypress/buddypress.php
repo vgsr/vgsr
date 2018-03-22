@@ -681,7 +681,7 @@ class VGSR_BuddyPress {
 
 		// For admins
 		if ( current_user_can( 'bp_moderate' ) ) {
-			echo '<li class="selected" id="members-all_profiles"><a href="<?php bp_members_directory_permalink(); ?>">' . sprintf( __( 'All Profiles %s', 'vgsr' ), '<span>' . bp_get_total_member_count() . '</span>' ) . '</a></li>';
+			echo '<li id="members-all_profiles"><a href="'. bp_get_members_directory_permalink() . '">' . sprintf( __( 'All Profiles %s', 'vgsr' ), '<span>' . bp_get_total_member_count() . '</span>' ) . '</a></li>';
 		}
 	}
 
