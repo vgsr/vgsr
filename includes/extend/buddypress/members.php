@@ -80,10 +80,6 @@ function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter
 		} elseif ( 0 === strpos( $object_scope, 'vgsr_member_type_' ) ) {
 			$member_type   = str_replace( 'vgsr_member_type_', '', $object_scope );
 			$query_string .= "&member_type__in={$member_type}";
-
-		// Default scope All Profiles to all members
-		} elseif ( current_user_can( 'bp_moderate' ) && 'all_profiles' === $object_scope ) {
-			$query_string = str_replace( '&scope=all_profiles', '', $query_string );
 		}
 	}
 
