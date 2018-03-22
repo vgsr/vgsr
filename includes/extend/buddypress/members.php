@@ -119,9 +119,37 @@ function vgsr_bp_members_get_query_arg( $arg = '' ) {
  * @return string Members pagination count
  */
 function vgsr_bp_members_pagination_count( $pag ) {
+	$lines = array();
 
 	// In the All Profiles scope
 	if ( 'all_profiles' === vgsr_bp_members_get_query_arg( 'scope' ) ) {
+
+		// Active
+		$lines['active'] = array(
+			1 => __( 'Viewing 1 active profile', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s active profile', 'Viewing %1$s - %2$s of %3$s active profiles', 'vgsr' ),
+		);
+
+		// Popular
+		$lines['popular'] = array(
+			1 => __( 'Viewing 1 profile with friends', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s profile with friends', 'Viewing %1$s - %2$s of %3$s profiles with friends', 'vgsr' ),
+		);
+
+		// Online
+		$lines['online'] = array(
+			1 => __( 'Viewing 1 online profile', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s online profile', 'Viewing %1$s - %2$s of %3$s online profiles', 'vgsr' ),
+		);
+
+		// Default
+		$lines['default'] = array(
+			1 => __( 'Viewing 1 profile', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s profile', 'Viewing %1$s - %2$s of %3$s profiles', 'vgsr' ),
+		);
+	}
+
+	if ( $lines ) {
 		global $members_template;
 
 		$start_num = intval( ( $members_template->pag_page - 1 ) * $members_template->pag_num ) + 1;
@@ -129,30 +157,12 @@ function vgsr_bp_members_pagination_count( $pag ) {
 		$to_num    = bp_core_number_format( ( $start_num + ( $members_template->pag_num - 1 ) > $members_template->total_member_count ) ? $members_template->total_member_count : $start_num + ( $members_template->pag_num - 1 ) );
 		$total     = bp_core_number_format( $members_template->total_member_count );
 
-		if ( 'active' == $members_template->type ) {
-			if ( 1 == $members_template->total_member_count ) {
-				$pag = __( 'Viewing 1 active profile', 'vgsr' );
-			} else {
-				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s active profile', 'Viewing %1$s - %2$s of %3$s active profiles', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
-			}
-		} elseif ( 'popular' == $members_template->type ) {
-			if ( 1 == $members_template->total_member_count ) {
-				$pag = __( 'Viewing 1 profile with friends', 'vgsr' );
-			} else {
-				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s profile with friends', 'Viewing %1$s - %2$s of %3$s profiles with friends', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
-			}
-		} elseif ( 'online' == $members_template->type ) {
-			if ( 1 == $members_template->total_member_count ) {
-				$pag = __( 'Viewing 1 online profile', 'vgsr' );
-			} else {
-				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s online profile', 'Viewing %1$s - %2$s of %3$s online profiles', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
-			}
+		$type = in_array( $members_template->type, array( 'active', 'popular', 'online' ) ) ? $members_template->type : 'default';
+
+		if ( 1 == $members_template->total_member_count ) {
+			$pag = $lines[ $type ][1];
 		} else {
-			if ( 1 == $members_template->total_member_count ) {
-				$pag = __( 'Viewing 1 profile', 'vgsr' );
-			} else {
-				$pag = sprintf( _n( 'Viewing %1$s - %2$s of %3$s profile', 'Viewing %1$s - %2$s of %3$s profiles', $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
-			}
+			$pag = sprintf( translate_nooped_plural( $lines[ $type ][2], $members_template->total_member_count, 'vgsr' ), $from_num, $to_num, $total );
 		}
 	}
 
