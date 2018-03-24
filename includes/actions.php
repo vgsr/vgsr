@@ -60,6 +60,10 @@ add_action( 'pre_get_users',           'vgsr_pre_get_users',            5    );
 add_action( 'pre_user_query',          'vgsr_pre_user_query',           5    );
 add_filter( 'wp_dropdown_users_args',  'vgsr_dropdown_users_args',     20, 2 ); // Since WP 4.4
 
+/** Nav Menus *****************************************************************/
+
+add_filter( 'wp_nav_menu_objects',     'vgsr_nav_menu_objects',        10, 2 );
+
 /** Taxonomy ******************************************************************/
 
 add_filter( 'the_category_list',       'vgsr_the_category_list',       10, 2 );

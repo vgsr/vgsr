@@ -190,7 +190,37 @@ function vgsr_manifest_json() {
 	wp_send_json( apply_filters( 'vgsr_manifest_json', $params ) );
 }
 
-/** Categories *************************************************************/
+/** Nav Menus **************************************************************/
+
+/**
+ * Modify the sorted list of menu items
+ *
+ * @since 1.0.0
+ *
+ * @param  array $items Menu items
+ * @param  array $args Arguments for `wp_nav_menu()`
+ * @return array Menu items
+ */
+function vgsr_nav_menu_objects( $items, $args ) {
+
+	// When 404-ing
+	if ( is_404() ) {
+		$posts_page = (int) get_option( 'page_for_posts' );
+
+		foreach ( $items as $k => $item ) {
+
+			// Remove the posts page's parent status/class. By default WordPress
+			// appoints the posts page as parent for non-page pages. Please not.
+			if ( $item->object_id == $posts_page && 'post_type' == $item->type && in_array( 'current_page_parent', $item->classes ) ) {
+				unset( $items[ $k ]->classes[ array_search( 'current_page_parent', $item->classes ) ] );
+			}
+		}
+	}
+
+	return $items;
+}
+
+/** Taxonomy ***************************************************************/
 
 /**
  * Modify the categories in the category list
