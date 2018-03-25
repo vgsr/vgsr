@@ -13,6 +13,25 @@ defined( 'ABSPATH' ) || exit;
 /** Components *************************************************************/
 
 /**
+ * Return exclusive BP components
+ *
+ * @since 0.1.0
+ *
+ * @return array Exclusive BP components
+ */
+function vgsr_bp_components() {
+	return apply_filters( 'vgsr_bp_components', array(
+		'activity',
+		'blogs',
+		'forums',
+		'friends',
+		'groups',
+		'messages',
+		'notifications'
+	) );
+}
+
+/**
  * Return whether the given component is exclusive for vgsr
  *
  * @since 0.1.0
@@ -27,7 +46,7 @@ function vgsr_bp_is_vgsr_component( $component = '' ) {
 		$component = bp_current_component();
 	}
 
-	$is = in_array( $component, vgsr()->extend->bp->vgsr_components() );
+	$is = in_array( $component, vgsr_bp_components() );
 
 	return $is;
 }

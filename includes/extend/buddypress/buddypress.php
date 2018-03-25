@@ -19,14 +19,6 @@ if ( ! class_exists( 'VGSR_BuddyPress' ) ) :
 class VGSR_BuddyPress {
 
 	/**
-	 * Holds the components that are exclusive for VGSR users
-	 *
-	 * @since 0.1.0
-	 * @var array
-	 */
-	protected $components = array();
-
-	/**
 	 * Holds all users per member type
 	 *
 	 * @since 0.1.0
@@ -172,31 +164,6 @@ class VGSR_BuddyPress {
 	}
 
 	/**
-	 * Return exclusive BP components
-	 *
-	 * @since 0.1.0
-	 *
-	 * @return array Exclusive BP components
-	 */
-	public function vgsr_components() {
-
-		// Define exclusive BP components
-		if ( ! isset( $this->components ) ) {
-			$this->components = apply_filters( 'vgsr_bp_components', array(
-				'activity',
-				'blogs',
-				'forums',
-				'friends',
-				'groups',
-				'messages',
-				'notifications'
-			) );
-		}
-
-		return $this->components;
-	}
-
-	/**
 	 * Modify the list of active components for the current user
 	 *
 	 * @since 0.1.0
@@ -217,7 +184,7 @@ class VGSR_BuddyPress {
 
 		// The user is non-vgsr, so don't load exclusive components
 		} elseif ( ! is_user_vgsr() ) {
-			$components = array_diff_key( $components, array_flip( $this->vgsr_components() ) );
+			$components = array_diff_key( $components, array_flip( vgsr_bp_components() ) );
 		}
 
 		return $components;
