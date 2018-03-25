@@ -202,7 +202,7 @@ class VGSR_BuddyPress {
 
 			// For members directory redirect to own profile
 			if ( bp_is_members_directory() ) {
-				wp_redirect( bp_core_get_user_domain( bp_loggedin_user_id() ) );
+				bp_core_redirect( bp_core_get_user_domain( bp_loggedin_user_id() ) );
 				exit;
 			}
 
