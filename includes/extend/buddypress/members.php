@@ -29,7 +29,10 @@ function vgsr_bp_members_directory_tabs() {
 
 	// For admins
 	if ( current_user_can( 'bp_moderate' ) ) {
-		echo '<li id="members-all_profiles"><a href="'. bp_get_members_directory_permalink() . '">' . sprintf( __( 'All Profiles %s', 'vgsr' ), '<span>' . bp_get_total_member_count() . '</span>' ) . '</a></li>';
+		printf( '<li id="members-all_profiles"><a href="%s">%s</a></li>',
+			bp_get_members_directory_permalink(),
+			sprintf( __( 'All Profiles %s', 'vgsr' ), '<span>' . bp_get_total_member_count() . '</span>' )
+		);
 	}
 }
 
