@@ -525,12 +525,9 @@ function vgsr_cmp_ancienniteit( $a, $b ) {
  * @since 0.1.0
  */
 function vgsr_admin_bar_menus() {
-
-	// Modify WP Logo menu
-	add_action( 'admin_bar_menu', 'vgsr_admin_bar_wp_menu', 10 );
-
-	// Modify My Sites nodes
+	add_action( 'admin_bar_menu', 'vgsr_admin_bar_wp_menu',       10 );
 	add_action( 'admin_bar_menu', 'vgsr_admin_bar_my_sites_menu', 20 );
+	add_action( 'admin_bar_menu', 'vgsr_admin_bar_site_menu',     30 );
 }
 
 /**
@@ -567,6 +564,12 @@ function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
 	if ( ! is_multisite() )
 		return;
 
+	// Remove My Sites menu for non-vgsr users
+	if ( is_user_logged_in() && ! is_user_vgsr() ) {
+		$wp_admin_bar->remove_node( 'my-sites' );
+		return;
+	}
+
 	// Walk user blogs under My Sites
 	foreach ( $wp_admin_bar->user->blogs as $blog ) {
 		switch_to_blog( $blog->userblog_id );
@@ -583,5 +586,22 @@ function vgsr_admin_bar_my_sites_menu( $wp_admin_bar ) {
 		}
 
 		restore_current_blog();
+	}
+}
+
+/**
+ * Modify the site's admin bar menu
+ *
+ * @see wp_admin_bar_site_menu()
+ *
+ * @since 0.2.0
+ *
+ * @param WP_Admin_Bar $wp_admin_bar
+ */
+function vgsr_admin_bar_site_menu( $wp_admin_bar ) {
+
+	// Remove Site menu for non-vgsr users
+	if ( is_user_logged_in() && ! is_user_vgsr() ) {
+		$wp_admin_bar->remove_node( 'site-name' );
 	}
 }
