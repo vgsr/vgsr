@@ -80,6 +80,9 @@ class VGSR_BuddyPress {
 		add_action( 'bp_init',       array( $this, 'bp_init'       ), 11 );
 		add_filter( 'is_buddypress', array( $this, 'is_buddypress' )     );
 
+		// Admin
+		add_filter( 'vgsr_admin_redirect_url', array( $this, 'admin_redirect_url' ) );
+
 		// Define member types and define user checks
 		add_action( 'bp_register_member_types',        array( $this, 'register_member_types' )        );
 		add_filter( 'is_user_vgsr',                    array( $this, 'is_user_vgsr'          ), 10, 2 );
@@ -124,6 +127,28 @@ class VGSR_BuddyPress {
 		if ( ! current_user_can( 'bp_moderate' ) && is_admin() ) {
 			remove_action( 'bp_members_admin_load', array( $bp->members->admin, 'process_member_type_update' ) );
 		}
+	}
+
+	/** Admin **************************************************************/
+
+	/**
+	 * Modify the vgsr admin redirect url
+	 *
+	 * @since 0.2.0
+	 *
+	 * @param string $location Redirect url
+	 * @return string Redirect url
+	 */
+	public function admin_redirect_url( $location ) {
+
+		// For non-admin non-vgsr users block all admin pages *and* the profile page
+		if ( ! current_user_can( $this->minimum_capability ) && ! is_user_vgsr() ) {
+
+			// Always redirect to the user's own BP profile
+			$location = bp_core_get_user_domain( bp_loggedin_user_id() );
+		}
+
+		return $location;
 	}
 
 	/** Hide BP ************************************************************/

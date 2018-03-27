@@ -35,12 +35,11 @@ class VGSR_Admin {
 	 * @since 0.0.1
 	 */
 	private function setup_globals() {
-		$vgsr = vgsr();
 
 		/** Paths *************************************************************/
 
-		$this->admin_dir = trailingslashit( $vgsr->includes_dir . 'admin'  ); // Admin path
-		$this->admin_url = trailingslashit( $vgsr->includes_url . 'admin'  ); // Admin url
+		$this->admin_dir = trailingslashit( vgsr()->includes_dir . 'admin'  ); // Admin path
+		$this->admin_url = trailingslashit( vgsr()->includes_url . 'admin'  ); // Admin url
 
 		/** Details ***********************************************************/
 
@@ -82,9 +81,11 @@ class VGSR_Admin {
 
 		/** General Actions ***************************************************/
 
-		add_action( 'vgsr_admin_menu',              array( $this, 'admin_menu'        ) );
-		add_action( 'vgsr_register_admin_settings', array( $this, 'register_settings' ) );
-		add_action( 'admin_enqueue_scripts',        array( $this, 'enqueue_scripts'   ) );
+		add_action( 'vgsr_admin_menu',              array( $this, 'vgsr_admin_menu'   ), 10 );
+		add_action( 'admin_menu',                   array( $this, 'admin_menu'        ), 10 );
+		add_action( 'vgsr_admin_init',              array( $this, 'admin_redirect'    ),  0 );
+		add_action( 'vgsr_register_admin_settings', array( $this, 'register_settings' ), 10 );
+		add_action( 'admin_enqueue_scripts',        array( $this, 'enqueue_scripts'   ), 10 );
 
 		/** Filters ***********************************************************/
 
@@ -109,34 +110,78 @@ class VGSR_Admin {
 	}
 
 	/**
-	 * Add the admin menus
+	 * Modify the plugin core admin menus
 	 *
 	 * @since 0.0.1
 	 */
+	public function vgsr_admin_menu() {
+
+		// When settings are enabled and admin pages were registered
+		if ( current_user_can( 'vgsr_settings_page' ) && vgsr_admin_page_has_pages() ) {
+
+			// Register admin page
+			$hook = add_submenu_page(
+				$this->parent_page,
+				_x( 'VGSR Settings', 'settings page title', 'vgsr' ),
+				_x( 'VGSR',          'settings menu title', 'vgsr' ),
+				$this->minimum_capability,
+				vgsr_admin_page_get_current_page(),
+				'vgsr_admin_page'
+			);
+
+			// Register admin page hooks
+			add_action( "load-$hook",         'vgsr_load_admin_page'   );
+			add_action( "admin_head-$hook",   'vgsr_admin_page_head'   );
+			add_action( "admin_footer-$hook", 'vgsr_admin_page_footer' );
+		}
+	}
+
+	/**
+	 * Modify the site's admin menus
+	 *
+	 * @since 0.2.0
+	 *
+	 * @global array $menu
+	 */
 	public function admin_menu() {
+		global $menu;
 
-		// Bail when settings are not enabled
-		if ( ! current_user_can( 'vgsr_settings_page' ) )
-			return;
+		// For non-admin non-vgsr users
+		if ( ! current_user_can( $this->minimum_capability ) && ! is_user_vgsr() ) {
 
-		// Bail when no admin pages were registered
-		if ( ! vgsr_admin_page_has_pages() )
-			return;
+			// Remove all admin pages except the user's profile
+			foreach ( $menu as $index => $args ) {
+				if ( isset( $args[2] ) && 'profile.php' !== $args[2] ) {
+					remove_menu_page( $args[2] );
+				}
+			}
+		}
+	}
 
-		// Register admin page
-		$hook = add_submenu_page(
-			$this->parent_page,
-			_x( 'VGSR Settings', 'settings page title', 'vgsr' ),
-			_x( 'VGSR',          'settings menu title', 'vgsr' ),
-			$this->minimum_capability,
-			vgsr_admin_page_get_current_page(),
-			'vgsr_admin_page'
-		);
+	/**
+	 * Handle admin redirections
+	 *
+	 * @since 0.2.0
+	 *
+	 * @global string $pagenow
+	 *
+	 * @uses apply_filters() Calls 'vgsr_admin_redirect_url'
+	 */
+	public function admin_redirect() {
+		global $pagenow;
 
-		// Register admin page hooks
-		add_action( "load-$hook",         'vgsr_load_admin_page'   );
-		add_action( "admin_head-$hook",   'vgsr_admin_page_head'   );
-		add_action( "admin_footer-$hook", 'vgsr_admin_page_footer' );
+		$location = false;
+
+		// For non-admin non-vgsr users block all admin pages except the profile page
+		if ( ! current_user_can( $this->minimum_capability ) && ! is_user_vgsr() && 'profile.php' !== $pagenow ) {
+			$location = get_edit_profile_url();
+		}
+
+		// Allow filtering redirect url
+		if ( $location = apply_filters( 'vgsr_admin_redirect_url', $location ) ) {
+			wp_safe_redirect( $location );
+			exit;
+		}
 	}
 
 	/**
