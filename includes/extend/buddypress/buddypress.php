@@ -67,6 +67,7 @@ class VGSR_BuddyPress {
 		require( $this->includes_dir . 'functions.php' );
 		require( $this->includes_dir . 'members.php'   );
 		require( $this->includes_dir . 'settings.php'  );
+		require( $this->includes_dir . 'xprofile.php'  );
 	}
 
 	/**
