@@ -75,3 +75,23 @@ function vgsr_bp_xprofile_field_get_children( $children, $for_editing, $field ) 
 
 	return $children;
 }
+
+
+/**
+ * Save profile field object
+ *
+ * @since 0.2.0
+ *
+ * @param BP_XProfile_Field $field Field object
+ */
+function vgsr_bp_xprofile_save_field( $field ) {
+
+	// VGSR Users field type
+	if ( 'vgsr_users' === $field->type ) {
+
+		// Skip when the option was not posted
+		if ( isset( $_POST[ "user_type_{$field->type}" ] ) ) {
+			bp_xprofile_update_meta( $field->id, 'field', 'user_type', $_POST[ "user_type_{$field->type}" ] );
+		}
+	}
+}
