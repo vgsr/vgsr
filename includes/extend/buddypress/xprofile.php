@@ -76,7 +76,6 @@ function vgsr_bp_xprofile_field_get_children( $children, $for_editing, $field ) 
 	return $children;
 }
 
-
 /**
  * Save profile field object
  *
@@ -93,5 +92,63 @@ function vgsr_bp_xprofile_save_field( $field ) {
 		if ( isset( $_POST[ "user_type_{$field->type}" ] ) ) {
 			bp_xprofile_update_meta( $field->id, 'field', 'user_type', $_POST[ "user_type_{$field->type}" ] );
 		}
+	}
+}
+
+/** Template ***************************************************************/
+
+/**
+ * Output or return a dropdown with XProfile fields
+ *
+ * @since 1.0.0
+ *
+ * @param array $args Dropdown arguments
+ * @return string Dropdown HTML markup
+ */
+function vgsr_bp_xprofile_fields_dropdown( $args = array() ) {
+
+	// Parse default args
+	$args = wp_parse_args( $args, array(
+		'id' => '', 'name' => '', 'multiselect' => false, 'selected' => 0, 'echo' => false,
+	) );
+
+	// Bail when missing attributes
+	if ( empty( $args['name'] ) )
+		return '';
+
+	// Default id attribute to name
+	if ( empty( $args['id'] ) ) {
+		$args['id'] = $args['name'];
+	}
+
+	// Get all field groups with their fields
+	$xprofile = bp_xprofile_get_groups( array( 'fetch_fields' => true, 'hide_empty_groups' => true ) );
+
+	// Start dropdown markup
+	$dd  = sprintf( '<select id="%s" name="%s" %s>', esc_attr( $args['id'] ), esc_attr( $args['name'] ), $args['multiselect'] ? 'multiple="multiple"' : '' );
+	$dd .= '<option value="">' . esc_html__( '&mdash; No Field &mdash;', 'vgsr' )  . '</option>';
+
+	// Walk profile groups
+	foreach ( $xprofile as $field_group ) {
+
+		// Start optgroup
+		$dd .= sprintf( '<optgroup label="%s">', esc_attr( $field_group->name ) );
+
+		// Walk profile group fields
+		foreach ( $field_group->fields as $field ) {
+			$dd .= sprintf( '<option value="%s" %s>%s</option>', esc_attr( $field->id ), selected( $args['selected'], $field->id, false ), esc_html( $field->name ) );
+		}
+
+		// Close optgroup
+		$dd .= '</optgroup>';
+	}
+
+	// Close dropdown
+	$dd .= '</select>';
+
+	if ( $args['echo'] ) {
+		echo $dd;
+	} else {
+		return $dd;
 	}
 }
