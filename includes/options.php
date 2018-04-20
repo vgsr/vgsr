@@ -48,7 +48,7 @@ function vgsr_add_options() {
 
 	// Add default options
 	foreach ( vgsr_get_default_options() as $key => $value ) {
-		add_network_option( $key, $value );
+		add_site_option( $key, $value );
 	}
 
 	// Allow previously activated plugins to append their own options.
@@ -69,7 +69,7 @@ function vgsr_delete_options() {
 
 	// Add default options
 	foreach ( array_keys( vgsr_get_default_options() ) as $key ) {
-		delete_network_option( $key );
+		delete_site_option( $key );
 	}
 
 	// Allow previously activated plugins to append their own options.

@@ -322,7 +322,7 @@ function vgsr_admin_settings_save() {
 				foreach ( $settings as $setting_name => $setting ) {
 					$value = isset( $_POST[ $setting_name ] ) ? $_POST[ $setting_name ] : '';
 
-					update_network_option( null, $setting_name, $value );
+					update_site_option( $setting_name, $value );
 				}
 			}
 		}
@@ -362,7 +362,7 @@ function vgsr_form_option( $option, $default = '' , $slug = false ) {
 	function vgsr_get_form_option( $option, $default = '', $slug = false ) {
 
 		// Get the option and sanitize it
-		$value = get_network_option( null, $option, $default );
+		$value = get_site_option( $option, $default );
 
 		// Slug?
 		if ( true === $slug ) {
