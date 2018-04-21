@@ -33,5 +33,5 @@ add_filter( 'bp_xprofile_field_get_children', 'vgsr_bp_xprofile_field_get_childr
 add_action( 'xprofile_field_after_save',      'vgsr_bp_xprofile_save_field'                );
 
 // Plugin Settings
-add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_settings_sections' );
-add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_settings_fields'   );
+add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_admin_settings_sections' );
+add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_bp_admin_settings_fields'   );
