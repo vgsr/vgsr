@@ -20,5 +20,5 @@ add_action( 'admin_notices',        'vgsr_admin_notices',           10 );
 
 /** Settings ******************************************************************/
 
-add_action( 'vgsr_admin_init',      'vgsr_register_admin_settings', 10 );
-add_action( 'vgsr_admin_init',      'vgsr_admin_settings_save',    100 );
+add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings',      10 );
+add_action( 'vgsr_admin_init', 'vgsr_admin_save_network_settings', 100 );

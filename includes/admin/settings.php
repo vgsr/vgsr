@@ -199,13 +199,9 @@ function vgsr_admin_page() {
 			case 'vgsr' : ?>
 
 		<form action="<?php echo $form_action; ?>" method="post">
-
 			<?php settings_fields( 'vgsr' ); ?>
-
 			<?php do_settings_sections( 'vgsr' ); ?>
-
 			<?php submit_button(); ?>
-
 		</form>
 
 			<?php
@@ -289,7 +285,6 @@ function vgsr_admin_page_has_pages() {
  * @return string The current admin page. Defaults to the first page.
  */
 function vgsr_admin_page_get_current_page() {
-
 	$pages = array_keys( vgsr_admin_page_get_pages() );
 	$page  = ( isset( $_GET['page'] ) && in_array( $_GET['page'], $pages ) ) ? $_GET['page'] : false;
 
@@ -302,17 +297,23 @@ function vgsr_admin_page_get_current_page() {
 }
 
 /**
- * Save admin settings
+ * Save network admin settings
  *
  * @see bp_core_admin_settings_save()
  *
  * @since 1.0.0
+ *
+ * @global array $wp_settings_fields
  */
-function vgsr_admin_settings_save() {
+function vgsr_admin_save_network_settings() {
 	global $wp_settings_fields;
 
+	// Bail when not in the network admin
+	if ( ! is_network_admin() )
+		return;
+
 	// Core settings are submitted
-	if ( is_network_admin() && isset( $_GET['page'] ) && 'vgsr' == $_GET['page'] && ! empty( $_POST['submit'] ) ) {
+	if ( isset( $_GET['page'] ) && 'vgsr' == $_GET['page'] && ! empty( $_POST['submit'] ) ) {
 		check_admin_referer( 'vgsr-options' );
 
 		// Because many settings are saved with checkboxes, and thus will have no values
