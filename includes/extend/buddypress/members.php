@@ -37,6 +37,21 @@ function vgsr_bp_members_directory_tabs() {
 }
 
 /**
+ * Add additional order options to the Members directory
+ *
+ * @since 0.2.0
+ */
+function vgsr_bp_members_directory_order_options() {
+
+	// When the user is vgsr
+	if ( is_user_vgsr() ) {
+
+		// Add filter option for ancienniteit
+		echo '<option value="ancienniteit" selected="selected">' . esc_html__( 'Anciënniteit', 'vgsr' ) . '</option>';
+	}
+}
+
+/**
  * Add filter to modify the total member count
  *
  * @since 0.2.0
@@ -52,63 +67,6 @@ function vgsr_bp_add_member_count_filter() {
  */
 function vgsr_bp_remove_member_count_filter() {
 	remove_filter( 'bp_get_total_member_count', 'vgsr_bp_get_total_vgsr_member_count', 5 );
-}
-
-/**
- * Modify the ajax query string from the legacy template pack
- *
- * @since 0.1.0
- *
- * @param string $query_string        The query string we are working with.
- * @param string $object              The type of page we are on.
- * @param string $object_filter       The current object filter.
- * @param string $object_scope        The current object scope.
- * @param string $object_page         The current object page.
- * @param string $object_search_terms The current object search terms.
- * @param string $object_extras       The current object extras.
- * @return string The query string
- */
-function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter, $object_scope, $object_page, $object_search_terms, $object_extras ) {
-
-	// Handle the members page queries
-	if ( 'members' === $object ) {
-
-		// Default scope All Members to all vgsr member types
-		if ( 'all' === $object_scope ) {
-			foreach ( array_keys( vgsr_bp_member_types() ) as $member_type ) {
-				$query_string .= "&member_type__in[]={$member_type}";
-			}
-
-		// Single member type
-		} elseif ( 0 === strpos( $object_scope, 'vgsr_member_type_' ) ) {
-			$member_type   = str_replace( 'vgsr_member_type_', '', $object_scope );
-			$query_string .= "&member_type__in={$member_type}";
-		}
-	}
-
-	return $query_string;
-}
-
-/**
- * Return the query argument value from the current Members query
- *
- * @since 0.2.0
- *
- * @param string $arg Query arg key
- * @return mixed The current members query scope
- */
-function vgsr_bp_members_get_query_arg( $arg = '' ) {
-
-	// Get the current member query's args
-	$query_vars = wp_parse_args( bp_ajax_querystring( 'members' ) );
-	$scope = null;
-
-	// Get the availabel argument value
-	if ( isset( $query_vars[ $arg ] ) ) {
-		$scope = $query_vars[ $arg ];
-	}
-
-	return $scope;
 }
 
 /**
@@ -243,4 +201,93 @@ function vgsr_bp_add_member_header_actions() {
 		'link_text'         => __( 'Dashboard Profile', 'vgsr' ),
 		'link_class'        => 'dashboard-profile'
 	) );
+}
+
+/** Query ******************************************************************/
+
+/**
+ * Modify the ajax query string from the legacy template pack
+ *
+ * @since 0.1.0
+ *
+ * @param string $query_string        The query string we are working with.
+ * @param string $object              The type of page we are on.
+ * @param string $object_filter       The current object filter.
+ * @param string $object_scope        The current object scope.
+ * @param string $object_page         The current object page.
+ * @param string $object_search_terms The current object search terms.
+ * @param string $object_extras       The current object extras.
+ * @return string The query string
+ */
+function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter, $object_scope, $object_page, $object_search_terms, $object_extras ) {
+
+	// Handle the members page queries
+	if ( 'members' === $object ) {
+
+		// Default to querying/sorting by ancienniteit
+		if ( is_user_vgsr() && empty( $object_filter ) ) {
+			$query_string .= "type=ancienniteit";
+		}
+
+		// Default scope All Members to all vgsr member types
+		if ( 'all' === $object_scope || empty( $object_scope ) ) {
+			foreach ( array_keys( vgsr_bp_member_types() ) as $member_type ) {
+				$query_string .= "&member_type__in[]={$member_type}";
+			}
+
+		// Single member type
+		} elseif ( 0 === strpos( $object_scope, 'vgsr_member_type_' ) ) {
+			$member_type   = str_replace( 'vgsr_member_type_', '', $object_scope );
+			$query_string .= "&member_type__in={$member_type}";
+		}
+	}
+
+	return $query_string;
+}
+
+/**
+ * Return the query argument value from the current Members query
+ *
+ * @since 0.2.0
+ *
+ * @param string $arg Query arg key
+ * @return mixed The current members query scope
+ */
+function vgsr_bp_members_get_query_arg( $arg = '' ) {
+
+	// Get the current member query's args
+	$query_vars = wp_parse_args( bp_ajax_querystring( 'members' ) );
+	$scope = null;
+
+	// Get the availabel argument value
+	if ( isset( $query_vars[ $arg ] ) ) {
+		$scope = $query_vars[ $arg ];
+	}
+
+	return $scope;
+}
+
+/**
+ * Modify the SQL clauses for the user ID query of a BP_User_Query
+ *
+ * @since 0.2.0
+ *
+ * @global $wpdb WPDB
+ *
+ * @param  array $sql SQL clauses
+ * @param  BP_User_Query $user_query User query object
+ * @return array SQL clauses
+ */
+function vgsr_bp_user_query_uid_clauses( $sql, $user_query ) {
+	global $wpdb;
+
+	// Ordering by ancienniteit
+	if ( 'ancienniteit' == $user_query->query_vars['type'] ) {
+		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} um ON u.ID = um.user_id";
+		$sql['where'][] = $wpdb->prepare( "um.meta_key = %s", 'ancienniteit' );
+		$sql['orderby'] = "ORDER BY CAST(um.meta_value AS SIGNED)";
+		$sql['order']   = "ASC";
+	}
+
+	return $sql;
 }
