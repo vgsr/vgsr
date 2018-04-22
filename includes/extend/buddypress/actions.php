@@ -31,6 +31,8 @@ add_action( 'bp_member_header_actions',               'vgsr_bp_add_member_header
 add_filter( 'bp_xprofile_get_field_types',    'vgsr_bp_xprofile_register_field_types'      );
 add_filter( 'bp_xprofile_field_get_children', 'vgsr_bp_xprofile_field_get_children', 10, 3 );
 add_action( 'xprofile_field_after_save',      'vgsr_bp_xprofile_save_field'                );
+add_action( 'xprofile_data_after_save',       'vgsr_bp_xprofile_sync_field_to_meta'        );
+add_action( 'updated_user_meta',              'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
 
 // Plugin Settings
 add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_bp_admin_settings_sections' );

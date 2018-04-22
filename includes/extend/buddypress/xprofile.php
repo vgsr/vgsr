@@ -95,12 +95,115 @@ function vgsr_bp_xprofile_save_field( $field ) {
 	}
 }
 
+/** Profile sync ***********************************************************/
+
+/**
+ * Return the profile fields to sync with user meta
+ *
+ * @since 0.2.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_fields'
+ * @return array Profile fields to sync with user meta
+ */
+function vgsr_bp_xprofile_sync_get_fields() {
+	return (array) apply_filters( 'vgsr_bp_xprofile_sync_get_fields', array(
+		'jaargroep'    => get_site_option( '_vgsr_bp_jaargroep_field' ),
+		'ancienniteit' => get_site_option( '_vgsr_bp_ancienniteit_field' )
+	) );
+}
+
+/**
+ * Return the meta key for which to sync the profile field
+ *
+ * @since 0.2.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_meta_for_field'
+ *
+ * @param  BP_XProfile_Field|int $field Profile field object or ID
+ * @return string|bool Meta key to sync or False when not found
+ */
+function vgsr_bp_xprofile_sync_get_meta_for_field( $field ) {
+	$field    = xprofile_get_field( $field );
+	$meta_key = false;
+
+	if ( $field ) {
+		foreach ( vgsr_bp_xprofile_sync_get_fields() as $_meta_key => $field_id ) {
+			if ( $field_id && $field_id == $field->id ) {
+				$meta_key = $_meta_key;
+				break;
+			}
+		}
+	}
+
+	return apply_filters( 'vgsr_bp_xprofile_sync_get_meta_for_field', $meta_key, $field );
+}
+
+/**
+ * Return the field for which to sync the user meta
+ *
+ * @since 0.2.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_field_for_meta'
+ *
+ * @param  string $meta_key Meta key
+ * @return BP_XProfile_Field|bool Profile field to sync or False when not found
+ */
+function vgsr_bp_xprofile_sync_get_field_for_meta( $meta_key ) {
+	$field = false;
+
+	foreach ( vgsr_bp_xprofile_sync_get_fields() as $_meta_key => $field_id ) {
+		if ( $meta_key === $_meta_key && $field_id ) {
+			$field = xprofile_get_field( $field_id );
+			break;
+		}
+	}
+
+	return apply_filters( 'vgsr_bp_xprofile_sync_get_field_for_meta', $field, $meta_key );
+}
+
+/**
+ * Update user meta value when the profile data changed
+ *
+ * @since 0.2.0
+ *
+ * @param BP_XProfile_ProfileData $profile_data Profile data
+ */
+function vgsr_bp_xprofile_sync_field_to_meta( $profile_data ) {
+
+	// When synching meta, update profile field
+	if ( $meta_key = vgsr_bp_xprofile_sync_get_meta_for_field( $profile_data->field_id ) ) {
+		remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+		update_user_meta( $profile_data->user_id, $meta_key, $profile_data->value );
+		add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+	}
+}
+
+/**
+ * Update profile data when the user meta value changed
+ *
+ * @since 0.2.0
+ *
+ * @param int $meta_id Meta record ID
+ * @param int $user_id User ID
+ * @param string $meta_key Meta key
+ * @param mixed $meta_value Meta value
+ */
+function vgsr_bp_xprofile_sync_meta_to_field( $meta_id, $user_id, $meta_key, $meta_value ) {
+
+	// When synching meta, update profile field
+	if ( $field = vgsr_bp_xprofile_sync_get_field_for_meta( $meta_key ) ) {
+		remove_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+		xprofile_set_field_data( $field->id, $user_id, $meta_value, $field->is_required );
+		add_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+	}
+}
+
 /** Template ***************************************************************/
 
 /**
  * Output or return a dropdown with XProfile fields
  *
- * @since 1.0.0
+ * @since 0.2.0
  *
  * @param array $args Dropdown arguments
  * @return string Dropdown HTML markup
