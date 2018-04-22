@@ -10,6 +10,19 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+/** Utility *******************************************************************/
+
+/**
+ * Return the current plugin's version
+ *
+ * @since 1.0.0
+ *
+ * @return string Plugin version
+ */
+function vgsr_get_version() {
+	return vgsr()->version;
+}
+
 /** General ****************************************************************/
 
 /**
