@@ -338,8 +338,8 @@ function vgsr_get_gender( $user = 0 ) {
 /**
  * Return the user's anciënniteit
  *
- * Expect anciënniteit to be represented by 'YYYYPPP' where 'YYYY' represents
- * the user's jaargroep and 'PPP' represents the user's position within the
+ * Expect anciënniteit to be represented by 'YYYYXXX' where 'YYYY' represents
+ * the user's jaargroep and 'XXX' represents the user's position within the
  * jaargroep.
  *
  * @since 1.0.0
@@ -379,7 +379,7 @@ function vgsr_get_jaargroep( $user = 0 ) {
 
 		// Default to the ancienniteit / 1000
 		if ( ! $jaargroep && $ancienniteit = vgsr_get_ancienniteit( $user ) ) {
-			$jaargroep = floor( $ancienniteit / 1000 );
+			$jaargroep = (int) substr( $ancienniteit, 0, 4 );
 		}
 	}
 
