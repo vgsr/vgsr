@@ -51,6 +51,10 @@ class VGSR_BuddyPress {
 		$this->includes_dir = trailingslashit( vgsr()->extend_dir . 'buddypress' );
 		$this->includes_url = trailingslashit( vgsr()->extend_url . 'buddypress' );
 
+		// Assets
+		$this->assets_dir = trailingslashit( $this->includes_dir . 'assets' );
+		$this->assets_url = trailingslashit( $this->includes_url . 'assets' );
+
 		/** Misc ***********************************************************/
 
 		$this->minimum_capability = is_multisite() ? 'manage_network_options' : 'manage_options';
@@ -99,6 +103,7 @@ class VGSR_BuddyPress {
 		add_action( 'bp_set_member_type', array( $this, 'set_member_type' ), 10, 3 );
 
 		// Pages & Templates
+		add_action( 'bp_enqueue_scripts',                        array( $this, 'enqueue_scripts'            ), 90    );
 		add_filter( 'bp_get_template_part',                      array( $this, 'get_template_part'          ), 20, 3 );
 		add_filter( 'bp_get_button',                             array( $this, 'get_button'                 ), 20, 2 );
 		add_filter( 'bp_get_directory_title',                    array( $this, 'directory_title'            ), 10, 2 );
@@ -770,6 +775,15 @@ class VGSR_BuddyPress {
 	}
 
 	/** Pages & Templates **************************************************/
+
+	/**
+	 * Enqueue scripts and styles
+	 *
+	 * @since 0.2.0
+	 */
+	public function enqueue_scripts() {
+		wp_enqueue_script( 'vgsr-buddypress', $this->assets_url . 'js/vgsr-buddypress.js', array( 'jquery', 'bp-legacy-js' ) );
+	}
 
 	/**
 	 * Filter the template part in BP's template loading

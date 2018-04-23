@@ -92,6 +92,35 @@ function vgsr_bp_members_get_oudleden_scope() {
 }
 
 /**
+ * Display the jaargroepen member query filter
+ *
+ * @since 0.2.0
+ */
+function vgsr_bp_members_jaargroep_filter() {
+	$jaargroepen = vgsr_get_jaargroepen();
+
+	// Bail when no jaargroepen exist. Only when user is vgsr and on root blog
+	if ( ! $jaargroepen || ! is_user_vgsr() || ! vgsr_bp_is_root_blog() )
+		return;
+
+	?>
+
+	<li id="members-jaargroep-select" class="last vgsr-filter">
+		<label for="members-by-jaargroep"><?php esc_html_e( 'Jaargroep:', 'vgsr' ); ?></label>
+		<select id="members-by-jaargroep">
+			<option value=""><?php echo esc_html( _x( 'All', 'Jaargroep member filter', 'vgsr' ) ); ?></option>
+			<?php foreach ( $jaargroepen as $jaargroep ) : ?>
+
+			<option value="<?php echo esc_attr( $jaargroep ); ?>"><?php echo $jaargroep; ?></option>
+
+			<?php endforeach; ?>
+		</select>
+	</li>
+
+	<?php
+}
+
+/**
  * Modify the pagination count of the members query
  *
  * @see bp_get_members_pagination_count()
@@ -242,7 +271,76 @@ function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter
 		}
 	}
 
+	// Apply extras
+	if ( ! empty( $object_extras ) ) {
+		/**
+		 * Extras reference only a single value, since BP doesn't handle arrays or
+		 * objects for extra data. This means that untill a better way is found,
+		 * the variable is single-purposed and can only be utilized for jaargroep
+		 * filtering.
+		 */
+		$query_string .= '&vgsr_jaargroep=' . $object_extras;
+	}
+
 	return $query_string;
+}
+
+/**
+ * Modify the parsed members query arguments
+ *
+ * Since BP's directory queries do not allow for custom query arg parsing,
+ * we hack around this by hijacking the `type` arg and resetting it later.
+ * This filter is paired with {@see vgsr_bp_parse_core_get_users_args()}.
+ *
+ * @since 0.2.0
+ *
+ * @param array $args Parsed query args.
+ * @return array Parsed query args
+ */
+function vgsr_bp_parse_has_members_args( $args = array() ) {
+
+	// Jaargroep filtering
+	if ( ! empty( $args['vgsr_jaargroep'] ) ) {
+
+		// Define type argument container. Hijack `type` argument
+		$args['type'] = array(
+			'_type'     => $args['type'],
+			'jaargroep' => $args['vgsr_jaargroep']
+		);
+	}
+
+	return $args;
+}
+
+/**
+ * Modify the to-parse members query arguments
+ *
+ * Since BP's directory queries do not allow for custom query arg parsing,
+ * we hack around this by hijacking the `type` arg and resetting it here.
+ * This filter is paired with {@see vgsr_bp_parse_has_members_args()}.
+ *
+ * @since 0.2.0
+ *
+ * @param array $args Args to parse
+ * @return array Args to parse
+ */
+function vgsr_bp_parse_core_get_users_args( $args = array() ) {
+
+	// This is our modified 'type' argument
+	if ( is_array( $args['type'] ) && isset( $args['type']['_type'] ) ) {
+
+		// Preserve `type` argument
+		$type = $args['type']['_type'];
+		unset( $args['type']['_type'] );
+
+		// Define query modifiers
+		$args['vgsr_jaargroep'] = $args['type']['jaargroep'];
+
+		// Reset `type` argument
+		$args['type'] = $type;
+	}
+
+	return $args;
 }
 
 /**
@@ -281,12 +379,20 @@ function vgsr_bp_members_get_query_arg( $arg = '' ) {
 function vgsr_bp_user_query_uid_clauses( $sql, $user_query ) {
 	global $wpdb;
 
+	$qv = $user_query->query_vars;
+
 	// Ordering by ancienniteit
-	if ( 'ancienniteit' == $user_query->query_vars['type'] ) {
-		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} um ON u.ID = um.user_id";
-		$sql['where'][] = $wpdb->prepare( "um.meta_key = %s", 'ancienniteit' );
-		$sql['orderby'] = "ORDER BY CAST(um.meta_value AS SIGNED)";
+	if ( 'ancienniteit' == $qv['type'] ) {
+		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} ancienniteit ON u.ID = ancienniteit.user_id";
+		$sql['where'][] = $wpdb->prepare( "ancienniteit.meta_key = %s", 'ancienniteit' );
+		$sql['orderby'] = "ORDER BY CAST(ancienniteit.meta_value AS SIGNED)";
 		$sql['order']   = "ASC";
+	}
+
+	// Jaargroep filtering
+	if ( ! empty( $qv['vgsr_jaargroep'] ) ) {
+		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} jaargroep ON u.ID = jaargroep.user_id";
+		$sql['where'][] = $wpdb->prepare( "jaargroep.meta_key = %s AND jaargroep.meta_value = %s", 'jaargroep', $qv['vgsr_jaargroep'] );
 	}
 
 	return $sql;
