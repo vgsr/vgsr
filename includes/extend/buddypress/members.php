@@ -19,8 +19,8 @@ defined( 'ABSPATH' ) || exit;
  */
 function vgsr_bp_members_directory_tabs() {
 
-	// When the user is vgsr
-	if ( is_user_vgsr() ) {
+	// When the user is vgsr. Only for the root blog
+	if ( is_user_vgsr() && vgsr_bp_is_root_blog() ) {
 
 		// Add tabs for Lid and Oud-lid member type
 		vgsr_bp_members_member_type_tab( vgsr_bp_lid_member_type()    );
@@ -43,8 +43,8 @@ function vgsr_bp_members_directory_tabs() {
  */
 function vgsr_bp_members_directory_order_options() {
 
-	// When the user is vgsr
-	if ( is_user_vgsr() ) {
+	// When the user is vgsr. Only for the root blog
+	if ( is_user_vgsr() && vgsr_bp_is_root_blog() ) {
 
 		// Add filter option for ancienniteit
 		echo '<option value="ancienniteit" selected="selected">' . esc_html__( 'Anciënniteit', 'vgsr' ) . '</option>';
