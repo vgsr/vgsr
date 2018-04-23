@@ -386,6 +386,24 @@ function vgsr_get_jaargroep( $user = 0 ) {
 	return (int) apply_filters( 'vgsr_get_jaargroep', $jaargroep, $user );
 }
 
+/**
+ * Return all available user jaargroepen
+ *
+ * @since 0.2.0
+ *
+ * @global $wpdb WPDB
+ *
+ * @return array Jaargroepen
+ */
+function vgsr_get_jaargroepen() {
+	global $wpdb;
+
+	$query  = $wpdb->prepare( "SELECT DISTINCT um.meta_value FROM {$wpdb->usermeta} um WHERE um.meta_key = %s ORDER BY um.meta_value ASC", 'jaargroep' );
+	$retval = $wpdb->get_col( $query );
+
+	return (array) apply_filters( 'vgsr_get_jaargroepen', $retval );
+}
+
 /** Formalities ***********************************************************/
 
 /**
