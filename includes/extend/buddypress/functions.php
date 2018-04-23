@@ -32,6 +32,26 @@ function vgsr_bp_is_root_blog() {
 	return apply_filters( 'vgsr_bp_is_root_blog', $retval );
 }
 
+/**
+ * Return the root blog ID
+ *
+ * @since 0.2.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_get_root_blog_id'
+ *
+ * @return int The root blog ID
+ */
+function vgsr_bp_get_root_blog_id() {
+	$blog_id = bp_get_root_blog_id();
+
+	// Consider BP Multiblog Mode plugin
+	if ( function_exists( 'bp_multiblog_mode' ) ) {
+		$blog_id = bp_multiblog_mode_get_root_blog_id();
+	}
+
+	return apply_filters( 'vgsr_bp_get_root_blog_id', $blog_id );
+}
+
 /** Components *************************************************************/
 
 /**
