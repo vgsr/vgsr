@@ -10,6 +10,28 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+/** Core *******************************************************************/
+
+/**
+ * Return whether we're on the root blog
+ *
+ * @since 0.2.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_is_root_blog'
+ *
+ * @return bool Is this the root blog?
+ */
+function vgsr_bp_is_root_blog() {
+	$retval = bp_is_root_blog();
+
+	// Consider BP Multiblog Mode plugin
+	if ( function_exists( 'bp_multiblog_mode' ) ) {
+		$retval = bp_multiblog_mode_is_root_blog();
+	}
+
+	return apply_filters( 'vgsr_bp_is_root_blog', $retval );
+}
+
 /** Components *************************************************************/
 
 /**
