@@ -92,6 +92,28 @@ function vgsr_bp_members_get_oudleden_scope() {
 }
 
 /**
+ * Return whether this is the leden members directory scope
+ *
+ * @since 0.2.0
+ *
+ * @return bool Is this the leden scope?
+ */
+function vgsr_bp_members_is_leden_scope() {
+	return vgsr_bp_members_get_leden_scope() === vgsr_bp_members_get_query_arg( 'scope' );
+}
+
+/**
+ * Return whether this is the oud-leden members directory scope
+ *
+ * @since 0.2.0
+ *
+ * @return bool Is this the oud-leden scope?
+ */
+function vgsr_bp_members_is_oudleden_scope() {
+	return vgsr_bp_members_get_oudleden_scope() === vgsr_bp_members_get_query_arg( 'scope' );
+}
+
+/**
  * Display the jaargroepen member query filter
  *
  * @since 0.2.0
@@ -160,8 +182,35 @@ function vgsr_bp_members_pagination_count( $pag ) {
 			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s profile', 'Viewing %1$s - %2$s of %3$s profiles', 'vgsr' ),
 		);
 
+	// In Leden scope
+	} elseif ( vgsr_bp_members_is_leden_scope() ) {
+
+		// Active
+		$lines['active'] = array(
+			1 => __( 'Viewing 1 active lid', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s active lid', 'Viewing %1$s - %2$s of %3$s active leden', 'vgsr' ),
+		);
+
+		// Popular
+		$lines['popular'] = array(
+			1 => __( 'Viewing 1 lid with friends', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s lid with friends', 'Viewing %1$s - %2$s of %3$s leden with friends', 'vgsr' ),
+		);
+
+		// Online
+		$lines['online'] = array(
+			1 => __( 'Viewing 1 online lid', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s online lid', 'Viewing %1$s - %2$s of %3$s online leden', 'vgsr' ),
+		);
+
+		// Default
+		$lines['default'] = array(
+			1 => __( 'Viewing 1 lid', 'vgsr' ),
+			2 => _n_noop( 'Viewing %1$s - %2$s of %3$s lid', 'Viewing %1$s - %2$s of %3$s leden', 'vgsr' ),
+		);
+
 	// In Oud-leden scope
-	} elseif ( vgsr_bp_members_get_oudleden_scope() === vgsr_bp_members_get_query_arg( 'scope' ) ) {
+	} elseif ( vgsr_bp_members_is_oudleden_scope() ) {
 
 		// Active
 		$lines['active'] = array(
