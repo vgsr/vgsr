@@ -262,21 +262,61 @@ function vgsr_bp_members_pagination_count( $pag ) {
  *
  * @since 0.1.0
  */
+function vgsr_bp_add_directory_members_actions() {
+
+	// When the user can moderate
+	if ( bp_current_user_can( 'bp_moderate' ) ) {
+
+		// Edit user in wp-admin link
+		vgsr_bp_member_dashboard_profile_button();
+	}
+}
+
+/**
+ * Display additional member profile action links
+ *
+ * @since 0.1.0
+ */
 function vgsr_bp_add_member_header_actions() {
 
-	// Bail when the user cannot moderate
-	if ( ! bp_current_user_can( 'bp_moderate' ) )
-		return;
+	// When the user can moderate
+	if ( bp_current_user_can( 'bp_moderate' ) ) {
 
-	// Edit user in wp-admin link
+		// Edit user in wp-admin link
+		vgsr_bp_member_dashboard_profile_button();
+	}
+}
+
+/**
+ * Output a BP button linking to the member's dashboard profile
+ *
+ * @since 0.2.0
+ *
+ * @param int $user_id Optional. User ID. Defaults to displayed or directory user.
+ */
+function vgsr_bp_member_dashboard_profile_button( $user_id = 0 ) {
+
+	// Default to displayed user
+	if ( ! $user_id && bp_is_user() ) {
+		$user_id = bp_displayed_user_id();
+
+	// Default to members template user
+	} elseif ( ! $user_id && bp_get_member_user_id() ) {
+		$user_id = bp_get_member_user_id();
+
+	// Bail when no user is provided
+	} elseif ( ! $user_id ) {
+		return;
+	}
+
 	bp_button( array(
 		'id'                => 'dashboard_profile',
 		'component'         => 'members',
 		'must_be_logged_in' => true,
 		'block_self'        => false,
-		'link_href'         => add_query_arg( array( 'user_id' => bp_displayed_user_id() ), admin_url( 'user-edit.php' ) ),
-		'link_title'        => __( 'Edit this user in the admin.', 'vgsr' ),
-		'link_text'         => __( 'Dashboard Profile', 'vgsr' ),
+		'link_href'         => add_query_arg( array( 'user_id' => $user_id ), admin_url( 'user-edit.php' ) ),
+		'link_title'        => esc_html__( 'Edit this user in the admin.', 'vgsr' ),
+		'link_text'         => esc_html__( 'Dashboard Profile', 'vgsr' ),
 		'link_class'        => 'dashboard-profile'
 	) );
 }

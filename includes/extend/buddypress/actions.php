@@ -29,6 +29,7 @@ add_filter( 'bp_before_core_get_users_parse_args',    'vgsr_bp_parse_core_get_us
 add_filter( 'bp_members_pagination_count',            'vgsr_bp_members_pagination_count'          );
 add_filter( 'bp_get_current_member_type',             '__return_false'                            );
 add_filter( 'bp_get_member_type_directory_permalink', '__return_false'                            );
+add_action( 'bp_directory_members_actions',           'vgsr_bp_add_directory_members_actions'     );
 add_action( 'bp_member_header_actions',               'vgsr_bp_add_member_header_actions'         );
 add_filter( 'bp_user_query_uid_clauses',              'vgsr_bp_user_query_uid_clauses',     10, 2 );
 
