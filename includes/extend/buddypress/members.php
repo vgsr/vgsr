@@ -480,7 +480,7 @@ function vgsr_bp_user_query_uid_clauses( $sql, $user_query ) {
 
 	// Jaargroep filtering
 	if ( ! empty( $qv['vgsr_jaargroep'] ) ) {
-		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} jaargroep ON u.ID = jaargroep.user_id";
+		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} jaargroep ON u.{$user_query->uid_name} = jaargroep.user_id";
 		$sql['where'][] = $wpdb->prepare( "jaargroep.meta_key = %s AND jaargroep.meta_value = %s", 'jaargroep', $qv['vgsr_jaargroep'] );
 	}
 
