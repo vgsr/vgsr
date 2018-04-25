@@ -109,27 +109,27 @@ function vgsr_bp_member_types() {
 		// Lid
 		vgsr_bp_lid_member_type() => array(
 			'labels' => array(
-				'name'          => __( 'Leden', 'vgsr' ),
-				'singular_name' => __( 'Lid',   'vgsr' ),
-				'plural_name'   => __( 'Leden', 'vgsr' ),
+				'name'          => esc_html__( 'Leden', 'vgsr' ),
+				'singular_name' => esc_html__( 'Lid',   'vgsr' ),
+				'plural_name'   => esc_html__( 'Leden', 'vgsr' ),
 			)
 		),
 
 		// Oud-lid
 		vgsr_bp_oudlid_member_type() => array(
 			'labels' => array(
-				'name'          => __( 'Oud-leden', 'vgsr' ),
-				'singular_name' => __( 'Oud-lid',   'vgsr' ),
-				'plural_name'   => __( 'Oud-leden', 'vgsr' ),
+				'name'          => esc_html__( 'Oud-leden', 'vgsr' ),
+				'singular_name' => esc_html__( 'Oud-lid',   'vgsr' ),
+				'plural_name'   => esc_html__( 'Oud-leden', 'vgsr' ),
 			)
 		),
 
 		// Ex-lid
 		vgsr_bp_exlid_member_type() => array(
 			'labels' => array(
-				'name'          => __( 'Ex-leden', 'vgsr' ),
-				'singular_name' => __( 'Ex-lid',   'vgsr' ),
-				'plural_name'   => __( 'Ex-leden', 'vgsr' ),
+				'name'          => esc_html__( 'Ex-leden', 'vgsr' ),
+				'singular_name' => esc_html__( 'Ex-lid',   'vgsr' ),
+				'plural_name'   => esc_html__( 'Ex-leden', 'vgsr' ),
 			)
 		),
 	) );
