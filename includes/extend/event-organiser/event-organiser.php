@@ -1,10 +1,10 @@
 <?php
 
 /**
- * VGSR Event Organiser Functions
+ * VGSR Extension for Event Organiser
  * 
  * @package VGSR
- * @subpackage Extend
+ * @subpackage Event Organiser
  */
 
 // Exit if accessed directly

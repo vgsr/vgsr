@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VGSR BuddyPress Extension
+ * VGSR Extension for BuddyPress
  *
  * @package VGSR
  * @subpackage BuddyPress

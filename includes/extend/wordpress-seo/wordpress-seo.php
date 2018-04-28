@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VGSR WP SEO Extension
+ * VGSR Extension for WP SEO
  * 
  * @package VGSR
  * @subpackage WP SEO

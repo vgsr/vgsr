@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Main VGSR Gravity Forms Class
+ * VGSR Extension for Gravity Forms
  *
  * @package VGSR
- * @subpackage Plugins
+ * @subpackage Gravity Forms
  */
 
 // Exit if accessed directly

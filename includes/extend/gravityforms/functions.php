@@ -4,7 +4,7 @@
  * VGSR Gravity Forms Functions
  *
  * @package VGSR
- * @subpackage Plugins
+ * @subpackage Gravity Forms
  */
 
 // Exit if accessed directly
