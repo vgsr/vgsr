@@ -231,23 +231,23 @@ function vgsr_bp_member_type_promote_url( $member_type = '', $user_id = 0, $appe
 		}
 
 		// Define local variable(s)
-		$url = '';
-		$mt  = bp_get_member_type_object( $member_type );
+		$url  = '';
+		$type = bp_get_member_type_object( $member_type );
 
 		// When the member type does exist
-		if ( ! empty( $mt ) ) {
+		if ( ! empty( $type ) ) {
 
 			// Get the args to add to the URL.
 			$args = array(
 				'action' => 'vgsr_promote',
-				'type'   => $mt->name,
+				'type'   => $type->name,
 				'append' => (int) (bool) $append,
 			);
 
 			// Construct action url
 			$url = trailingslashit( bp_core_get_user_domain( $user_id ) . 'vgsr_promote' );
 			$url = add_query_arg( $args, $url );
-			$url = wp_nonce_url( $url, 'vgsr_promote_member_type_' . $mt->name );
+			$url = wp_nonce_url( $url, 'vgsr_promote_member_type_' . $type->name );
 		}
 
 		return apply_filters( 'vgsr_bp_get_member_type_promote_url', $url, $member_type, $user_id, $append );
@@ -277,16 +277,16 @@ function vgsr_bp_members_member_type_tab( $member_type ) {
 		// Define local variable(s)
 		$tab   = '';
 		$count = 0;
-		$mt    = bp_get_member_type_object( $member_type );
+		$type  = bp_get_member_type_object( $member_type );
 
-		if ( ! empty( $mt ) ) {
+		if ( ! empty( $type ) ) {
 
 			// Only display tab when there are members
-			if ( $count = vgsr_bp_get_total_member_count( array( 'member_type__in' => $mt->name ) ) ) {
+			if ( $count = vgsr_bp_get_total_member_count( array( 'member_type__in' => $type->name ) ) ) {
 				$tab = sprintf( '<li id="members-%s"><a href="%s">%s <span>%s</span></a></li>',
-					"vgsr_member_type_{$mt->name}", // The scope part (cannot have any dashes in it!)
-					esc_url( bp_get_member_type_directory_permalink( $mt->name ) ),
-					$mt->labels['name'],
+					"vgsr_member_type_{$type->name}", // The scope part (cannot have any dashes in it!)
+					esc_url( bp_get_member_type_directory_permalink( $type->name ) ),
+					$type->labels['name'],
 					$count
 				);
 			}
