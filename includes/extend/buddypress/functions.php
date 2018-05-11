@@ -88,7 +88,7 @@ function vgsr_bp_is_vgsr_component( $component = '' ) {
 		$component = bp_current_component();
 	}
 
-	$is = in_array( $component, vgsr_bp_components() );
+	$is = in_array( $component, vgsr_bp_components(), true );
 
 	return $is;
 }
