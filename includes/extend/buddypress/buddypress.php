@@ -323,41 +323,52 @@ class VGSR_BuddyPress {
 	/**
 	 * Unhook theme-compat component hooks in bp-legacy
 	 *
-	 * @see BP_Legacy::setup_actions()
-	 *
 	 * @since 0.1.0
 	 */
 	public function unhook_theme_compat() {
 
-		// Friends component
-		if ( vgsr_bp_is_vgsr_component( 'friends' ) ) {
-			remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
-		}
+		// What template pack is used?
+		switch ( bp_get_theme_compat_id() ) {
 
-		// Activity component
-		if ( vgsr_bp_is_vgsr_component( 'activity' ) ) {
-			remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
-		}
+			/**
+			 * BP Legacy template pack
+			 *
+			 * @see BP_Legacy::setup_actions()
+			 */
+			case 'legacy':
 
-		// Messages component
-		if ( vgsr_bp_is_vgsr_component( 'messages' ) ) {
-			remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
-		}
+				// Friends component
+				if ( vgsr_bp_is_vgsr_component( 'friends' ) ) {
+					remove_action( 'bp_member_header_actions', 'bp_add_friend_button', 5 );
+				}
 
-		// Groups component
-		if ( vgsr_bp_is_vgsr_component( 'groups' ) ) {
-			remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
-			remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
-			remove_action( 'bp_directory_groups_actions',      'bp_group_join_button'                            );
-			remove_action( 'bp_groups_directory_group_filter', 'bp_legacy_theme_group_create_nav', 999           );
-			remove_action( 'bp_after_group_admin_content',     'bp_legacy_groups_admin_screen_hidden_input'      );
-			remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
-		}
+				// Activity component
+				if ( vgsr_bp_is_vgsr_component( 'activity' ) ) {
+					remove_action( 'bp_member_header_actions', 'bp_send_public_message_button', 20 );
+				}
 
-		// Blogs component
-		if ( vgsr_bp_is_vgsr_component( 'blogs' ) ) {
-			remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
-			remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
+				// Messages component
+				if ( vgsr_bp_is_vgsr_component( 'messages' ) ) {
+					remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
+				}
+
+				// Groups component
+				if ( vgsr_bp_is_vgsr_component( 'groups' ) ) {
+					remove_action( 'bp_group_header_actions',          'bp_group_join_button',               5           );
+					remove_action( 'bp_group_header_actions',          'bp_group_new_topic_button',         20           );
+					remove_action( 'bp_directory_groups_actions',      'bp_group_join_button'                            );
+					remove_action( 'bp_groups_directory_group_filter', 'bp_legacy_theme_group_create_nav', 999           );
+					remove_action( 'bp_after_group_admin_content',     'bp_legacy_groups_admin_screen_hidden_input'      );
+					remove_action( 'bp_before_group_admin_form',       'bp_legacy_theme_group_manage_members_add_search' );
+				}
+
+				// Blogs component
+				if ( vgsr_bp_is_vgsr_component( 'blogs' ) ) {
+					remove_action( 'bp_directory_blogs_actions',    'bp_blogs_visit_blog_button'           );
+					remove_action( 'bp_blogs_directory_blog_types', 'bp_legacy_theme_blog_create_nav', 999 );
+				}
+
+			break;
 		}
 	}
 
