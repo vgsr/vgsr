@@ -166,7 +166,7 @@ class VGSR_WPSEO {
 
 				// Add Day parent
 				$ancestors[] = array(
-					'text'       => date( _x( 'l j', 'Event archives breadcrumb title: Day', 'zeta' ), strtotime( $date ) ),
+					'text'       => date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'zeta' ), strtotime( $date ) ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m-d', strtotime( $date ) ) ) ),
 					'allow_html' => false,
 				);
@@ -183,34 +183,40 @@ class VGSR_WPSEO {
 			if ( $add_month || eo_is_event_archive( 'day' ) ) {
 				$add_year = true;
 				$ancestors[] = array(
-					'text'       => date( _x( 'F', 'Event archives breadcrumb title: Month', 'zeta' ), $date ),
+					'text'       => date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'zeta' ), $date ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m', $date ) ) ),
 					'allow_html' => false,
 				);
 
 				// Set the proper current element title
 				if ( ! $add_month ) {
-					$crumbs[ count( $crumbs ) - 1 ] = array( 'text' => date( _x( 'l j', 'Event archives breadcrumb title: Day', 'zeta' ), $date ) );
+					$crumbs[ count( $crumbs ) - 1 ] = array(
+						'text' => date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'zeta' ), $date )
+					);
 				}
 			}
 
 			// Add Year parent
 			if ( $add_year || eo_is_event_archive( 'month' ) ) {
 				$ancestors[] = array(
-					'text'       => date( _x( 'Y', 'Event archives breadcrumb title: Year', 'zeta' ), $date ),
+					'text'       => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'zeta' ), $date ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y', $date ) ) ),
 					'allow_html' => false,
 				);
 
 				// Set the proper current element title
 				if ( ! $add_year ) {
-					$crumbs[ count( $crumbs ) - 1 ] = array( 'text' => date( _x( 'F', 'Event archives breadcrumb title: Month', 'zeta' ), $date ) );
+					$crumbs[ count( $crumbs ) - 1 ] = array(
+						'text' => date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'zeta' ), $date )
+					);
 				}
 			}
 
 			// Set the proper current element title
 			if ( eo_is_event_archive( 'year' ) ) {
-				$crumbs[ count( $crumbs ) - 1 ] = array( 'text' => date( _x( 'Y', 'Event archives breadcrumb title: Year', 'zeta' ), $date ) );
+				$crumbs[ count( $crumbs ) - 1 ] = array(
+					'text' => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'zeta' ), $date )
+				);
 			}
 
 			// Insert event ancestor crumbs before the last one
