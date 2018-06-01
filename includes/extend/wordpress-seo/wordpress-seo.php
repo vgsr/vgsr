@@ -130,13 +130,8 @@ class VGSR_WPSEO {
 			 * Add year/month/day event archives to the event breadcrumb trail.
 			 */
 
-			// Define local variable(s)
-			$add_year = $add_month = false;
-			$ancestors = array();
-
-			// Single event
+			// Get date from single Event
 			if ( is_singular( 'event' ) ) {
-				$add_year = $add_month = true;
 
 				// Bail when taxonomy crumbs are used for this event
 				if ( isset( $this->options['post_types-event-maintax'] ) && $this->options['post_types-event-maintax'] != '0'
@@ -164,63 +159,89 @@ class VGSR_WPSEO {
 					$date = eo_get_the_start( 'Y-m-d H:i:s' );
 				}
 
-				// Add Day parent
-				$ancestors[] = array(
-					'text'       => date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'zeta' ), strtotime( $date ) ),
-					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m-d', strtotime( $date ) ) ) ),
-					'allow_html' => false,
-				);
-
-			// Event archive
+			// Get date from Event archive
 			} else {
 				$date = eo_get_event_archive_date( 'Y-m-d H:i:s' );
 			}
 
-			// Make $date a timestamp
+			// Make date a timestamp
 			$date = strtotime( $date );
 
-			// Add Month parent
-			if ( $add_month || eo_is_event_archive( 'day' ) ) {
-				$add_year = true;
-				$ancestors[] = array(
-					'text'       => date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'zeta' ), $date ),
-					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m', $date ) ) ),
+			// Define plugin crumb presets
+			$_crumbs = array(
+
+				// Root
+				'root' => array(
+					'text'       => esc_html_x( 'Events', 'Breadcrumb root title', 'vgsr' ),
+					'url'        => get_post_type_archive_link( 'event' ),
 					'allow_html' => false,
-				);
+				),
 
-				// Set the proper current element title
-				if ( ! $add_month ) {
-					$crumbs[ count( $crumbs ) - 1 ] = array(
-						'text' => date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'zeta' ), $date )
-					);
-				}
-			}
-
-			// Add Year parent
-			if ( $add_year || eo_is_event_archive( 'month' ) ) {
-				$ancestors[] = array(
-					'text'       => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'zeta' ), $date ),
+				// Yearly archives
+				'year' => array(
+					'text'       => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'vgsr' ), $date ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y', $date ) ) ),
 					'allow_html' => false,
+				),
+
+				// Monthly archives
+				'month' => array(
+					'text'       => ucfirst( date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'vgsr' ), $date ) ),
+					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m', $date ) ) ),
+					'allow_html' => false,
+				),
+
+				// Daily archives
+				'day' => array(
+					'text'       => ucfirst( date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'vgsr' ), $date ) ),
+					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m-d', $date ) ) ),
+					'allow_html' => false,
+				),
+			);
+
+			// Overwrite Events root 
+			$crumbs[1] = $_crumbs['root'];
+
+			// Define local variable(s)
+			$last = count( $crumbs ) - 1;
+
+			// Single event
+			if ( is_singular( 'event' ) ) {
+
+				// Prepend Year, Month, Day
+				array_splice( $crumbs, $last, 0, array(
+					$_crumbs['year'],
+					$_crumbs['month'],
+					$_crumbs['day']
+				) );
+
+			// Daily archives
+			} elseif ( eo_is_event_archive( 'day' ) ) {
+
+				// Prepend Year, Month, add Day
+				$crumbs[] = $_crumbs['year'];
+				$crumbs[] = $_crumbs['month'];
+				$crumbs[] = array(
+					'text' => ucfirst( date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'vgsr' ), $date ) )
 				);
 
-				// Set the proper current element title
-				if ( ! $add_year ) {
-					$crumbs[ count( $crumbs ) - 1 ] = array(
-						'text' => date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'zeta' ), $date )
-					);
-				}
-			}
+			// Monthly archives
+			} elseif ( eo_is_event_archive( 'month' ) ) {
 
-			// Set the proper current element title
-			if ( eo_is_event_archive( 'year' ) ) {
-				$crumbs[ count( $crumbs ) - 1 ] = array(
-					'text' => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'zeta' ), $date )
+				// Prepend Year, add Month
+				$crumbs[] = $_crumbs['year'];
+				$crumbs[] = array(
+					'text' => ucfirst( date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'vgsr' ), $date ) )
+				);
+
+			// Yearly archives
+			} elseif ( eo_is_event_archive( 'year' ) ) {
+
+				// Add Year
+				$crumbs[] = array(
+					'text' => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'vgsr' ), $date )
 				);
 			}
-
-			// Insert event ancestor crumbs before the last one
-			array_splice( $crumbs, count( $crumbs ) - 1, 0, array_reverse( $ancestors ) );
 		}
 
 		$crumbs = array_values( $crumbs );
