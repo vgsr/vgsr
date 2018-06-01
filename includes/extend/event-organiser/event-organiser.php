@@ -24,7 +24,32 @@ class VGSR_Event_Organiser {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		$this->setup_globals();
+		$this->includes();
 		$this->setup_actions();
+	}
+
+	/**
+	 * Define default class globals
+	 *
+	 * @since 1.0.0
+	 */
+	private function setup_globals() {
+
+		/** Paths **********************************************************/
+
+		$this->includes_dir = trailingslashit( vgsr()->extend_dir . 'event-organiser' );
+		$this->includes_url = trailingslashit( vgsr()->extend_url . 'event-organiser' );
+	}
+
+	/**
+	 * Include the required files
+	 *
+	 * @since 1.0.0
+	 */
+	private function includes() {
+		require( $this->includes_dir . 'actions.php'   );
+		require( $this->includes_dir . 'functions.php' );
 	}
 
 	/**
