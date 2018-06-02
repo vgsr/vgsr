@@ -179,21 +179,21 @@ class VGSR_WPSEO {
 
 				// Yearly archives
 				'year' => array(
-					'text'       => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'vgsr' ), $date ),
+					'text'       => date_i18n( esc_html_x( 'Y', 'Event archives breadcrumb title: Year', 'vgsr' ), $date ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y', $date ) ) ),
 					'allow_html' => false,
 				),
 
 				// Monthly archives
 				'month' => array(
-					'text'       => ucfirst( date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'vgsr' ), $date ) ),
+					'text'       => ucfirst( date_i18n( esc_html_x( 'F', 'Event archives breadcrumb title: Month', 'vgsr' ), $date ) ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m', $date ) ) ),
 					'allow_html' => false,
 				),
 
 				// Daily archives
 				'day' => array(
-					'text'       => ucfirst( date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'vgsr' ), $date ) ),
+					'text'       => date_i18n( esc_html_x( 'l j', 'Event archives breadcrumb title: Day', 'vgsr' ), $date ),
 					'url'        => call_user_func_array( 'eo_get_event_archive_link', explode( '-', date( 'Y-m-d', $date ) ) ),
 					'allow_html' => false,
 				),
@@ -222,7 +222,8 @@ class VGSR_WPSEO {
 				$crumbs[] = $_crumbs['year'];
 				$crumbs[] = $_crumbs['month'];
 				$crumbs[] = array(
-					'text' => ucfirst( date_i18n( _x( 'l j', 'Event archives breadcrumb title: Day', 'vgsr' ), $date ) )
+					'text'       => $_crumbs['day']['text'],
+					'allow_html' => false
 				);
 
 			// Monthly archives
@@ -231,7 +232,8 @@ class VGSR_WPSEO {
 				// Prepend Year, add Month
 				$crumbs[] = $_crumbs['year'];
 				$crumbs[] = array(
-					'text' => ucfirst( date_i18n( _x( 'F', 'Event archives breadcrumb title: Month', 'vgsr' ), $date ) )
+					'text'       => $_crumbs['month']['text'],
+					'allow_html' => false
 				);
 
 			// Yearly archives
@@ -239,7 +241,8 @@ class VGSR_WPSEO {
 
 				// Add Year
 				$crumbs[] = array(
-					'text' => date_i18n( _x( 'Y', 'Event archives breadcrumb title: Year', 'vgsr' ), $date )
+					'text'       => $_crumbs['year']['text'],
+					'allow_html' => false
 				);
 			}
 		}
