@@ -13,14 +13,14 @@ defined( 'ABSPATH' ) || exit;
 /** Template ******************************************************************/
 
 /**
- * Filter the archive title for Event pages
+ * Return the archive title for Event pages
  *
  * @since 1.0.0
  *
  * @param string $title Archive title
  * @return string Archive title
  */
-function vgsr_eo_archive_title( $title ) {
+function vgsr_eo_get_the_archive_title( $title = '' ) {
 
 	// When displaying an event category
 	if ( is_tax( 'event-category' ) ) {
@@ -62,4 +62,53 @@ function vgsr_eo_archive_title( $title ) {
 	}
 
 	return $title;
+}
+
+/**
+ * Return the archive description for Event pages
+ *
+ * @since 1.0.0
+ *
+ * @param string $description Archive description
+ * @return string Archive description
+ */
+function vgsr_eo_get_the_archive_description( $description = '' ) {
+
+	// When displaying an event category
+	if ( is_tax( 'event-category' ) ) {
+		$description = sprintf( __( 'This page lists all events published within the selected category. You can visit the <a href="%1$s">main events page</a> to view the upcoming events or browse the <a href="%2$s">date archives</a> to find all registered events on this site.', 'vgsr' ), get_post_type_archive_link( 'event' ), eo_get_event_archive_link( date( 'Y' ) ) );
+	}
+
+	// When displaying an event tag
+	if ( is_tax( 'event-tag' ) ) {
+		$description = sprintf( __( 'This page lists all events published within the selected tag. You can visit the <a href="%1$s">main events page</a> to view the upcoming events or browse the <a href="%2$s">date archives</a> to find all registered events on this site.', 'vgsr' ), get_post_type_archive_link( 'event' ), eo_get_event_archive_link( date( 'Y' ) ) );
+	}
+
+	// When displaying an event venue
+	if ( is_tax( 'event-venue' ) ) {
+		$description = sprintf( __( 'This page lists all events related to the selected venue. You can visit the <a href="%1$s">main events page</a> to view the upcoming events or browse the <a href="%2$s">date archives</a> to find all registered events on this site.', 'vgsr' ), get_post_type_archive_link( 'event' ), eo_get_event_archive_link( date( 'Y' ) ) );
+	}
+
+	// When displaying event archives of a certain period
+	if ( is_post_type_archive( 'event' ) ) {
+
+		// Yearly archives
+		if ( eo_is_event_archive( 'year' ) ) {
+			$description = sprintf( __( 'This page lists all events published for the selected year. You can browse here to find all registered events on this site or visit the <a href="%s">main events page</a> to view the upcoming events.', 'vgsr' ), get_post_type_archive_link( 'event' ) );
+
+		// Monthly archives
+		} elseif ( eo_is_event_archive( 'month' ) ) {
+			$description = sprintf( __( 'This page lists all events published for the selected month. You can visit the <a href="%1$s">main events page</a> to view the upcoming events or browse the <a href="%2$s">date archives</a> to find all registered events on this site.', 'vgsr' ), get_post_type_archive_link( 'event' ), eo_get_event_archive_link( date( 'Y' ) ) );
+
+		// Daily archives
+		} elseif ( eo_is_event_archive( 'day' ) ) {
+			$description = sprintf( __( 'This page lists all events published for the selected date. You can visit the <a href="%1$s">main events page</a> to view the upcoming events or browse the <a href="%2$s">date archives</a> to find all registered events on this site.', 'vgsr' ), get_post_type_archive_link( 'event' ), eo_get_event_archive_link( date( 'Y' ) ) );
+
+		// Fallback
+		} else {
+			$description = sprintf( __( 'This page lists the upcoming events. You can browse the <a href="%s">date archives</a> to find all registered events on this site.', 'vgsr' ), eo_get_event_archive_link( date( 'Y' ) ) );
+		}
+	}
+
+	return $description;
 }
