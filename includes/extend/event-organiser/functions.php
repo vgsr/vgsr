@@ -49,7 +49,7 @@ function vgsr_eo_get_the_archive_title( $title = '' ) {
 
 		// Monthly archives
 		} elseif ( eo_is_event_archive( 'month' ) ) {
-			$title = sprintf( $title, eo_get_event_archive_date( esc_html_x( 'F Y', 'Event archives page title: Month', 'vgsr' ) ) );
+			$title = sprintf( $title, ucfirst( eo_get_event_archive_date( esc_html_x( 'F Y', 'Event archives page title: Month', 'vgsr' ) ) ) );
 
 		// Daily archives
 		} elseif ( eo_is_event_archive( 'day' ) ) {
