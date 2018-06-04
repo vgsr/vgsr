@@ -13,6 +13,33 @@ defined( 'ABSPATH' ) || exit;
 /** Template ******************************************************************/
 
 /**
+ * Return whether we're on the Events home page
+ *
+ * @since 1.0.0
+ *
+ * @return bool Is this the event home page?
+ */
+function vgsr_eo_is_event_home() {
+	return is_post_type_archive( 'event' ) && ! eo_get_event_archive_date();
+}
+
+/**
+ * Return the template for the Events home page
+ *
+ * @since 1.0.0
+ *
+ * @return string Template file
+ */
+function vgsr_eo_get_event_home_template() {
+	$templates = array(
+		'archive-event-home.php',
+		'page.php'
+	);
+
+	return eo_locate_template( $templates, false );
+}
+
+/**
  * Return the archive title for Event pages
  *
  * @since 1.0.0
