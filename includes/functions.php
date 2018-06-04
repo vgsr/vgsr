@@ -193,7 +193,7 @@ function vgsr_manifest_json() {
 		$params['background_color'] = '#33A537';
 		$params['icons'] = array(
 			array(
-				'src'   => vgsr()->includes_url . 'assets/images/logo-wit.png',
+				'src'   => vgsr()->assets_url . 'images/logo-wit.png',
 				'sizes' => '32x32 64x64 128x128 200x200',
 			),
 		);

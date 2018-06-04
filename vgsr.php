@@ -116,16 +116,16 @@ final class VGSR {
 		$this->plugin_url   = plugin_dir_url ( $this->file );
 
 		// Includes
-		$this->includes_dir = trailingslashit( $this->plugin_dir . 'includes'  );
-		$this->includes_url = trailingslashit( $this->plugin_url . 'includes'  );
+		$this->includes_dir = trailingslashit( $this->plugin_dir . 'includes' );
+		$this->includes_url = trailingslashit( $this->plugin_url . 'includes' );
 
 		// Assets
-		$this->assets_dir   = trailingslashit( $this->includes_dir . 'assets'  );
-		$this->assets_url   = trailingslashit( $this->includes_url . 'assets'  );
+		$this->assets_dir   = trailingslashit( $this->plugin_dir . 'assets' );
+		$this->assets_url   = trailingslashit( $this->plugin_url . 'assets' );
 
 		// Extenders
-		$this->extend_dir   = trailingslashit( $this->includes_dir . 'extend'  );
-		$this->extend_url   = trailingslashit( $this->includes_url . 'extend'  );
+		$this->extend_dir   = trailingslashit( $this->includes_dir . 'extend' );
+		$this->extend_url   = trailingslashit( $this->includes_url . 'extend' );
 
 		// Languages
 		$this->lang_dir     = trailingslashit( $this->plugin_dir . 'languages' );
