@@ -86,7 +86,7 @@ function vgsr_wpseo_bp_breadcrumb_links( $crumbs = array() ) {
 function vgsr_wpseo_eo_breadcrumb_links( $crumbs = array() ) {
 
 	// Bail when not on a EO page
-	if ( ! is_post_type_archive( 'event' ) && ! is_singular( 'event' ) ) {
+	if ( 'event' !== get_post_type() ) {
 		return $crumbs;
 	}
 
@@ -164,30 +164,19 @@ function vgsr_wpseo_eo_breadcrumb_links( $crumbs = array() ) {
 		),
 	);
 
-	// Overwrite Events root 
+	// Define local variable(s)
+	$last      = count( $crumbs ) - 1;
+	$last_item = $crumbs[ $last ];
+
+	// Overwrite Events root
 	$crumbs[1] = $_crumbs['root'];
 
-	// Define local variable(s)
-	$last = count( $crumbs ) - 1;
+	// Yearly archives
+	if ( eo_is_event_archive( 'year' ) ) {
 
-	// Single event
-	if ( is_singular( 'event' ) ) {
-
-		// Prepend Year, Month, Day
-		array_splice( $crumbs, $last, 0, array(
-			$_crumbs['year'],
-			$_crumbs['month'],
-			$_crumbs['day']
-		) );
-
-	// Daily archives
-	} elseif ( eo_is_event_archive( 'day' ) ) {
-
-		// Prepend Year, Month, add Day
-		$crumbs[] = $_crumbs['year'];
-		$crumbs[] = $_crumbs['month'];
+		// Add Year
 		$crumbs[] = array(
-			'text'       => $_crumbs['day']['text'],
+			'text'       => $_crumbs['year']['text'],
 			'allow_html' => false
 		);
 
@@ -201,14 +190,32 @@ function vgsr_wpseo_eo_breadcrumb_links( $crumbs = array() ) {
 			'allow_html' => false
 		);
 
-	// Yearly archives
-	} elseif ( eo_is_event_archive( 'year' ) ) {
+	// Daily archives
+	} elseif ( eo_is_event_archive( 'day' ) ) {
 
-		// Add Year
+		// Prepend Year, Month, add Day
+		$crumbs[] = $_crumbs['year'];
+		$crumbs[] = $_crumbs['month'];
 		$crumbs[] = array(
-			'text'       => $_crumbs['year']['text'],
+			'text'       => $_crumbs['day']['text'],
 			'allow_html' => false
 		);
+
+	// Taxonomy archives
+	} elseif ( is_tax() ) {
+
+		// Append term. Item was overwritten by root
+		$crumbs[] = $last_item;
+
+	// Single event
+	} elseif ( is_singular( 'event' ) ) {
+
+		// Prepend Year, Month, Day
+		array_splice( $crumbs, $last, 0, array(
+			$_crumbs['year'],
+			$_crumbs['month'],
+			$_crumbs['day']
+		) );
 	}
 
 	return $crumbs;
