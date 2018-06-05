@@ -86,7 +86,7 @@ function vgsr_wpseo_bp_breadcrumb_links( $crumbs = array() ) {
 function vgsr_wpseo_eo_breadcrumb_links( $crumbs = array() ) {
 
 	// Bail when not on a EO page
-	if ( 'event' !== get_post_type() ) {
+	if ( 'event' !== get_post_type() && ! vgsr_eo_is_event_home() ) {
 		return $crumbs;
 	}
 
