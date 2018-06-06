@@ -184,6 +184,7 @@ final class VGSR {
 		// Array of VGSR core actions
 		$actions = array(
 			'load_textdomain', // Load textdomain (vgsr)
+			'widgets_init',    // Register widgets
 		);
 
 		// Add the actions
@@ -228,6 +229,25 @@ final class VGSR {
 
 		// Look in global /wp-content/languages/plugins/
 		load_plugin_textdomain( $this->domain );
+	}
+
+	/**
+	 * Register widgets
+	 *
+	 * @since 1.0.0
+	 *
+	 * @uses apply_filters() Calls 'vgsr_register_widgets'
+	 */
+	public function widgets_init() {
+
+		// Collect widget data as 'classname' => 'path/to/file.php'
+		$widgets = apply_filters( 'vgsr_register_widgets', array() );
+
+		// Register widgets
+		foreach ( $widgets as $class => $path ) {
+			require_once( $path );
+			register_widget( $class );
+		}
 	}
 }
 

@@ -85,6 +85,17 @@ function vgsr_init() {
 }
 
 /**
+ * Initialize widgets
+ *
+ * @since 0.1.0
+ *
+ * @uses do_action() Calls 'vgsr_widgets_init'
+ */
+function vgsr_widgets_init() {
+	do_action( 'vgsr_widgets_init' );
+}
+
+/**
  * Main action in the head of the site's front-end
  *
  * @since 0.1.0

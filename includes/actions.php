@@ -15,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
 add_filter( 'request',                 'vgsr_request',                 10    );
 add_action( 'plugins_loaded',          'vgsr_loaded',                  20    );
 add_action( 'init',                    'vgsr_init',                     0    ); // Early for vgsr_register
+add_action( 'widgets_init',            'vgsr_widgets_init',            10    );
 add_action( 'add_admin_bar_menus',     'vgsr_admin_bar_menus',         10    );
 add_action( 'wp_head',                 'vgsr_head',                    10    );
 add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
