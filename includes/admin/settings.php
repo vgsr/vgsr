@@ -173,6 +173,31 @@ function vgsr_setting_callback_private_reading_post_types() {
 	<?php
 }
 
+/** Generic fields ************************************************************/
+
+/**
+ * Display the page selection settings field
+ *
+ * @since 1.0.0
+ *
+ * @param array $args Field and query arguments. See also {@see wp_dropdown_pages()}.
+ */
+function vgsr_admin_setting_callback_page( $args ) {
+
+	// Parse args
+	$args = wp_parse_args( $args, array(
+		'show_option_none' => esc_html__( '&mdash; No Page &mdash;', 'vgsr' )
+	) );
+
+	// Page dropdown. Only works for hierarchical post types.
+	wp_dropdown_pages( $args );
+
+	// Description
+	if ( isset( $args['description'] ) ) {
+		echo '<p class="description">' . $args['description'] . '</p>';
+	}
+}
+
 /** Settings Page *************************************************************/
 
 /**
