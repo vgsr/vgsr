@@ -36,7 +36,25 @@ function vgsr_eo_get_event_home_template() {
 		'page.php'
 	);
 
-	return eo_locate_template( $templates, false );
+	return vgsr_locate_template( $templates, false );
+}
+
+/**
+ * Filter the document page title for event pages
+ *
+ * Available since WP 4.4.0 in `wp_get_document_title()`.
+ *
+ * @since 1.0.0
+ *
+ * @param string $title Page title
+ * @return string Page title
+ */
+function vgsr_eo_page_title( $title ) {
+
+	// Run page title through our archive title filter
+	$title['title'] = vgsr_eo_get_the_archive_title( $title['title'] );
+
+	return $title;
 }
 
 /**

@@ -12,5 +12,6 @@ defined( 'ABSPATH' ) || exit;
 
 /** Template ******************************************************************/
 
+add_filter( 'document_title_parts',        'vgsr_eo_page_title'                  );
 add_filter( 'get_the_archive_title',       'vgsr_eo_get_the_archive_title'       );
 add_filter( 'get_the_archive_description', 'vgsr_eo_get_the_archive_description' );
