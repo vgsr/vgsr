@@ -10,6 +10,31 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+/** Settings ******************************************************************/
+
+/**
+ * Register settings fields for Event Organiser options
+ *
+ * @since 1.0.0
+ */
+function vgsr_eo_register_settings_fields() {
+
+	// Events home page
+	register_setting( 'eventorganiser_general', 'vgsr_eo_events_home_page', 'intval' );
+	add_settings_field(
+		'vgsr_eo_events_home_page',
+		esc_html__( 'Events home page', 'vgsr' ),
+		'vgsr_admin_setting_callback_page',
+		'eventorganiser_general',
+		'general',
+		array(
+			'name'        => 'vgsr_eo_events_home_page',
+			'selected'    => get_option( 'vgsr_eo_events_home_page', false ),
+			'description' => esc_html__( 'The selected page will act as the home page for Events. When no page is selected, a list of generated events widgets will be shown.', 'vgsr' )
+		)
+	);
+}
+
 /** Template ******************************************************************/
 
 /**
