@@ -150,14 +150,15 @@ final class VGSR {
 
 		/** Core **************************************************************/
 
-		require( $this->includes_dir . 'actions.php'     );
-		require( $this->includes_dir . 'extend.php'      );
-		require( $this->includes_dir . 'functions.php'   );
-		require( $this->includes_dir . 'options.php'     );
-		require( $this->includes_dir . 'posts.php'       );
-		require( $this->includes_dir . 'sub-actions.php' );
-		require( $this->includes_dir . 'update.php'      );
-		require( $this->includes_dir . 'users.php'       );
+		require( $this->includes_dir . 'actions.php'      );
+		require( $this->includes_dir . 'extend.php'       );
+		require( $this->includes_dir . 'functions.php'    );
+		require( $this->includes_dir . 'options.php'      );
+		require( $this->includes_dir . 'posts.php'        );
+		require( $this->includes_dir . 'sub-actions.php'  );
+		require( $this->includes_dir . 'theme-compat.php' );
+		require( $this->includes_dir . 'update.php'       );
+		require( $this->includes_dir . 'users.php'        );
 
 		/** Admin *************************************************************/
 

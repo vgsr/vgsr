@@ -19,6 +19,7 @@ add_action( 'widgets_init',            'vgsr_widgets_init',            10    );
 add_action( 'add_admin_bar_menus',     'vgsr_admin_bar_menus',         10    );
 add_action( 'wp_head',                 'vgsr_head',                    10    );
 add_filter( 'map_meta_cap',            'vgsr_map_meta_caps',           10, 4 );
+add_action( 'template_include',        'vgsr_template_include',        10    );
 add_action( 'wp_footer',               'vgsr_footer',                  10    );
 
 /** Init **********************************************************************/
@@ -29,6 +30,8 @@ add_action( 'vgsr_init',               'vgsr_manifest_json_route',     10    );
 add_action( 'vgsr_init',               'vgsr_ready',                  999    );
 
 /** Query *********************************************************************/
+
+add_filter( 'posts_pre_query',         'vgsr_bypass_wp_query',         10, 2 ); // Since WP 4.6
 
 add_action( 'pre_get_posts',           '_vgsr_post_query',             10    );
 add_action( 'vgsr_register',           '_vgsr_post_update_hierarchy',   0    );
@@ -53,6 +56,7 @@ add_filter( 'login_headertitle',       'vgsr_login_header_title',      10    );
 
 /** Template ******************************************************************/
 
+add_action( 'vgsr_template_include',   'vgsr_activate_theme_compat',   12    );
 add_action( 'vgsr_head',               'vgsr_manifest_meta_tag',       10    );
 
 /** Users *********************************************************************/

@@ -190,3 +190,17 @@ function vgsr_request( $query_vars = array() ) {
 function vgsr_map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 	return apply_filters( 'vgsr_map_meta_caps', $caps, $cap, $user_id, $args );
 }
+
+/**
+ * Intercept the template loader to load a custom template
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_template_include'
+ *
+ * @param string $template The current template match
+ * @return string $template
+ */
+function vgsr_template_include( $template ) {
+	return apply_filters( 'vgsr_template_include', $template );
+}
