@@ -191,3 +191,26 @@ function vgsr_eo_get_the_archive_description( $description = '' ) {
 
 	return $description;
 }
+
+/**
+ * Return whether the current event has a new date in the loop
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_eo_is_new_date'
+ * @return bool Has event new date?
+ */
+function vgsr_eo_is_new_date() {
+	global $wp_query;
+
+	// Bail when not in the event loop
+	if ( ! in_the_loop() || 'event' !== get_post_type() ) {
+		return false;
+	}
+
+	// Get the previous post from the loop, compare dates
+	$prev_post = $wp_query->current_post > 0 ? $wp_query->posts[ $wp_query->current_post - 1 ] : false;
+	$is_new    = ! $prev_post || $prev_post->StartDate !== $wp_query->post->StartDate;
+
+	return (bool) apply_filters( 'vgsr_eo_is_new_date', $is_new );
+}
