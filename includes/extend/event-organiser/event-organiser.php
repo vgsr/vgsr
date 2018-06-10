@@ -38,8 +38,13 @@ class VGSR_Event_Organiser {
 
 		/** Paths **********************************************************/
 
+		// Includes
 		$this->includes_dir = trailingslashit( vgsr()->extend_dir . 'event-organiser' );
 		$this->includes_url = trailingslashit( vgsr()->extend_url . 'event-organiser' );
+
+		// Templates
+		$this->themes_dir   = trailingslashit( vgsr()->themes_dir . 'event-organiser' );
+		$this->themes_url   = trailingslashit( vgsr()->themes_url . 'event-organiser' );
 	}
 
 	/**
@@ -69,6 +74,16 @@ class VGSR_Event_Organiser {
 		add_filter( 'get_next_post_where',     array( $this, 'adjacent_post_where' ), 10, 5 );
 		add_filter( 'get_previous_post_sort',  array( $this, 'adjacent_post_sort'  ), 10, 2 );
 		add_filter( 'get_next_post_sort',      array( $this, 'adjacent_post_sort'  ), 10, 2 );
+
+		// Templates
+		add_filter( 'eventorganiser_template_stack', array( $this, 'template_stack'   )        );
+		add_filter( 'vgsr_bypass_wp_query',          array( $this, 'bypass_wp_query'  ), 10, 2 );
+		add_filter( 'vgsr_template_include',         array( $this, 'template_include' )        );
+		add_filter( 'vgsr_activate_theme_compat',    array( $this, 'theme_compat'     )        );
+		add_filter( 'vgsr_locate_template',          array( $this, 'locate_template'  ), 10, 4 );
+
+		// Widgets
+		add_filter( 'vgsr_register_widgets', array( $this, 'register_widgets' ) );
 	}
 
 	/**
@@ -235,6 +250,128 @@ class VGSR_Event_Organiser {
 		}
 
 		return $order_by;
+	}
+
+	/** Templates **********************************************************/
+
+	/**
+	 * Modify the location stack for Event Organiser templates
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $stack Template locations
+	 * @return array Template locations
+	 */
+	public function template_stack( $stack ) {
+
+		// Prepend plugin template location
+		$stack = array_merge( array( $this->themes_dir ), $stack );
+
+		return $stack;
+	}
+
+	/**
+	 * Modify whether to bypass the main query
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool $retval Whether to bypass the main query
+	 * @param WP_Query $query Query
+	 * @return bool Bypass the main query?
+	 */
+	public function bypass_wp_query( $retval, $query ) {
+		return $retval || vgsr_eo_is_event_home();
+	}
+
+	/**
+	 * Modify the required template
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $template Template file
+	 * @return string Template file
+	 */
+	public function template_include( $template ) {
+
+		// Events home page
+		if ( vgsr_eo_is_event_home() && ( $_template = vgsr_eo_get_event_home_template() ) ) {
+			$template = $_template;
+		}
+
+		return $template;
+	}
+
+	/**
+	 * Trigger post reset for theme compat
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $args Post reset arguments
+	 * @return array Post reset arguments
+	 */
+	public function theme_compat( $args ) {
+
+		// Events home page
+		if ( vgsr_eo_is_event_home() ) {
+
+			// Defaulting to a page?
+			$post = get_option( 'vgsr_eo_events_home_page', false );
+			$post = $post ? get_post( $post ) : false;
+
+			// Reset post by page
+			if ( $post ) {
+				$args = $post->to_array();
+
+			// Default post compat
+			} else {
+				$args = array(
+					'post_title'   => esc_html__( 'Events', 'vgsr' ),
+					'post_content' => array( 'content-event-home' ),
+					'is_single'    => true,
+				);
+
+
+			}
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Retrieve the path of the highest priority template file that exists.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $template Located template file
+	 * @param array $template_names Template hierarchy
+	 * @param bool $load Optional. Whether to load the file when it is found. Default to false.
+	 * @param bool $require_once Optional. Whether to require_once or require. Default to true.
+	 * @return string Path of the template file when located.
+	 */
+	public function locate_template( $template, $template_names, $load, $require_once ) {
+		if ( ! $template ) {
+			$template = eo_locate_template( $template_names, $load, $require_once );
+		}
+
+		return $template;
+	}
+
+	/** Widgets ************************************************************/
+
+	/**
+	 * Modify the list of widgets to register
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $widgets Widgets
+	 * @return array Widgets
+	 */
+	public function register_widgets( $widgets ) {
+
+		// Upcoming events
+		$widgets['VGSR_EO_Upcoming_Events_Widget'] = vgsr()->includes_dir . 'classes/class-vgsr-eo-upcoming-events-widget.php';
+
+		return $widgets;
 	}
 }
 
