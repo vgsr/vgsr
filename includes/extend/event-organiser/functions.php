@@ -197,20 +197,64 @@ function vgsr_eo_get_the_archive_description( $description = '' ) {
  *
  * @since 1.0.0
  *
+ * @global WP_Post $post
+ *
  * @uses apply_filters() Calls 'vgsr_eo_is_new_date'
+ *
+ * @param string $format Optional. Date format to match. Defaults to 'Y-m-d'.
+ * @param WP_Query|bool $query Optional. Query to check posts from. Defaults to the main query.
+ * @param bool|WP_Post|int $previuos Optional. Whether to check against the previous post or post object or ID. Defaults to true.
+ * @param bool $default Optional. Default return value. Defaults to the boolean form of `$previous`.
  * @return bool Has event new date?
  */
-function vgsr_eo_is_new_date() {
-	global $wp_query;
+function vgsr_eo_is_new_date( $format = 'Y-m-d', $query = false, $previous = true, $default = null ) {
+	global $post;
 
-	// Bail when not in the event loop
-	if ( ! in_the_loop() || 'event' !== get_post_type() ) {
+	// Default to the main query
+	if ( ! is_a( $query, 'WP_Query' ) ) {
+		$query = $GLOBALS['wp_query'];
+	}
+ 
+	// Bail when we're not in the event loop
+	if ( ! $query->in_the_loop || 'event' !== $query->post->post_type ) {
 		return false;
 	}
 
-	// Get the previous post from the loop, compare dates
-	$prev_post = $wp_query->current_post > 0 ? $wp_query->posts[ $wp_query->current_post - 1 ] : false;
-	$is_new    = ! $prev_post || $prev_post->StartDate !== $wp_query->post->StartDate;
+	// Get the post to compare from input
+	if ( is_numeric( $previous ) || is_a( $previous, 'WP_Post' ) ) {
+		$cmp_post = get_post( $previous );
 
-	return (bool) apply_filters( 'vgsr_eo_is_new_date', $is_new );
+	// Get the post to copmare from the loop
+	} else {
+		$which    = $previous ? $query->current_post - 1 : $query->current_post + 1;
+		$cmp_post = isset( $query->posts[ $which ] ) ? $query->posts[ $which ] : false;
+	}
+
+	// Define return value
+	$retval = is_null( $default ) ? (bool) $previous : (bool) $default;
+
+	if ( $cmp_post ) {
+		/**
+		 * To compare dates, we're using `eo_get_the_start()`, which requires
+		 * the global `$post`. So we set it apart here to override it.
+		 */
+		$_post = $post;
+
+		// Get date to compare
+		$post     = $cmp_post;
+		$cmp_date = eo_get_the_start( $format );
+
+		// Get post date
+		$post      = $query->post;
+		$post_date = eo_get_the_start( $format );
+
+		// Compare dates
+		$retval = $cmp_date !== $post_date;
+
+		// Restore post global
+		$post = $_post;
+		unset( $_post );
+	}
+
+	return (bool) apply_filters( 'vgsr_eo_is_new_date', $retval, $format, $query, $previous, $default );
 }
