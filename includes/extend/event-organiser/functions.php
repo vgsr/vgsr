@@ -224,7 +224,7 @@ function vgsr_eo_is_new_date( $format = 'Y-m-d', $query = false, $previous = tru
 	if ( is_numeric( $previous ) || is_a( $previous, 'WP_Post' ) ) {
 		$cmp_post = get_post( $previous );
 
-	// Get the post to copmare from the loop
+	// Get the post to compare from the loop
 	} else {
 		$which    = $previous ? $query->current_post - 1 : $query->current_post + 1;
 		$cmp_post = isset( $query->posts[ $which ] ) ? $query->posts[ $which ] : false;
