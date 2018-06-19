@@ -37,12 +37,11 @@ class VGSR_BBPress {
 	 * @since 0.0.1
 	 */
 	private function setup_globals() {
-		$vgsr = vgsr();
 
 		/** Paths **********************************************************/
 
-		$this->includes_dir = trailingslashit( $vgsr->extend_dir . 'bbpress' );
-		$this->includes_url = trailingslashit( $vgsr->extend_url . 'bbpress' );
+		$this->includes_dir = trailingslashit( vgsr()->extend_dir . 'bbpress' );
+		$this->includes_url = trailingslashit( vgsr()->extend_url . 'bbpress' );
 	}
 
 	/**
