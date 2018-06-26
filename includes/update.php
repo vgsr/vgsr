@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * If there is no raw DB version, this is the first installation
  *
- * @since 0.0.1
+ * @since 1.0.0
  *
  * @return bool True if update, False if not
  */
@@ -22,9 +22,9 @@ function vgsr_is_install() {
 }
 
 /**
- * Compare the VGSR version to the DB version to determine if updating
+ * Compare the plugin version to the DB version to determine if updating
  *
- * @since 0.0.1
+ * @since 1.0.0
  *
  * @return bool True if update, False if not
  */
@@ -36,19 +36,19 @@ function vgsr_is_update() {
 }
 
 /**
- * Determine if VGSR is being activated
+ * Determine if the plugin is being activated
  *
- * Note that this function currently is not used in VGSR core and is here
- * for third party plugins to use to check for VGSR activation.
+ * Note that this function currently is not used in the plugin's core and is here
+ * for third party plugins to use to check for plugin activation.
  *
- * @since 0.0.1
+ * @since 1.0.0
  *
- * @return bool True if activating VGSR, false if not
+ * @return bool True if activating the plugin, false if not
  */
 function vgsr_is_activation( $basename = '' ) {
 	global $pagenow;
 
-	$vgsr   = vgsr();
+	$plugin = vgsr();
 	$action = false;
 
 	// Bail if not in admin/plugins
@@ -75,8 +75,8 @@ function vgsr_is_activation( $basename = '' ) {
 	}
 
 	// Set basename if empty
-	if ( empty( $basename ) && ! empty( $vgsr->basename ) ) {
-		$basename = $vgsr->basename;
+	if ( empty( $basename ) && ! empty( $plugin->basename ) ) {
+		$basename = $plugin->basename;
 	}
 
 	// Bail if no basename
@@ -84,21 +84,21 @@ function vgsr_is_activation( $basename = '' ) {
 		return false;
 	}
 
-	// Is VGSR being activated?
+	// Is the plugin being activated?
 	return in_array( $basename, $plugins );
 }
 
 /**
- * Determine if VGSR is being deactivated
+ * Determine if the plugin is being deactivated
  *
- * @since 0.0.1
+ * @since 1.0.0
  * 
- * @return bool True if deactivating VGSR, false if not
+ * @return bool True if deactivating the plugin, false if not
  */
 function vgsr_is_deactivation( $basename = '' ) {
 	global $pagenow;
 
-	$vgsr   = vgsr();
+	$plugin = vgsr();
 	$action = false;
 
 	// Bail if not in admin/plugins
@@ -125,8 +125,8 @@ function vgsr_is_deactivation( $basename = '' ) {
 	}
 
 	// Set basename if empty
-	if ( empty( $basename ) && ! empty( $vgsr->basename ) ) {
-		$basename = $vgsr->basename;
+	if ( empty( $basename ) && ! empty( $plugin->basename ) ) {
+		$basename = $plugin->basename;
 	}
 
 	// Bail if no basename
@@ -134,23 +134,23 @@ function vgsr_is_deactivation( $basename = '' ) {
 		return false;
 	}
 
-	// Is VGSR being deactivated?
+	// Is the plugin being deactivated?
 	return in_array( $basename, $plugins );
 }
 
 /**
  * Update the DB to the latest version
  *
- * @since 0.0.1
+ * @since 1.0.0
  */
 function vgsr_version_bump() {
 	update_site_option( 'vgsr_db_version', vgsr_get_db_version() );
 }
 
 /**
- * Setup the VGSR updater
+ * Setup the plugin updater
  *
- * @since 0.0.1
+ * @since 1.0.0
  */
 function vgsr_setup_updater() {
 
@@ -163,13 +163,13 @@ function vgsr_setup_updater() {
 }
 
 /**
- * VGSR's version updater looks at what the current database version is, and
+ * Plugin's version updater looks at what the current database version is, and
  * runs whatever other code is needed.
  *
  * This is most-often used when the data schema changes, but should also be used
- * to correct issues with VGSR meta-data silently on software update.
+ * to correct issues with plugin meta-data silently on software update.
  *
- * @since 0.0.1
+ * @since 1.0.0
  *
  * @todo Log update event
  */

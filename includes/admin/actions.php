@@ -18,6 +18,10 @@ add_action( 'admin_head',           'vgsr_admin_head',              10 );
 add_action( 'admin_footer',         'vgsr_admin_footer',            10 );
 add_action( 'admin_notices',        'vgsr_admin_notices',           10 );
 
+/** Main **********************************************************************/
+
+add_action( 'vgsr_admin_init', 'vgsr_setup_updater',               999 );
+
 /** Settings ******************************************************************/
 
 add_action( 'vgsr_admin_init', 'vgsr_register_admin_settings',      10 );

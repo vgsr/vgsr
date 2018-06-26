@@ -178,8 +178,8 @@ final class VGSR {
 		add_action( 'activate_'   . $this->basename, 'vgsr_activation'   );
 		add_action( 'deactivate_' . $this->basename, 'vgsr_deactivation' );
 
-		// If VGSR is being deactivated, do not add any actions
-		if ( vgsr_is_deactivation( $this->basename ) )
+		// Bail when plugin is being deactivated
+		if ( vgsr_is_deactivation() )
 			return;
 
 		// Array of VGSR core actions

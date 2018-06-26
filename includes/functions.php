@@ -10,18 +10,67 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/** Utility *******************************************************************/
+/** Versions ******************************************************************/
 
 /**
- * Return the current plugin's version
+ * Output the plugin version
  *
  * @since 1.0.0
- *
- * @return string Plugin version
  */
-function vgsr_get_version() {
-	return vgsr()->version;
+function vgsr_version() {
+	echo vgsr_get_version();
 }
+
+	/**
+	 * Return the plugin version
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The plugin version
+	 */
+	function vgsr_get_version() {
+		return vgsr()->version;
+	}
+
+/**
+ * Output the plugin database version
+ *
+ * @since 1.0.0
+ */
+function vgsr_db_version() {
+	echo vgsr_get_db_version();
+}
+
+	/**
+	 * Return the plugin database version
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The plugin version
+	 */
+	function vgsr_get_db_version() {
+		return vgsr()->db_version;
+	}
+
+/**
+ * Output the plugin database version directly from the database
+ *
+ * @since 1.0.0
+ */
+function vgsr_db_version_raw() {
+	echo vgsr_get_db_version_raw();
+}
+
+	/**
+	 * Return the plugin database version directly from the database
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The current plugin version
+	 */
+	function vgsr_get_db_version_raw() {
+		return get_option( 'vgsr_db_version', '' );
+	}
 
 /** General ****************************************************************/
 
