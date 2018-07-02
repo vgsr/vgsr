@@ -88,7 +88,7 @@ class VGSR_GravityForms {
 		add_filter( 'gform_export_separator', array( $this, 'export_separator' ) );
 
 		// GF-Pages
-		add_filter( 'gf_pages_hide_single_form', array( $this, 'gf_pages_hide_form_vgsr' ), 10, 2 );
+		add_filter( 'gf_pages_hide_form', array( $this, 'gf_pages_hide_form_vgsr' ), 10, 2 );
 	}
 
 	/** Capabilities *******************************************************/
