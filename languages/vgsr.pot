@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-03 01:34+0000\n"
+"POT-Creation-Date: 2018-07-19 18:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -14,194 +14,565 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/"
 
-#: vgsr.php:83 vgsr.php:90
-msgid "Cheatin&#8217; huh?"
-msgstr ""
-
-#: includes/functions.php:37
+#: ../../../../src/wp-content/plugins/vgsr/includes/functions.php:99
 msgid "Vereniging van Gereformeerde Studenten te Rotterdam"
 msgstr ""
 
-#: includes/admin/admin.php:129
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:438
+#, php-format
+msgid "Dear mr. %s,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:439
+#, php-format
+msgid "Dear mrs. %s,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:441
+#, php-format
+msgid "Dear mr. or mrs. %s,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:491
+msgid "Sincerely,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:125
 msgctxt "settings page title"
 msgid "VGSR Settings"
 msgstr ""
 
-#: includes/admin/admin.php:130
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:126
 msgctxt "settings menu title"
 msgid "VGSR"
 msgstr ""
 
-#: includes/admin/admin.php:271
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:316
+msgctxt "Plugin action link"
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/admin.php:308
-#: includes/extend/gravityforms/gravityforms.php:514
-#: includes/extend/gravityforms/gravityforms.php:515
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:353
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:388
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:389
 msgctxt "exclusivity title"
 msgid "VGSR"
 msgstr ""
 
-#: includes/admin/admin.php:362 includes/admin/admin.php:424
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:407
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:469
 msgctxt "exclusivity label"
 msgid "VGSR"
 msgstr ""
 
-#: includes/admin/admin.php:366
-#: includes/extend/gravityforms/gravityforms.php:411
-#: includes/extend/gravityforms/gravityforms.php:461
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:411
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:276
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:359
 msgctxt "exclusivity label"
 msgid "vgsr"
 msgstr ""
 
-#: includes/admin/admin.php:392
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:437
 msgid "Show to all site visitors"
 msgstr ""
 
-#: includes/admin/admin.php:393
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:438
 msgid "Show only to <span>VGSR members</span>"
 msgstr ""
 
-#: includes/admin/settings.php:28
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:28
 msgid "Main Settings"
 msgstr ""
 
-#: includes/admin/settings.php:35
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:35
 msgid "Access Settings"
 msgstr ""
 
-#: includes/admin/settings.php:130
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:130
 msgid "Set the main functionality options for VGSR."
 msgstr ""
 
-#: includes/admin/settings.php:144
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:144
 msgid "Tweak here the settings about access to your site's contents."
 msgstr ""
 
-#: includes/admin/settings.php:161
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:159
 msgid ""
 "Select which post types can be accessed by VGSR members when privately "
 "published."
 msgstr ""
 
-#: includes/admin/settings.php:196
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:189
+msgid "&mdash; No Page &mdash;"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:219
 msgid "VGSR Settings"
 msgstr ""
 
-#: includes/admin/settings.php:269
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:288
 msgid "Main"
 msgstr ""
 
-#: includes/extend/ancienniteit.php:51
-msgid "Force seniority"
+#: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:29
+#: ../../../../src/wp-content/plugins/vgsr/templates/event-organiser/content-event-home.php:23
+msgid "Upcoming Events"
 msgstr ""
 
-#: includes/extend/ancienniteit.php:70
-msgid "Return VGSR members always sorted by seniority."
+#: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:32
+msgid "Displays the upcoming events."
 msgstr ""
 
-#: includes/extend/bbpress/settings.php:25
+#: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:124
+msgid "Title:"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:131
+msgid "Link widget title to the events home page"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:136
+msgid "Number of days to display:"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/templates/event-organiser/widget-upcoming-events.php:30
+msgid "No upcoming events were found."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/bbpress/settings.php:25
 msgid "bbPress Settings"
 msgstr ""
 
-#: includes/extend/bbpress/settings.php:46
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/bbpress/settings.php:46
 msgid "Hide profile root"
 msgstr ""
 
-#: includes/extend/bbpress/settings.php:54
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/bbpress/settings.php:54
 msgid "Breadcrumbs Home"
 msgstr ""
 
-#: includes/extend/bbpress/settings.php:76
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/bbpress/settings.php:76
 msgid "bbPress manipulations for VGSR."
 msgstr ""
 
-#: includes/extend/bbpress/settings.php:113
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/bbpress/settings.php:109
 #, php-format
 msgid "Remove forums root slug for user profile pages. Turns %1$s into %2$s."
 msgstr ""
 
-#: includes/extend/bbpress/settings.php:130
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/bbpress/settings.php:122
 msgid ""
 "Overwrite the forums breadcrumbs home text. Keep empty to default to the "
 "home page title."
 msgstr ""
 
-#: includes/extend/buddypress/actions.php:46
-#, php-format
-msgid "Member promoted to %s."
-msgstr ""
-
-#: includes/extend/buddypress/actions.php:48
-msgid "There was a problem promoting this member."
-msgstr ""
-
-#: includes/extend/buddypress/buddypress.php:590
-msgid "Edit this user in the admin."
-msgstr ""
-
-#: includes/extend/buddypress/buddypress.php:591
-msgid "Dashboard Profile"
-msgstr ""
-
-#: includes/extend/buddypress/buddypress.php:605
-#: includes/extend/buddypress/buddypress.php:621
-msgid "Change the member type of this member."
-msgstr ""
-
-#: includes/extend/buddypress/buddypress.php:606
-#: includes/extend/buddypress/buddypress.php:622
-#, php-format
-msgid "Promote to %s"
-msgstr ""
-
-#: includes/extend/buddypress/functions.php:51
-#: includes/extend/buddypress/functions.php:53
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:112
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:114
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:74
 msgid "Leden"
 msgstr ""
 
-#: includes/extend/buddypress/functions.php:52
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:113
 msgid "Lid"
 msgstr ""
 
-#: includes/extend/buddypress/functions.php:60
-#: includes/extend/buddypress/functions.php:62
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:121
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:123
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:75
 msgid "Oud-leden"
 msgstr ""
 
-#: includes/extend/buddypress/functions.php:61
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:122
 msgid "Oud-lid"
 msgstr ""
 
-#: includes/extend/buddypress/functions.php:69
-#: includes/extend/buddypress/functions.php:71
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:130
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:132
 msgid "Ex-leden"
 msgstr ""
 
-#: includes/extend/buddypress/functions.php:70
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:131
 msgid "Ex-lid"
 msgstr ""
 
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:34
+#, php-format
+msgid "All Profiles %s"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:50
+msgid "Anciënniteit"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:131
+msgid "Jaargroep:"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:133
+msgctxt "Jaargroep member filter"
+msgid "All"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:163
+msgid "Viewing 1 active profile"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:164
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s active profile"
+msgid_plural "Viewing %1$s - %2$s of %3$s active profiles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:169
+msgid "Viewing 1 profile with friends"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:170
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s profile with friends"
+msgid_plural "Viewing %1$s - %2$s of %3$s profiles with friends"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:175
+msgid "Viewing 1 online profile"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:176
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s online profile"
+msgid_plural "Viewing %1$s - %2$s of %3$s online profiles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:181
+msgid "Viewing 1 profile"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:182
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s profile"
+msgid_plural "Viewing %1$s - %2$s of %3$s profiles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:190
+msgid "Viewing 1 active lid"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:191
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s active lid"
+msgid_plural "Viewing %1$s - %2$s of %3$s active leden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:196
+msgid "Viewing 1 lid with friends"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:197
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s lid with friends"
+msgid_plural "Viewing %1$s - %2$s of %3$s leden with friends"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:202
+msgid "Viewing 1 online lid"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:203
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s online lid"
+msgid_plural "Viewing %1$s - %2$s of %3$s online leden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:208
+msgid "Viewing 1 lid"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:209
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s lid"
+msgid_plural "Viewing %1$s - %2$s of %3$s leden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:217
+msgid "Viewing 1 active oud-lid"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:218
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s active oud-lid"
+msgid_plural "Viewing %1$s - %2$s of %3$s active oud-leden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:223
+msgid "Viewing 1 oud-lid with friends"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:224
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s oud-lid with friends"
+msgid_plural "Viewing %1$s - %2$s of %3$s oud-leden with friends"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:229
+msgid "Viewing 1 online oud-lid"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:230
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s online oud-lid"
+msgid_plural "Viewing %1$s - %2$s of %3$s online oud-leden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:235
+msgid "Viewing 1 oud-lid"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:236
+#, php-format
+msgid "Viewing %1$s - %2$s of %3$s oud-lid"
+msgid_plural "Viewing %1$s - %2$s of %3$s oud-leden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:318
+msgid "Edit this user in the admin."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:319
+msgid "Dashboard Profile"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:27
+msgid "Profile Fields"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:50
+msgid "Jaargroep Field"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:55
+msgid "Select the field that holds the member's Jaargroep value."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:61
+msgid "Ancienniteit Field"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:66
+msgid "Select the field that holds the member's Anciennteit value."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:99
+msgid "Activate the Extended Profiles component to use this setting."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:125
+msgid "View"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/xprofile.php:233
+msgid "&mdash; No Field &mdash;"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/event-organiser.php:355
+msgid "Events"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:26
+msgid "Events home page"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:33
+msgid ""
+"The selected page will act as the home page for Events. When no page is "
+"selected, a list of generated events widgets will be shown."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:97
+#, php-format
+msgctxt "Event category archives page title"
+msgid "Events: %s"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:102
+#, php-format
+msgctxt "Event tag archives page title"
+msgid "Events by tag: %s"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:107
+#, php-format
+msgctxt "Event venue archives page title"
+msgid "Events at %s"
+msgstr ""
+
+#. period archive (year or month or day)
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:114
+#, php-format
+msgctxt "Event period archives page title"
+msgid "Events: %s"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:118
+msgctxt "Event archives page title: Year"
+msgid "Y"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:122
+msgctxt "Event archives page title: Month"
+msgid "F Y"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:126
+msgctxt "Event archives page title: Day"
+msgid "jS F Y"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:130
+msgctxt "Event archives page title"
+msgid "Events"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:136
+msgctxt "Event home page title"
+msgid "Events"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:154
+#, php-format
+msgid ""
+"This page lists all events published within the selected category. You can "
+"visit the <a href=\"%1$s\">main events page</a> to view the upcoming events "
+"or browse the <a href=\"%2$s\">date archives</a> to find all registered "
+"events on this site by date."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:159
+#, php-format
+msgid ""
+"This page lists all events published within the selected tag. You can visit "
+"the <a href=\"%1$s\">main events page</a> to view the upcoming events or "
+"browse the <a href=\"%2$s\">date archives</a> to find all registered events "
+"on this site by date."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:164
+#, php-format
+msgid ""
+"This page lists all events related to the selected venue. You can visit the "
+"<a href=\"%1$s\">main events page</a> to view the upcoming events or browse "
+"the <a href=\"%2$s\">date archives</a> to find all registered events on this "
+"site by date."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:172
+#, php-format
+msgid ""
+"This page lists all events published for the selected year. You can browse "
+"here to find all registered events on this site or visit the <a href=\"%s\">"
+"main events page</a> to view the upcoming events."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:176
+#, php-format
+msgid ""
+"This page lists all events published for the selected month. You can visit "
+"the <a href=\"%1$s\">main events page</a> to view the upcoming events or "
+"browse the <a href=\"%2$s\">date archives</a> to find all registered events "
+"on this site by date."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:180
+#, php-format
+msgid ""
+"This page lists all events published for the selected date. You can visit "
+"the <a href=\"%1$s\">main events page</a> to view the upcoming events or "
+"browse the <a href=\"%2$s\">date archives</a> to find all registered events "
+"on this site by date."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:184
+#, php-format
+msgid ""
+"This page lists all events on this site. You can browse the <a href=\"%s\">"
+"date archives</a> to find all registered events on this site by date."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/functions.php:189
+#, php-format
+msgid ""
+"This page lists the upcoming events. You can browse the <a href=\"%s\">date "
+"archives</a> to find all registered events on this site by date."
+msgstr ""
+
 #. Name of the plugin
-#: includes/extend/gravityforms/gravityforms.php:326
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:193
 msgid "VGSR"
 msgstr ""
 
-#: includes/extend/gravityforms/gravityforms.php:329
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:196
 msgid "Make this an exclusive form"
 msgstr ""
 
-#: includes/extend/gravityforms/gravityforms.php:443
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:305
+#, php-format
+msgid "VGSR: %s"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:305
 msgid "Make this an exclusive field"
 msgstr ""
 
-#: includes/extend/gravityforms/gravityforms.php:514
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:388
 msgid "Make this form exclusively available to VGSR members."
 msgstr ""
 
-#: includes/extend/gravityforms/gravityforms.php:515
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:389
 msgid "Make this field exclusively available to VGSR members."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:140
+msgctxt "Breadcrumb root title"
+msgid "Events"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:147
+msgctxt "Event archives breadcrumb title: Year"
+msgid "Y"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:154
+msgctxt "Event archives breadcrumb title: Month"
+msgid "F"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:161
+msgctxt "Event archives breadcrumb title: Day"
+msgid "l j"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:29
+msgctxt "xprofile field type"
+msgid "VGSR Users Select Box"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:71
+msgid "User Type:"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:73
+msgid "All"
 msgstr ""
 
 #. Description of the plugin
