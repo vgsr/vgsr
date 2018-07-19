@@ -156,7 +156,7 @@ function vgsr_setting_callback_private_reading_post_types() {
 	// Get the saved post types
 	$option = vgsr_get_private_reading_post_types(); ?>
 
-	<p><?php _e( 'Select which post types can be accessed by VGSR members when privately published.', 'vgsr' ); ?></p>
+	<p><?php esc_html_e( 'Select which post types can be accessed by VGSR members when privately published.', 'vgsr' ); ?></p>
 	<ul>
 		<?php foreach ( vgsr_post_types( array( 'public' => true ) ) as $post_type ) :
 			$post_type_object = get_post_type_object( $post_type );

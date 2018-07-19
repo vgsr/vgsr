@@ -122,8 +122,8 @@ class VGSR_Admin {
 			// Register admin page
 			$hook = add_submenu_page(
 				$this->parent_page,
-				_x( 'VGSR Settings', 'settings page title', 'vgsr' ),
-				_x( 'VGSR',          'settings menu title', 'vgsr' ),
+				esc_html_x( 'VGSR Settings', 'settings page title', 'vgsr' ),
+				esc_html_x( 'VGSR',          'settings menu title', 'vgsr' ),
 				$this->minimum_capability,
 				vgsr_admin_page_get_current_page(),
 				'vgsr_admin_page'
@@ -304,16 +304,16 @@ class VGSR_Admin {
 	 * @since 0.0.1
 	 *
 	 * @param array $links Plugin action links
-	 * @param string $basename The plugin basename
+	 * @param string $basename Plugin basename
 	 * @return array Plugin action links
 	 */
 	public function plugin_action_links( $links, $basename ) {
 
-		// Append plugin links, when user can manage
+		// Add plugin action links for this plugin
 		if ( $basename === vgsr()->basename && current_user_can( $this->minimum_capability ) ) {
 
-			// Settings link
-			$links['settings'] = sprintf( '<a href="%s">%s</a>', esc_url( vgsr_admin_url() ), esc_html__( 'Settings', 'vgsr' ) );
+			// Settings page
+			$links['settings'] = '<a href="' . esc_url( vgsr_admin_url() ) . '">' . esc_html_x( 'Settings', 'Plugin action link', 'vgsr' ) . '</a>';
 		}
 
 		return $links;
@@ -350,7 +350,7 @@ class VGSR_Admin {
 			$screen = get_current_screen();
 
 			// We need this column to enable quick edit
-			$columns['vgsr'] = _x( 'VGSR', 'exclusivity title', 'vgsr' );
+			$columns['vgsr'] = esc_html_x( 'VGSR', 'exclusivity title', 'vgsr' );
 
 			// Hide dummy column by default
 			add_filter( "get_user_option_manage{$screen->id}columnshidden", array( $this, 'get_post_columns_hidden' ) );
