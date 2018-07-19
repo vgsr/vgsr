@@ -104,9 +104,9 @@ final class VGSR {
 
 		/** Misc **************************************************************/
 
-		$this->domain       = 'vgsr';         // Unique identifier for retrieving translated strings
 		$this->extend       = new stdClass(); // Plugins add data here
 		$this->errors       = new WP_Error(); // Feedback
+		$this->domain       = 'vgsr';         // Unique identifier for retrieving translated strings
 	}
 
 	/**

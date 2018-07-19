@@ -2,8 +2,8 @@
 Contributors: offereins
 Tags: vgsr
 Requires at least: 4.4
-Tested up to: 4.7
-Stable tag: 0.1.2
+Tested up to: 4.9.7
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ VGSR is designed, used and maintained to support vgsr.nl and bring in to its ful
 * bbPress
 * BuddyPress
 * Event Organiser
-* GravityForms
+* Gravity Forms
 * WP SEO
 
 == Installation ==
@@ -29,6 +29,12 @@ This plugin is not hosted in the official WordPress repository. Instead, updatin
 
 == Changelog ==
 
+= 0.2.0 =
+* Adds theme-compat logic for custom templates
+* Adds support for Event Organiser
+* Adds support for Gravity Forms
+* Adds support for WP SEO
+
 = 0.1.0 =
 * First stable development release
-* Setup vgsr-ship based on BuddyPress member-type logic
+* Setup vgsr-membership based on BuddyPress member-type logic
