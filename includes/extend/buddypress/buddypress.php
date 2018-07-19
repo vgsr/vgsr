@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_BuddyPress' ) ) :
 /**
- * The VGSR BuddyPress extension class
+ * The VGSR BuddyPress class
  *
  * @since 0.1.0
  */
@@ -928,6 +928,17 @@ class VGSR_BuddyPress {
 			$post->post_parent = $post_parent;
 		}
 	}
+}
+
+/**
+ * Setup the extension logic for BuddyPress
+ *
+ * @since 0.0.2
+ *
+ * @uses VGSR_BuddyPress
+ */
+function vgsr_setup_buddypress() {
+	vgsr()->extend->bp = new VGSR_BuddyPress;
 }
 
 endif; // class_exists

@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_GravityForms' ) ) :
 /**
- * Loads Gravity Forms Extension
+ * The VGSR Gravity Forms class
  *
  * @since 0.0.6
  */
@@ -456,6 +456,17 @@ class VGSR_GravityForms {
 
 		return $hide;
 	}
+}
+
+/**
+ * Setup the extension logic for Gravity Forms
+ *
+ * @since 0.0.6
+ *
+ * @uses VGSR_GravityForms
+ */
+function vgsr_setup_gravityforms() {
+	vgsr()->extend->gravityforms = new VGSR_GravityForms;
 }
 
 endif; // class_exists

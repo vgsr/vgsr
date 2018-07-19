@@ -119,7 +119,6 @@ final class VGSR {
 		/** Core **************************************************************/
 
 		require( $this->includes_dir . 'actions.php'      );
-		require( $this->includes_dir . 'extend.php'       );
 		require( $this->includes_dir . 'functions.php'    );
 		require( $this->includes_dir . 'options.php'      );
 		require( $this->includes_dir . 'posts.php'        );
@@ -133,6 +132,14 @@ final class VGSR {
 		if ( is_admin() ) {
 			require( $this->includes_dir . 'admin/admin.php' );
 		}
+
+		/** Extensions ********************************************************/
+
+		require( $this->extend_dir . 'bbpress/bbpress.php'                 );
+		require( $this->extend_dir . 'buddypress/buddypress.php'           );
+		require( $this->extend_dir . 'event-organiser/event-organiser.php' );
+		require( $this->extend_dir . 'gravityforms/gravityforms.php'       );
+		require( $this->extend_dir . 'wordpress-seo/wordpress-seo.php'     );
 	}
 
 	/**

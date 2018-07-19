@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_Event_Organiser' ) ) :
 /**
- * The VGSR Event Organiser Class
+ * The VGSR Event Organiser class
  *
  * @since 1.0.0
  */
@@ -24,6 +24,11 @@ class VGSR_Event_Organiser {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+
+		// Bail if no Event Organiser
+		if ( ! defined( 'EVENT_ORGANISER_VER' ) )
+			return;
+
 		$this->setup_globals();
 		$this->includes();
 		$this->setup_actions();
@@ -373,6 +378,17 @@ class VGSR_Event_Organiser {
 
 		return $widgets;
 	}
+}
+
+/**
+ * Setup the extension logic for Event Organiser
+ *
+ * @since 1.0.0
+ *
+ * @uses VGSR_Event_Organiser
+ */
+function vgsr_setup_event_organiser() {
+	vgsr()->extend->event_organiser = new VGSR_Event_Organiser;
 }
 
 endif; // class_exists

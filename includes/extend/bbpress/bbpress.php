@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Main VGSR bbPress Class
+ * VGSR Extension for bbPress
  *
  * @package VGSR
- * @subpackage Plugins
+ * @subpackage bbPress
  */
 
 // Exit if accessed directly
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_BBPress' ) ) :
 /**
- * Loads bbPress Extension
+ * The VGSR bbPress class
  *
  * @since 0.0.1
  */
@@ -138,6 +138,17 @@ class VGSR_BBPress {
 
 		return $args;
 	}	
+}
+
+/**
+ * Setup the extension logic for bbPress
+ *
+ * @since 0.0.1
+ *
+ * @uses VGSR_BBPress
+ */
+function vgsr_setup_bbpress() {
+	vgsr()->extend->bbp = new VGSR_BBPress;
 }
 
 endif; // class_exists

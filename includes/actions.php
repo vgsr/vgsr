@@ -90,5 +90,5 @@ if ( is_admin() ) {
 add_action( 'bbp_loaded',              'vgsr_setup_bbpress',            0    ); // Forum integration
 add_action( 'bp_core_loaded',          'vgsr_setup_buddypress',        10    ); // Social network integration
 add_action( 'vgsr_ready',              'vgsr_setup_event_organiser',   10    ); // Events integration
-add_action( 'vgsr_ready',              'vgsr_setup_gravityforms',      10    ); // Forms integration
+add_action( 'gform_loaded',            'vgsr_setup_gravityforms',      10    ); // Forms integration
 add_action( 'vgsr_ready',              'vgsr_setup_wpseo',             10    ); // SEO integration

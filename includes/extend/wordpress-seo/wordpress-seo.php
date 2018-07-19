@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'VGSR_WPSEO' ) ) :
 /**
- * The VGSR WPSEO Class
+ * The VGSR WPSEO class
  *
  * @since 1.0.0
  */
@@ -24,6 +24,11 @@ class VGSR_WPSEO {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+
+		// Bail if no WordPress SEO
+		if ( ! defined( 'WPSEO_VERSION' ) )
+			return;
+
 		$this->setup_globals();
 		$this->includes();
 		$this->setup_actions();
@@ -98,6 +103,17 @@ class VGSR_WPSEO {
 
 		return $crumbs;
 	}
+}
+
+/**
+ * Setup the extension logic for WordPress SEO
+ *
+ * @since 0.1.0
+ *
+ * @uses VGSR_WPSEO
+ */
+function vgsr_setup_wpseo() {
+	vgsr()->extend->wpseo = new VGSR_WPSEO;
 }
 
 endif; // class_exists
