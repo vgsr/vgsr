@@ -31,24 +31,21 @@ if ( ! class_exists( 'VGSR' ) ) :
  */
 final class VGSR {
 
-	/** Singleton *************************************************************/
-
 	/**
-	 * Main VGSR Instance
+	 * Setup and return the singleton pattern
 	 *
-	 * Insures that only one instance of VGSR exists in memory at any one
+	 * Ensures that only one instance of VGSR exists in memory at any one
 	 * time. Also prevents needing to define globals all over the place.
 	 *
 	 * @since 0.0.1
 	 *
-	 * @return The one true VGSR
+	 * @return The single VGSR
 	 */
 	public static function instance() {
 
-		// Store the instance locally to avoid private static replication
+		// Store the instance locally
 		static $instance = null;
 
-		// Only run these methods if they haven't been ran previously
 		if ( null === $instance ) {
 			$instance = new VGSR;
 			$instance->setup_globals();
@@ -56,42 +53,13 @@ final class VGSR {
 			$instance->setup_actions();
 		}
 
-		// Always return the instance
 		return $instance;
 	}
 
-	/** Magic Methods *********************************************************/
-
 	/**
 	 * A dummy constructor to prevent VGSR from being loaded more than once.
-	 *
-	 * @since 0.0.1
-	 *
-	 * @see VGSR::instance()
-	 * @see vgsr();
 	 */
 	private function __construct() { /* Do nothing here */ }
-
-	/**
-	 * A dummy magic method to prevent VGSR from being cloned
-	 *
-	 * @since 0.0.1
-	 */
-	public function __clone() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'vgsr' ), '0.1' ); }
-
-	/**
-	 * A dummy magic method to prevent VGSR from being unserialized
-	 *
-	 * @since 0.0.1
-	 */
-	public function __wakeup() { _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'vgsr' ), '0.1' ); }
-
-	/**
-	 * Magic method to prevent notices and errors from invalid method calls
-	 *
-	 * @since 0.0.1
-	 */
-	public function __call( $name = '', $args = array() ) { unset( $name, $args ); return null; }
 
 	/** Private Methods *******************************************************/
 
