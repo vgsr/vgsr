@@ -12,6 +12,7 @@ VGSR is designed, used and maintained to support vgsr.nl and bring in to its ful
 * BuddyPress
 * Event Organiser
 * Gravity Forms
+* Responsive Lightbox
 * WP SEO
 
 ## Installation ##

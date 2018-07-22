@@ -17,6 +17,7 @@ VGSR is designed, used and maintained to support vgsr.nl and bring in to its ful
 * BuddyPress
 * Event Organiser
 * Gravity Forms
+* Responsive Lightbox
 * WP SEO
 
 == Installation ==
@@ -28,6 +29,10 @@ Activate VGSR in the "Plugins" admin panel using the "Activate" link. If you're 
 This plugin is not hosted in the official WordPress repository. Instead, updating is supported through use of the [GitHub Updater](https://github.com/afragen/github-updater/) plugin by @afragen and friends.
 
 == Changelog ==
+
+= 0.2.1 =
+* Improves visibility of gallery posts in breadcrumbs, nav menus etc.
+* Adds support for Responsive Lightbox
 
 = 0.2.0 =
 * Adds theme-compat logic for custom templates
