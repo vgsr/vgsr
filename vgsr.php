@@ -13,7 +13,7 @@
  * Plugin URI:        https://github.com/vgsr/vgsr
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins
- * Version:           0.2.0
+ * Version:           0.2.1
  * Network:           true
  * Text Domain:       vgsr
  * Domain Path:       /languages/
@@ -72,8 +72,8 @@ final class VGSR {
 
 		/** Versions **********************************************************/
 
-		$this->version    = '0.2.0';
-		$this->db_version = 20180719;
+		$this->version    = '0.2.1';
+		$this->db_version = 20180722;
 
 		/** Paths *************************************************************/
 
