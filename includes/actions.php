@@ -48,6 +48,11 @@ add_filter( 'wp_nav_menu_objects',     '_vgsr_post_nav_menu_objects',  10, 2 );
 add_filter( 'comments_clauses',        '_vgsr_post_comment_query',     10, 2 );
 add_filter( 'comment_feed_where',      '_vgsr_post_comment_query',     10, 2 );
 
+add_filter( 'get_next_post_join',      'vgsr_get_adjacent_post_join',  10, 5 );
+add_filter( 'get_previous_post_join',  'vgsr_get_adjacent_post_join',  10, 5 );
+add_filter( 'get_next_post_where',     'vgsr_get_adjacent_post_where', 10, 5 );
+add_filter( 'get_previous_post_where', 'vgsr_get_adjacent_post_where', 10, 5 );
+
 /** Login *********************************************************************/
 
 add_action( 'login_enqueue_scripts',   'vgsr_login_enqueue_scripts',   10    );
@@ -58,6 +63,7 @@ add_filter( 'login_headertitle',       'vgsr_login_header_title',      10    );
 
 add_action( 'vgsr_template_include',   'vgsr_activate_theme_compat',   12    );
 add_action( 'vgsr_head',               'vgsr_manifest_meta_tag',       10    );
+add_filter( 'get_the_archive_title',   'vgsr_get_the_archive_title',   10    );
 
 /** Users *********************************************************************/
 
@@ -67,6 +73,7 @@ add_filter( 'wp_dropdown_users_args',  'vgsr_dropdown_users_args',     20, 2 ); 
 
 /** Nav Menus *****************************************************************/
 
+add_filter( 'wp_setup_nav_menu_item',  'vgsr_setup_nav_menu_item',     10    );
 add_filter( 'wp_nav_menu_objects',     'vgsr_nav_menu_objects',        10, 2 );
 
 /** Taxonomy ******************************************************************/

@@ -89,6 +89,30 @@ class VGSR_WPSEO {
 			}
 		}
 
+		// Galleries
+		if ( has_post_format( 'gallery' ) ) {
+
+			// Remove 'Posts' crumb
+			unset( $crumbs[1] );
+			$crumbs = array_values( $crumbs );
+
+			// Single gallery
+			if ( is_singular() ) {
+				array_splice( $crumbs, count( $crumbs ) - 1, 0, array(
+					array(
+						'text' => get_the_archive_title(),
+						'url'  => get_post_format_link( 'gallery' )
+					)
+				) );
+
+			// Gallery archives
+			} else {
+				$crumbs[1] = array(
+					'text' => get_the_archive_title(),
+				);
+			}
+		}
+
 		// BuddyPress
 		if ( function_exists( 'buddypress' ) ) {
 			$crumbs = vgsr_wpseo_bp_breadcrumb_links( $crumbs );

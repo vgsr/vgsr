@@ -123,6 +123,7 @@ final class VGSR {
 		require( $this->includes_dir . 'options.php'      );
 		require( $this->includes_dir . 'posts.php'        );
 		require( $this->includes_dir . 'sub-actions.php'  );
+		require( $this->includes_dir . 'template.php'     );
 		require( $this->includes_dir . 'theme-compat.php' );
 		require( $this->includes_dir . 'update.php'       );
 		require( $this->includes_dir . 'users.php'        );

@@ -255,6 +255,30 @@ function vgsr_manifest_json() {
 /** Nav Menus **************************************************************/
 
 /**
+ * Setup nav menu item details for certain pages
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Post $menu_item Nav menu item object
+ * @return WP_Post Nav menu item object
+ */
+function vgsr_setup_nav_menu_item( $menu_item ) {
+
+	// Post format
+	if ( 'post_format' === $menu_item->object ) {
+		$term = get_term( $menu_item->object_id );
+
+		// This is the parent page
+		if ( $term && has_post_format( 'gallery' ) && 'gallery' === str_replace( 'post-format-', '', $term->slug ) ) {
+			$menu_item->classes[] = 'current_page_parent';
+			$menu_item->classes[] = 'current-menu-parent';
+		}
+	}
+
+	return $menu_item;
+}
+
+/**
  * Modify the sorted list of menu items
  *
  * @since 1.0.0
@@ -265,8 +289,8 @@ function vgsr_manifest_json() {
  */
 function vgsr_nav_menu_objects( $items, $args ) {
 
-	// When 404-ing
-	if ( is_404() ) {
+	// When 404-ing or when on a gallery page
+	if ( is_404() || has_post_format( 'gallery' ) ) {
 		$posts_page = (int) get_option( 'page_for_posts' );
 
 		foreach ( $items as $k => $item ) {
