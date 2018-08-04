@@ -29,6 +29,9 @@ class VGSR_Responsive_Lightbox {
 		if ( ! class_exists( 'Responsive_Lightbox' ) )
 			return;
 
+		// Force apply no-gallery mode. Removes gallery post type and taxonomy
+		Responsive_Lightbox()->options['builder']['gallery_builder'] = false;
+
 		$this->setup_actions();
 	}
 
@@ -39,29 +42,12 @@ class VGSR_Responsive_Lightbox {
 	 */
 	private function setup_actions() {
 
-		// Modify builder options
-		add_filter( 'pre_option_responsive_lightbox_builder', array( $this, 'builder_options' ) );
-
 		// Modify plugin logic
 		add_action( 'init',       array( $this, 'after_load_settings' ), 20 );
 		add_action( 'admin_head', array( $this, 'admin_head'          )     );
 	}
 
 	/** Public methods **************************************************/
-
-	/**
-	 * Modify the option for 'responsive_lightbox_builder'
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Option data
-	 */
-	public function builder_options() {
-		return array(
-			// Force apply no-gallery mode. Removes gallery post type and taxonomy
-			'gallery_builder' => false
-		);
-	}
 
 	/**
 	 * Modify the plugin's settings logic after it is loaded 
