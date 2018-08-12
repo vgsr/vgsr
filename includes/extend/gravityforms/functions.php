@@ -10,7 +10,219 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/** Meta *******************************************************************/
+/** Form *******************************************************************/
+
+/**
+ * Return the full form data object
+ *
+ * @since 0.3.0
+ *
+ * @param int $form_id Form ID
+ * @param bool $with_meta Optional. Whether to return form meta as well. Defaults to true.
+ * @return object|bool Form data or False when not found
+ */
+function vgsr_gf_get_form( $form_id, $with_meta = true ) {
+
+	// Bail when there's no form ID
+	if ( empty( $form_id ) ) {
+		return false;
+	}
+
+	// Get the form data
+	if ( is_numeric( $form_id ) ) {
+		$form = GFFormsModel::get_form( (int) $form_id );
+	} else {
+		$form = (object) $form_id;
+		$form_id = $form->id;
+	}
+
+	// Combine form data
+	if ( $form && $with_meta && ! isset( $form->display_meta ) ) {
+		$form = (object) array_merge( (array) $form, (array) GFFormsModel::get_form_meta( $form_id ) );
+
+		// Sanitize form
+		$form = vgsr_gf_sanitize_form( $form );
+	}
+
+	return $form;
+}
+
+/**
+ * Sanitizes a raw form and sets it up for further usage
+ *
+ * @since 0.3.0
+ *
+ * @uses apply_filters() Calls 'vgsr_gf_sanitize_form'
+ *
+ * @param object $form Raw form
+ * @return object Form
+ */
+function vgsr_gf_sanitize_form( $form ) {
+
+	// Unserialize and attach meta
+	if ( isset( $form->display_meta ) ) {
+		$meta = GFFormsModel::unserialize( $form->display_meta );
+
+		// Unset meta array
+		unset( $form->display_meta );
+
+		// Set meta properties
+		foreach ( $meta as $key => $value ) {
+			$form->$key = $value;
+		}
+	}
+
+	// Default view count
+	if ( ! isset( $form->view_count ) ) {
+		$views = wp_list_filter( GFFormsModel::get_view_count_per_form(), array( 'form_id' => $form->id ) );
+		$views = reset( $views );
+
+		$form->view_count = $views ? (int) $views->view_count : 0;
+	}
+
+	// Default lead count
+	if ( ! isset( $form->lead_count ) ) {
+		$form->lead_count = (int) GFFormsModel::get_lead_count( $form->id, null );
+	}
+
+	return apply_filters( 'vgsr_gf_sanitize_form', $form );
+}
+
+/**
+ * Return the full form field data object
+ *
+ * @since 0.3.0
+ *
+ * @param object|int $field_id Field object or ID.
+ * @param object|int $form Optional. Form object or ID to find field by.
+ * @return object|bool Form field or False when not found.
+ */
+function vgsr_gf_get_field( $field_id, $form = 0 ) {
+	$form  = vgsr_gf_get_form( $form );
+	$field = false;
+
+	// Get by id
+	if ( $form && is_numeric( $field_id ) ) {
+		$field = GFFormsModel::get_field( (array) $form, $field_id );
+
+	// The field object
+	} elseif ( is_object( $field_id ) ) {
+		$field = $field_id;
+	}
+
+	return $field;
+}
+
+/**
+ * Return the given form's meta value
+ *
+ * @since 0.0.7
+ *
+ * @param object|int $form Form object or form ID
+ * @param string $meta_key Form meta key
+ * @return mixed Form setting's value or NULL when not found
+ */
+function vgsr_gf_get_form_meta( $form, $meta_key ) {
+	$form = vgsr_gf_get_form( $form );
+	$meta = null;
+
+	// Get form setting
+	if ( $form && isset( $form->{$meta_key} ) ) {
+		$meta = $form->{$meta_key};
+	}
+
+	return $meta;
+}
+
+/**
+ * Return the given field's meta value
+ *
+ * @since 0.0.7
+ *
+ * @param object|int $field Field object or field ID
+ * @param string $meta_key Field meta key
+ * @param array|int $form Optional. Form object or form ID to find field by.
+ * @return mixed Field setting's value or NULL when not found
+ */
+function vgsr_gf_get_field_meta( $field, $meta_key, $form = 0 ) {
+	$field = vgsr_gf_get_field( $field, $form );
+	$meta  = null;
+
+	if ( $field && isset( $field->{$meta_key} ) ) {
+		$meta = $field->{$meta_key};
+	}
+
+	return $meta;
+}
+
+/**
+ * Query and return forms
+ *
+ * @since 0.3.0
+ *
+ * @uses apply_filters() Calls 'vgsr_gf_get_forms'
+ *
+ * @param array $args Query arguments, supports these args:
+ *  - number: The number of forms to query. Accepts -1 for all forms. Defaults to -1.
+ *  - paged: The number of the current page for pagination.
+ *  - count: Whether to return the form count. Defaults to false.
+ *  - show_active: Whether to return active (true) or inactive (false) forms only. Accepts null for either status. Defaults to true.
+ *  - orderby: The database column to order the results by. Defaults to 'date_created'.
+ *  - order: Designates ascending or descending of ordered forms. Defaults to 'DESC'.
+ *  - s: Search terms that could match a form's title.
+ *  - suppress_filters: Whether to suppress filters. Defaults to false.
+ * @return array Form objects
+ */
+function vgsr_gf_get_forms( $args = array() ) {
+
+	// Parse arguments
+	$r = wp_parse_args( $args, array(
+		'number'           => -1,
+		'paged'            => 1,
+		'count'            => false,
+		'show_active'      => true,
+		'orderby'          => 'date_created',
+		'order'            => 'DESC',
+		's'                => '',
+		'suppress_filters' => false,
+	) );
+
+	// Query forms the GF way: fetch all
+	if ( ! empty( $r['s'] ) ) {
+		$forms = GFFormsModel::search_forms( $r['s'], $r['show_active'], $r['orderby'], $r['order'] );
+	} else {
+		$forms = GFFormsModel::get_forms( $r['show_active'], $r['orderby'], $r['order'] );
+	}
+
+	// Setup form objects
+	$forms = array_map( 'vgsr_gf_get_form', $forms );
+
+	if ( ! $r['suppress_filters'] ) {
+
+		// Enable plugin filtering
+		$forms = (array) apply_filters( 'vgsr_gf_get_forms', $forms, $r );
+	}
+
+	// Return count early
+	if ( $r['count'] ) {
+		return count( $forms );
+	}
+
+	// Paginate the GF way, after the query
+	if ( $r['number'] > 0 ) {
+		$r['paged'] = absint( $r['paged'] );
+		if ( $r['paged'] == 0 ) {
+			$r['paged'] = 1;
+		}
+		$r['offset'] = absint( ( $r['paged'] - 1 ) * $r['number'] );
+
+		$forms = array_slice( $forms, $r['offset'], $r['number'] );
+	}
+
+	return $forms;
+}
+
+/** Is VGSR ****************************************************************/
 
 /**
  * Display the meta key which marks GF assets exclusive for vgsr
@@ -34,63 +246,6 @@ function vgsr_gf_exclusivity_meta_key() {
 	}
 
 /**
- * Return the given form's meta value
- *
- * @since 0.0.7
- *
- * @param array|int $form Form object or form ID
- * @param string $meta_key Form meta key
- * @return mixed Form setting's value or NULL when not found
- */
-function vgsr_gf_get_form_meta( $form, $meta_key ) {
-
-	// Get form metadata
-	if ( ! is_array( $form ) && is_numeric( $form ) ) {
-		$form = GFFormsModel::get_form_meta( (int) $form );
-	} elseif ( ! is_array( $form ) ) {
-		return null;
-	}
-
-	// Get form setting
-	return isset( $form[ $meta_key ] ) ? $form[ $meta_key ] : null;
-}
-
-/**
- * Return the given field's meta value
- *
- * @since 0.0.7
- *
- * @param array|int $field Field object or field ID
- * @param string $meta_key Field meta key
- * @param array|int $form Form object or form ID
- * @return mixed Field setting's value or NULL when not found
- */
-function vgsr_gf_get_field_meta( $field, $meta_key, $form = '' ) {
-
-	// Get field metadata
-	if ( is_numeric( $field ) && ! empty( $form ) ) {
-
-		// Form ID provided
-		if ( is_numeric( $form ) ) {
-			$form = GFFormsModel::get_form_meta( (int) $form );
-		}
-
-		// Read the field from the form's data
-		$field = GFFormsModel::get_field( $form, $field );
-
-	} elseif ( ! is_array( $field ) && ! is_object( $field ) ) {
-		return null;
-	}
-
-	$field = (array) $field;
-
-	// Get field setting
-	return isset( $field[ $meta_key ] ) ? $field[ $meta_key ] : null;
-}
-
-/** Is VGSR ****************************************************************/
-
-/**
  * Return whether the given form is exclusive
  *
  * @since 0.0.6
@@ -99,7 +254,7 @@ function vgsr_gf_get_field_meta( $field, $meta_key, $form = '' ) {
  *
  * @param array|int $form Form object or form ID
  * @param bool $check_fields Optional. Whether to check fields for exclusivity.
- * @return bool Form is exclusive
+ * @return bool Is form exclusive?
  */
 function vgsr_gf_is_form_vgsr( $form, $check_fields = true ) {
 
@@ -133,11 +288,17 @@ function vgsr_gf_is_form_vgsr( $form, $check_fields = true ) {
  *
  * @uses apply_filters() Calls 'vgsr_gf_is_field_vgsr'
  *
- * @param array|int $field Field object or Field ID
+ * @param object|int $field Field object or Field ID
  * @param array|int $form Form object or form ID
- * @return bool Field is exclusive
+ * @return bool Is form field exclusive?
  */
 function vgsr_gf_is_field_vgsr( $field, $form = '' ) {
-	return (bool) apply_filters( 'vgsr_gf_is_field_vgsr', (bool) vgsr_gf_get_field_meta( $field, vgsr_gf_get_exclusivity_meta_key(), $form ), $field, $form );
-}
+	$field  = vgsr_gf_get_field( $field, $form );
+	$retval = false;
 
+	if ( $field ) {
+		$retval = (bool) vgsr_gf_get_field_meta( $field, vgsr_gf_get_exclusivity_meta_key() );
+	}
+
+	return (bool) apply_filters( 'vgsr_gf_is_field_vgsr', $retval, $field );
+}
