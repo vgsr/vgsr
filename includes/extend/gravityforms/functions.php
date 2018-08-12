@@ -302,3 +302,117 @@ function vgsr_gf_is_field_vgsr( $field, $form = '' ) {
 
 	return (bool) apply_filters( 'vgsr_gf_is_field_vgsr', $retval, $field );
 }
+
+/** Export *****************************************************************/
+
+/**
+ * Output the contents of the admin export page
+ *
+ * @see GFForms::export_page()
+ * @see GFExport::export_page()
+ * @see GFExport::export_lead_page()
+ *
+ * @since 0.3.0
+ */
+function vgsr_gf_admin_export_page() {
+
+	if ( GFForms::maybe_display_wizard() ) {
+		return;
+	};
+
+	require_once( GFCommon::get_base_path() . '/export.php' );
+
+	/**
+	 * To limit forms for export, modify the markup generated for GF's
+	 * export page, removing the non-allowed forms.
+	 */
+	ob_start();
+
+	GFExport::export_page();
+
+	$page = ob_get_clean();
+
+	// Walk all forms
+	foreach ( vgsr_gf_get_forms() as $form ) {
+
+		// Remove un-exportable form options
+		if ( ! vgsr_gf_can_user_export_form( $form ) ) {
+			$page = str_replace( sprintf( '<option value="%s">%s</option>', absint( $form->id ), esc_html( $form->title ) ), '', $page );
+		}
+	}
+
+	echo $page;
+}
+
+/**
+ * Return the forms the user can export
+ *
+ * @since 0.3.0
+ *
+ * @param int $user_id Optional. User ID. Defaults to the current user.
+ * @return array Forms the user can export
+ */
+function vgsr_gf_get_forms_user_can_export( $user_id = 0 ) {
+
+	// Default to the current user
+	if ( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	// Get forms
+	$forms = vgsr_gf_get_forms();
+
+	// Walk all forms untill we find a match
+	foreach ( $forms as $k => $form ) {
+		if ( ! vgsr_gf_can_user_export_form( $form, $user_id ) ) {
+			unset( $forms[ $k ] );
+		}
+	}
+
+	$forms = array_values( $forms );
+
+	return (array) apply_filters( 'vgsr_gf_get_forms_user_can_export', $forms, $user_id );
+}
+
+/**
+ * Return whether the user can export any form
+ *
+ * @since 0.3.0
+ *
+ * @param int $user_id Optional. User ID. Defaults to the current user.
+ * @return bool Can user export any form?
+ */
+function vgsr_gf_can_user_export( $user_id = 0 ) {
+	return (bool) vgsr_gf_get_forms_user_can_export( $user_id );
+}
+
+/**
+ * Return whether the user can export the form
+ *
+ * @since 0.3.0
+ *
+ * @param object|int $form Form object or ID
+ * @param int $user_id Optional. User ID. Defaults to the current user.
+ * @return bool Can user export the form?
+ */
+function vgsr_gf_can_user_export_form( $form, $user_id = 0 ) {
+
+	// Default to the current user
+	if ( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	// Get form
+	$form   = vgsr_gf_get_form( $form );
+	$retval = false;
+
+	if ( $form ) {
+		$exporters = vgsr_gf_get_form_meta( $form, 'vgsrExporters' );
+
+		if ( $exporters ) {
+			$retval = in_array( $user_id, array_map( 'intval', $exporters ), true );
+		}
+	}
+
+	return (bool) apply_filters( 'vgsr_gf_can_user_export_form', $retval, $form, $user_id );
+}

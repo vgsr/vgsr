@@ -60,10 +60,15 @@ class VGSR_GravityForms {
 	 */
 	private function setup_actions() {
 
+		// Core
+		add_action( 'admin_menu',            array( $this, 'admin_menu'            ), 50    );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' )        );
+		add_filter( 'vgsr_map_meta_caps',    array( $this, 'map_meta_caps'         ), 10, 4 );
+
 		// Settings
 		// add_filter( 'vgsr_admin_get_settings_sections', 'vgsr_gf_settings_sections' );
 		// add_filter( 'vgsr_admin_get_settings_fields',   'vgsr_gf_settings_fields'   );
-		// add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
+		// add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_settings_meta_caps' ), 10, 4 );
 
 		// Forms
 		add_filter( 'gform_get_form_filter',        array( $this, 'handle_form_display'   ), 99, 2 );
@@ -94,6 +99,121 @@ class VGSR_GravityForms {
 	/** Capabilities *******************************************************/
 
 	/**
+	 * Modify the admin menus
+	 *
+	 * @see GFForms::create_menu()
+	 *
+	 * @since 0.3.0
+	 */
+	public function admin_menu() {
+
+		// For exporters
+		if ( ! current_user_can( 'gform_full_access' ) && current_user_can( 'vgsr_gf_export_entries' ) ) {
+
+			// Remove GF's menu structure
+			remove_menu_page( 'gf_export' );
+
+			/**
+			 * Create Forms export menu, since it doens't exist yet for these users
+			 */
+			$self = isset( $_GET['page'] ) && 'vgsr_gf_export' === $_GET['page'];
+			$menu_name = 'vgsr_gf_export';
+			$callback  = 'vgsr_gf_admin_export_page';
+
+			// Main page
+			$admin_icon = GFForms::get_admin_icon_b64( $self ? '#fff' : false );
+			$forms_hook_suffix = add_menu_page( __( 'Forms', 'gravityforms' ), __( 'Forms', 'gravityforms' ), 'vgsr_gf_export_entries', $menu_name, $callback, $admin_icon, apply_filters( 'gform_menu_position', '16.9' ) );
+
+			// Export sub page
+			$export_hook = add_submenu_page( $menu_name, __( 'Export', 'vgsr' ), __( 'Export', 'vgsr' ), 'vgsr_gf_export_entries', $menu_name, $callback );
+
+			// Load tooltips
+			if ( $self ) {
+				require_once( GFCommon::get_base_path() . '/tooltips.php' );
+			}
+		}
+	}
+
+	/**
+	 * Map plugin capabilities
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param  array   $caps    Required capabilities
+	 * @param  string  $cap     Requested capability
+	 * @param  integer $user_id User ID
+	 * @param  array   $args    Additional arguments
+	 * @return array Required capabilities
+	 */
+	public function map_meta_caps( $caps, $cap, $user_id, $args ) {
+
+		switch ( $cap ) {
+
+			// Export form entries
+			case 'vgsr_gf_export_entries' :
+
+				// Allow super admins
+				if ( is_super_admin( $user_id ) ) {
+					$caps = array( 'manage_options' );
+
+				// A particular form
+				} elseif ( isset( $args[0] ) ) {
+					if ( vgsr_gf_can_user_export_form( $args[0], $user_id ) ) {
+						$caps = array( 'read' );
+					} else {
+						$caps = array( 'do_not_allow' );
+					}
+
+				// No form specified
+				} elseif ( vgsr_gf_can_user_export( $user_id ) ) {
+					$caps = array( 'read' );
+
+				// Prevent otherwise
+				} else {
+					$caps = array( 'do_not_allow' );
+				}
+
+				break;
+
+			// GF export form entries
+			case 'gravityforms_export_entries' :
+				$export_page = is_admin() && isset( $_GET['page'] ) && 'vgsr_gf_export' === $_GET['page'];
+
+				// Allow exporters on plugin's export page or when ajaxing
+				if ( user_can( $user_id, 'vgsr_gf_export_entries' ) && ( $export_page || wp_doing_ajax() ) ) {
+					$caps = array( 'read' );
+				}
+
+				break;
+		}
+
+		return $caps;
+	}
+
+	/**
+	 * Enqueue admin styles and scripts
+	 *
+	 * @see GFForms::enqeuue_admin_scripts()
+	 *
+	 * @since 0.3.0
+	 */
+	public function admin_enqueue_scripts() {
+		$export_page = is_admin() && isset( $_GET['page'] ) && 'vgsr_gf_export' === $_GET['page'];
+
+		// Export form entries
+		if ( $export_page ) {
+			foreach ( array(
+				'jquery-ui-datepicker',
+				'gform_form_admin',
+				'gform_field_filter',
+				'sack',
+			) as $script ) {
+				wp_enqueue_script( $script );
+			}
+		}
+	}
+
+	/**
 	 * Map plugin settings capabilities
 	 *
 	 * @since 0.0.6
@@ -104,7 +224,7 @@ class VGSR_GravityForms {
 	 * @param  array   $args    Additional arguments
 	 * @return array Required capabilities
 	 */
-	public function map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
+	public function map_settings_meta_caps( $caps, $cap, $user_id, $args ) {
 
 		switch ( $cap ) {
 			case 'vgsr_settings_gf_general' :
@@ -186,6 +306,8 @@ class VGSR_GravityForms {
 	 */
 	public function register_form_setting( $settings, $form ) {
 
+		/** Exclusivity ****************************************************/
+
 		// Start output buffer and setup our settings field markup
 		ob_start(); ?>
 
@@ -205,6 +327,29 @@ class VGSR_GravityForms {
 		// Append the field to the section and end the output buffer
 		$settings[ $section ][ vgsr_gf_get_exclusivity_meta_key() ] = ob_get_clean();
 
+		/** Exporters ******************************************************/
+
+		$exporters = vgsr_gf_get_form_meta( $form, 'vgsrExporters' );
+		$exporters = $exporters ? array_map( 'intval', $exporters ) : array();
+
+		// Start output buffer and setup our settings field markup
+		ob_start(); ?>
+
+		<tr>
+			<th><?php esc_html_e( 'Exporters', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_exporters' ); ?></th>
+			<td>
+				<input type="text" id="vgsr_form_exporters" name="vgsr_form_exporters" value="<?php echo implode( ',', $exporters ); ?>" />
+			</td>
+		</tr>
+
+		<?php
+
+		// Settings sections are stored by their translatable title
+		$section = $this->i18n( 'Form Options' );
+
+		// Append the field to the section and end the output buffer
+		$settings[ $section ]['vgsrExporters'] = ob_get_clean();
+
 		return $settings;
 	}
 
@@ -220,6 +365,7 @@ class VGSR_GravityForms {
 
 		// Sanitize form from $_POST var
 		$settings[ vgsr_gf_get_exclusivity_meta_key() ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
+		$settings['vgsrExporters'] = array_map( 'absint', explode( ',', $_POST['vgsr_form_exporters'] ) );
 
 		return $settings;
 	}
@@ -385,8 +531,9 @@ class VGSR_GravityForms {
 
 		// Append our tooltips
 		$tips = array_merge( $tips, array(
-			'vgsr_form_setting'  => sprintf( $format, esc_html_x( 'VGSR', 'exclusivity title', 'vgsr' ), esc_html__( 'Make this form exclusively available to VGSR members.',  'vgsr' ) ),
+			'vgsr_form_setting'  => sprintf( $format, esc_html_x( 'VGSR', 'exclusivity title', 'vgsr' ), esc_html__( 'Make this form exclusively available to VGSR members.', 'vgsr' ) ),
 			'vgsr_field_setting' => sprintf( $format, esc_html_x( 'VGSR', 'exclusivity title', 'vgsr' ), esc_html__( 'Make this field exclusively available to VGSR members.', 'vgsr' ) ),
+			'vgsr_form_exporters'  => sprintf( $format, esc_html_x( 'Exporters', 'vgsr' ), esc_html__( "Provide a comma-separated list of ids of users who are allowed to export and download the form's entries along with their respondent's data.", 'vgsr' ) ),
 		) );
 
 		return $tips;
@@ -418,7 +565,7 @@ class VGSR_GravityForms {
 		return $instance;
 	}
 
-	/** Misc ***************************************************************/
+	/** Export *************************************************************/
 
 	/**
 	 * Modify the csv separator for exported GF data
