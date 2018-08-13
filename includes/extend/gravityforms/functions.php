@@ -222,6 +222,30 @@ function vgsr_gf_get_forms( $args = array() ) {
 	return $forms;
 }
 
+/** Helpers ****************************************************************/
+
+/**
+ * Apply a i18n function with the 'gravityforms' context
+ *
+ * @since 0.3.0
+ *
+ * @param string|array $args I18n function argument(s)
+ * @param string $i18n Optional. I18n function name. Defaults to '__'.
+ * @return string Translated text
+ */
+function vgsr_gf_i18n( $args, $i18n = '__' ) {
+
+	// Bail when no arguments were passed
+	if ( empty( $args ) )
+		return '';
+
+	// Append translation domain
+	$args   = (array) $args;
+	$args[] = 'gravityforms';
+
+	return call_user_func_array( $i18n, $args );
+}
+
 /** Is VGSR ****************************************************************/
 
 /**
@@ -342,6 +366,23 @@ function vgsr_gf_admin_export_page() {
 	}
 
 	echo $page;
+}
+
+/**
+ * Modify the csv separator for exported GF data
+ *
+ * By using a semicolon as separator, MS Excel somehow interpretes
+ * cells with line breaks (/n,/r) correctly. This prevents values
+ * with line breaks to be parsed as separate rows.
+ *
+ * @since 0.0.8
+ *
+ * @param string $sep CSV separator
+ * @param int $form_id Form ID
+ * @return string CSV separator
+ */
+function vgsr_gf_export_separator( $sep, $form_id ) {
+	return ';';
 }
 
 /**
