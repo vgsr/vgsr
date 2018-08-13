@@ -75,6 +75,10 @@ class VGSR_WPSEO {
 	 */
 	public function breadcrumb_links( $crumbs ) {
 
+		// Bail early when this is a search page
+		if ( is_search() )
+			return $crumbs;
+
 		// Get option
 		$post_maintax = WPSEO_Options::get_option( 'post_types-post-maintax' );
 
