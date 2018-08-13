@@ -30,6 +30,10 @@ This plugin is not hosted in the official WordPress repository. Instead, updatin
 
 == Changelog ==
 
+= 0.3.0 =
+* Adds Gravity Forms form option to allow selected users to download form entries
+* Fixes bug where WP SEO breadcrumbs were overwritten for search pages
+
 = 0.2.1 =
 * Improves visibility of gallery posts in breadcrumbs, nav menus etc.
 * Adds support for Responsive Lightbox
