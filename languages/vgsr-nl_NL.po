@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VGSR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-19 18:58+0000\n"
-"PO-Revision-Date: 2018-07-19 19:03+0000\n"
+"POT-Creation-Date: 2018-08-13 19:05+0000\n"
+"PO-Revision-Date: 2018-08-13 19:07+0000\n"
 "Last-Translator: Laurens Offereins <lmoffereins@gmail.com>\n"
 "Language-Team: Nederlands\n"
 "Language: nl_NL\n"
@@ -52,8 +52,8 @@ msgid "Settings"
 msgstr "Instellingen"
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:353
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:388
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:389
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:242
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:243
 msgctxt "exclusivity title"
 msgid "VGSR"
 msgstr "VGSR"
@@ -65,8 +65,8 @@ msgid "VGSR"
 msgstr "VGSR"
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:411
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:276
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:359
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:178
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:215
 msgctxt "exclusivity label"
 msgid "vgsr"
 msgstr "vgsr"
@@ -135,6 +135,11 @@ msgstr "Link de titel van de widget naar de agendapagina"
 #: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:136
 msgid "Number of days to display:"
 msgstr "Aantal te tonen dagen:"
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/responsive-lightbox.php:92
+msgctxt "Plugin admin menu name"
+msgid "Lightbox"
+msgstr "Lightbox"
 
 #: ../../../../src/wp-content/plugins/vgsr/templates/event-organiser/widget-upcoming-events.php:30
 msgid "No upcoming events were found."
@@ -391,7 +396,7 @@ msgstr "Bekijken"
 msgid "&mdash; No Field &mdash;"
 msgstr "&mdash; Geen veld &mdash;"
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/event-organiser.php:355
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/event-organiser.php:360
 msgid "Events"
 msgstr "Agenda"
 
@@ -554,30 +559,47 @@ msgstr ""
 "activiteiten per datum te vinden."
 
 #. Name of the plugin
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:193
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:29
 msgid "VGSR"
 msgstr "VGSR"
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:196
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:32
 msgid "Make this an exclusive form"
 msgstr "Maak dit formulier exclusief"
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:305
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:51
+msgid "Exporters"
+msgstr "Exporteerders"
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:81
 #, php-format
 msgid "VGSR: %s"
 msgstr "VGSR: %s"
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:305
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:81
 msgid "Make this an exclusive field"
 msgstr "Maak dit veld exclusief"
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:388
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:81
+msgid "Export"
+msgstr "Exporteren"
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:242
 msgid "Make this form exclusively available to VGSR members."
 msgstr "Maak dit formulier alleen toegankelijk voor leden der VGSR."
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:389
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:243
 msgid "Make this field exclusively available to VGSR members."
 msgstr "Maak dit veld alleen toegankelijk voor leden der VGSR."
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:244
+msgid ""
+"Provide a comma-separated list of ids of users who are allowed to export and "
+"download the form's entries along with their respondent's data."
+msgstr ""
+"Geef met een komma-gescheiden lijst van gebruiker-ids aan wie er toestemming "
+"hebben om reacties op formulieren te exporteren en te downloaden. Hierbij "
+"kunnen ze ook gegevens van respondenten opvragen."
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:140
 msgctxt "Breadcrumb root title"

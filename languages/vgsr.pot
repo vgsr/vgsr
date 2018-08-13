@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-19 18:58+0000\n"
+"POT-Creation-Date: 2018-08-13 19:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -53,8 +53,8 @@ msgid "Settings"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:353
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:388
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:389
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:242
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:243
 msgctxt "exclusivity title"
 msgid "VGSR"
 msgstr ""
@@ -66,8 +66,8 @@ msgid "VGSR"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:411
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:276
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:359
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:178
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:215
 msgctxt "exclusivity label"
 msgid "vgsr"
 msgstr ""
@@ -133,6 +133,11 @@ msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/classes/class-vgsr-eo-upcoming-events-widget.php:136
 msgid "Number of days to display:"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/responsive-lightbox.php:92
+msgctxt "Plugin admin menu name"
+msgid "Lightbox"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/templates/event-organiser/widget-upcoming-events.php:30
@@ -385,7 +390,7 @@ msgstr ""
 msgid "&mdash; No Field &mdash;"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/event-organiser.php:355
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/event-organiser/event-organiser.php:360
 msgid "Events"
 msgstr ""
 
@@ -517,29 +522,43 @@ msgid ""
 msgstr ""
 
 #. Name of the plugin
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:193
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:29
 msgid "VGSR"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:196
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:32
 msgid "Make this an exclusive form"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:305
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:51
+msgid "Exporters"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:81
 #, php-format
 msgid "VGSR: %s"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:305
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin-functions.php:81
 msgid "Make this an exclusive field"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:388
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:81
+msgid "Export"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:242
 msgid "Make this form exclusively available to VGSR members."
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/gravityforms.php:389
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:243
 msgid "Make this field exclusively available to VGSR members."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/admin.php:244
+msgid ""
+"Provide a comma-separated list of ids of users who are allowed to export and "
+"download the form's entries along with their respondent's data."
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:140
