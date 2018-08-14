@@ -145,7 +145,7 @@ class VGSR_GravityForms_Admin {
 
 		// Sanitize form from $_POST var
 		$settings[ vgsr_gf_get_exclusivity_meta_key() ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
-		$settings['vgsrExporters'] = array_map( 'absint', explode( ',', $_POST['vgsr_form_exporters'] ) );
+		$settings['vgsrExporters'] = array_filter( array_map( 'absint', explode( ',', $_POST['vgsr_form_exporters'] ) ) );
 
 		return $settings;
 	}
