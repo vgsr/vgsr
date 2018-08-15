@@ -357,7 +357,10 @@ function vgsr_gf_admin_export_page() {
 	$page = ob_get_clean();
 
 	// Walk all forms
-	foreach ( vgsr_gf_get_forms() as $form ) {
+	foreach ( vgsr_gf_get_forms( array(
+		'show_active' => null, // Query all active states
+		'orderby'     => 'title'
+	) ) as $form ) {
 
 		// Remove un-exportable form options
 		if ( ! vgsr_gf_can_user_export_form( $form ) ) {
@@ -401,7 +404,9 @@ function vgsr_gf_get_forms_user_can_export( $user_id = 0 ) {
 	}
 
 	// Get forms
-	$forms = vgsr_gf_get_forms();
+	$forms = vgsr_gf_get_forms( array(
+		'show_active' => null // Query all active states
+	) );
 
 	// Walk all forms untill we find a match
 	foreach ( $forms as $k => $form ) {
