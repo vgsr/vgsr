@@ -99,4 +99,5 @@ add_action( 'bp_core_loaded',          'vgsr_setup_buddypress',          10    )
 add_action( 'vgsr_ready',              'vgsr_setup_event_organiser',     10    ); // Events integration
 add_action( 'gform_loaded',            'vgsr_setup_gravityforms',        10    ); // Forms integration
 add_action( 'vgsr_ready',              'vgsr_setup_responsive_lightbox', 10    ); // Lightbox integration
+add_action( 'vgsr_ready',              'vgsr_setup_woosidebars',         10    ); // Widget areas integration
 add_action( 'vgsr_ready',              'vgsr_setup_wpseo',               10    ); // SEO integration
