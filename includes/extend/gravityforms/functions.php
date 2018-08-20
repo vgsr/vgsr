@@ -462,3 +462,83 @@ function vgsr_gf_can_user_export_form( $form, $user_id = 0 ) {
 
 	return (bool) apply_filters( 'vgsr_gf_can_user_export_form', $retval, $form, $user_id );
 }
+
+/**
+ * Add extra data items to the list exportable entry data
+ *
+ * @since 1.0.0
+ *
+ * @param array $form Form data
+ * @return array Form data
+ */
+function vgsr_gf_entry_export_fields( $form ) {
+
+	/**
+	 * Add additional user data fields
+	 */
+
+	// User login
+	$form['fields'][] = array(
+		'id'    => 'vgsr-user-login',
+		'label' => esc_html_x( 'User login', 'Gravity Forms export field', 'vgsr' )
+	);
+
+	// User display name
+	$form['fields'][] = array(
+		'id'    => 'vgsr-user-display-name',
+		'label' => esc_html_x( 'User display name', 'Gravity Forms export field', 'vgsr' )
+	);
+
+	// User email
+	$form['fields'][] = array(
+		'id'    => 'vgsr-user-email',
+		'label' => esc_html_x( 'User email', 'Gravity Forms export field', 'vgsr' )
+	);
+
+	return $form;
+}
+
+/**
+ * Modify the value for the given export field
+ *
+ * @since 1.0.0
+ *
+ * @param mixed $value Export field value
+ * @param int $form_id Form ID
+ * @param string $field Export field name
+ * @param array $entry Entry data
+ * @return mixed Export field value
+ */
+function vgsr_gf_export_field_value( $value, $form_id, $field, $entry ) {
+
+	// Get entry's user
+	$user_id = (int) $entry['created_by'];
+
+	// Bail when the user does not exist
+	if ( ! $user_id || ! $user = get_user_by( 'id', $user_id ) )
+		return $value;
+
+	// Check the field
+	switch ( $field ) {
+
+		// User login
+		case 'vgsr-user-login' :
+			$value = $user->user_login;
+
+			break;
+
+		// User display name
+		case 'vgsr-user-display-name' :
+			$value = $user->display_name;
+
+			break;
+
+		// User email
+		case 'vgsr-user-email' :
+			$value = $user->user_email;
+
+			break;
+	}
+
+	return $value;
+}
