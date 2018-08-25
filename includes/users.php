@@ -534,21 +534,21 @@ function vgsr_get_closing_p( $args = array() ) {
 /** Anciënniteit **********************************************************/
 
 /**
- * Compare two users based on anciënniteit
+ * Compare function for users based on anciënniteit
  *
  * @since 1.0.0
  *
- * @param  WP_User|int $a User object or ID.
- * @param  WP_User|int $b User object or ID.
+ * @param WP_User|int $a User object or ID.
+ * @param WP_User|int $b User object or ID.
  * @return int Comparison result
  */
 function vgsr_cmp_ancienniteit( $a, $b ) {
-	$_a = vgsr_get_ancienniteit( $a );
-	$_a = vgsr_get_ancienniteit( $b );
+	$a = vgsr_get_ancienniteit( $a );
+	$b = vgsr_get_ancienniteit( $b );
 
-	if ( 0 !== $_a && 0 !== $_b ) {
-		return $_a > $_b ? 1 : -1;
-	} elseif ( $_b > 0 ) {
+	if ( 0 !== $a && 0 !== $b ) {
+		return $a > $b ? 1 : -1;
+	} elseif ( $b > 0 ) {
 		return 1;
 	} else {
 		return -1;
