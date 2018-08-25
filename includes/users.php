@@ -138,7 +138,7 @@ function vgsr_dropdown_users_args( $query_args = array(), $args = array() ) {
  * 
  * @since 1.0.0
  *
- * @param  WP_User_Query $users_query
+ * @param WP_User_Query $users_query
  */
 function vgsr_pre_get_users( $users_query ) {
 
@@ -146,9 +146,11 @@ function vgsr_pre_get_users( $users_query ) {
 	if ( ! $users_query->get( 'vgsr' ) )
 		return;
 
-	// Since we cannot filter query vars before parsing the defaults,
-	// assume 'login' as the default orderby value. Circumvent this by
-	// providing the alternate orderby value 'user_login'.
+	/**
+	 * Since we cannot filter query vars before the query defaults are parsed,
+	 * assume 'login' as the default orderby value. Circumvent this assumption
+	 * by providing the alternative 'user_login' orderby value.
+	 */
 	if ( 'login' === $users_query->get( 'orderby' ) ) {
 
 		// Default to anciënniteit
@@ -165,18 +167,21 @@ function vgsr_pre_get_users( $users_query ) {
  *
  * @uses apply_filters() Calls 'vgsr_pre_user_query'
  *
- * @param  WP_User_Query $users_query
+ * @param WP_User_Query $users_query
  */
 function vgsr_pre_user_query( $users_query ) {
 	global $wpdb;
 
-	// Enable plugin filtering
-	$sql_clauses = array( 'join' => '', 'where' => '' );
-	$sql_clauses = apply_filters( 'vgsr_pre_user_query', $sql_clauses, $users_query );
+	/**
+	 * Define what constitutes a vgsr user. Since this is left to
+	 * extensions or other plugins, the filter allows for modifying
+	 * the vgsr user definition.
+	 */
+	$sql_clauses = apply_filters( 'vgsr_pre_user_query', array( 'join' => '', 'where' => '' ), $users_query );
 
 	// Append JOIN statement
 	if ( ! empty( $sql_clauses['join'] ) ) {
-		$join = preg_replace( '/^\s*/', '', $sql_clauses['where'] );
+		$join = preg_replace( '/^\s*/', '', $sql_clauses['join'] );
 		$users_query->query_from .= " $join";
 	}
 
@@ -186,17 +191,17 @@ function vgsr_pre_user_query( $users_query ) {
 		$users_query->query_where .= " AND $where";
 	}
 
-	// Parse ordering by anciënniteit
+	// Order by anciënniteit
 	if ( 'ancienniteit' === $users_query->get( 'orderby' ) ) {
 
-		// Apply ordering by meta query
+		// Anciënniteit by user meta
 		if ( apply_filters( 'vgsr_use_ancienniteit_meta', true ) ) {
 
 			// Join with anciënniteit meta column to use only in ordering. Force
-			// order null values after meta values.
+			// order null values to be sorted after meta values.
 			$order                      = 'ASC' === strtoupper( $users_query->get( 'order' ) ) ? 'ASC' : 'DESC';
-			$users_query->query_from   .= $wpdb->prepare( " LEFT JOIN {$wpdb->usermeta} AS ancm ON {$wpdb->users}.ID = ancm.user_id AND ancm.meta_key = %s", 'ancienniteit' );
-			$users_query->query_orderby = str_replace( 'ORDER BY', sprintf( 'ORDER BY CASE WHEN ancm.meta_value IS NULL THEN 1 ELSE 0 END, ancm.meta_value %s,', $order ), $users_query->query_orderby );
+			$users_query->query_from   .= $wpdb->prepare( " LEFT JOIN {$wpdb->usermeta} AS ancienniteit ON {$wpdb->users}.ID = ancienniteit.user_id AND ancienniteit.meta_key = %s", 'ancienniteit' );
+			$users_query->query_orderby = str_replace( 'ORDER BY', sprintf( 'ORDER BY CASE WHEN ancienniteit.meta_value IS NULL THEN 1 ELSE 0 END, ancienniteit.meta_value %s,', $order ), $users_query->query_orderby );
 		}
 	}
 }
