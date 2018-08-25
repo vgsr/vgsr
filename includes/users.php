@@ -398,13 +398,15 @@ function vgsr_get_jaargroep( $user = 0 ) {
  *
  * @global $wpdb WPDB
  *
+ * @uses apply_filters() Calls 'vgsr_get_jaargroepen'
+ *
  * @return array Jaargroepen
  */
 function vgsr_get_jaargroepen() {
 	global $wpdb;
 
-	$query  = $wpdb->prepare( "SELECT DISTINCT um.meta_value FROM {$wpdb->usermeta} um WHERE um.meta_key = %s ORDER BY um.meta_value ASC", 'jaargroep' );
-	$retval = $wpdb->get_col( $query );
+	$query  = $wpdb->prepare( "SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s ORDER BY meta_value ASC", 'jaargroep' );
+	$retval = array_unique( array_map( 'intval', $wpdb->get_col( $query ) ) );
 
 	return (array) apply_filters( 'vgsr_get_jaargroepen', $retval );
 }
