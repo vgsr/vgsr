@@ -414,45 +414,47 @@ function vgsr_get_jaargroepen() {
 /** Formalities ***********************************************************/
 
 /**
- * Return the user's salutation text
+ * Return a letter's opening lines
  *
  * @since 1.0.0
  *
  * @uses apply_filters() Calls 'vgsr_get_salutation'
  *
- * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @param WP_User|int $user Optional. User object or ID. Defaults to the current user.
  * @return string User's salutation.
  */
 function vgsr_get_salutation( $user = 0 ) {
+
+	// Parse arguments
 	$user   = vgsr_get_user( $user );
 	$gender = vgsr_get_gender( $user );
-	$salut  = '';
+	$retval = '';
 
 	// VGSR salutation
 	if ( $user && is_user_vgsr( $user ) ) {
 		if ( null !== $gender ) {
-			$salut = $gender
-				? 'Waarde amice %s,'
-				: 'Waarde amica %s,';
+			$retval = $gender
+				? esc_html__( 'Honourable amice %s,', 'vgsr' )
+				: esc_html__( 'Honourable amica %s,', 'vgsr' );
 		} else {
-			$salut = 'Waarde amica aut amice %s,';
+			$retval = esc_html__( 'Honourable amica aut amice %s,', 'vgsr' );
 		}
 
 	// Default salutation
 	} else {
 		if ( null !== $gender ) {
-			$salut = $gender
-				? __( 'Dear mr. %s,',  'vgsr' )
-				: __( 'Dear mrs. %s,', 'vgsr' );
+			$retval = $gender
+				? esc_html_x( 'Dear mr. %s,',  'General salutation', 'vgsr' )
+				: esc_html_x( 'Dear mrs. %s,', 'General salutation', 'vgsr' );
 		} else {
-			$salut = __( 'Dear mr. or mrs. %s,', 'vgsr' );
+			$retval = esc_html_x( 'Dear mr. or mrs. %s,', 'General salutation', 'vgsr' );
 		}
 	}
 
 	// Parse with last name
-	$salut = sprintf( $salut, ucfirst( vgsr_get_lastname( $user ) ) );
+	$retval = sprintf( $retval, ucfirst( vgsr_get_lastname( $user ) ) );
 
-	return apply_filters( 'vgsr_get_salutation', $salut, $user );
+	return apply_filters( 'vgsr_get_salutation', $retval, $user );
 }
 
 /**
@@ -468,42 +470,53 @@ function vgsr_get_salutation_p( $user = 0 ) {
 }
 
 /**
- * Return the user's closing text
+ * Return a letter's closing lines
  *
  * @since 1.0.0
  *
  * @uses apply_filters() Calls 'vgsr_get_closing'
  *
- * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
- * @return string User's closing.
+ * @param array $args Closing arguments, supports these args:
+ *  - addressee: User object or ID of the addressed person. Defaults to False.
+ *  - addresser: User object or ID of the addressing person. Defaults to the current user.
+ *  - description: Descriptor of the addressing person.
+ * @return string Closing statement.
  */
 function vgsr_get_closing( $args = array() ) {
-	$close = '';
+
+	// Define return variable
+	$retval = '';
 
 	// Parse arguments
-	$args = wp_parse_args( $args, array(
-		'addressed' => false,
-		'author'    => vgsr_get_user(),
+	$r = wp_parse_args( $args, array(
+		'addressee'   => false,
+		'addresser'   => vgsr_get_user(),
+		'description' => ''
 	) );
 
-	$args['addressed'] = vgsr_get_user( $args['addressed'] );
-	$args['author']    = vgsr_get_user( $args['author'] );
+	$r['addressee'] = vgsr_get_user( $r['addressee'] );
+	$r['addresser'] = vgsr_get_user( $r['addresser'] );
 
 	// VGSR closing
-	if ( $args['addressed'] && is_user_vgsr( $args['addressed'] ) ) {
-		$close = 'Met amicale groet,';
+	if ( $r['addressee'] && is_user_vgsr( $r['addressee'] ) ) {
+		$retval = 'Met amicale groet,';
 
 	// Default closing
 	} else {
-		$close = __( 'Sincerely,', 'vgsr' );
+		$retval = esc_html_x( 'Sincerely,', 'General closing', 'vgsr' );
 	}
 
-	// Append author
-	if ( $args['author'] ) {
-		$close .= "\n\n" . vgsr_get_fullname( $args['author'] );
+	// Append addresser
+	if ( $r['addresser'] ) {
+		$retval .= "\n\n" . vgsr_get_fullname( $r['addresser'] );
+
+		// Append description
+		if ( $r['description'] ) {
+			$retval .= "\n<em>" . $r['description'] . "</em>";
+		}
 	}
 
-	return apply_filters( 'vgsr_get_closing', $close, $args );
+	return apply_filters( 'vgsr_get_closing', $retval, $r );
 }
 
 /**
@@ -511,11 +524,11 @@ function vgsr_get_closing( $args = array() ) {
  *
  * @since 1.0.0
  *
- * @param  WP_User|int $user Optional. User object or ID. Defaults to the current user.
- * @return string User's paragraphed closing.
+ * @param array $args Optional. Closing arguments, see {@see vgsr_get_closing()}.
+ * @return string Closing wrapped in paragraphs.
  */
-function vgsr_get_closing_p( $user = 0 ) {
-	return wpautop( vgsr_get_closing( array( 'addressed' => $user ) ) ) . "\n";
+function vgsr_get_closing_p( $args = array() ) {
+	return wpautop( vgsr_get_closing( $args ) ) . "\n";
 }
 
 /** Anciënniteit **********************************************************/
