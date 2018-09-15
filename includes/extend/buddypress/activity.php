@@ -188,3 +188,59 @@ function vgsr_bp_activity_post_type_comment_action( $action, $activity ) {
 
 	return $action;
 }
+
+/**
+ * Modify whether the activity item can be commented on
+ *
+ * @since 1.0.0
+ *
+ * @param bool $can_comment Whether the item can be commented on
+ * @param string $activity_type Activity type name
+ * @return bool Whether the item can be commented on
+ */
+function vgsr_bp_activity_can_comment( $can_comment, $activity_type ) {
+
+	// Define disabled actions
+	$disabled_actions = array(
+		'new_avatar',           // Updated profile photos
+		'updated_profile',      // Profile updates
+		'updated_profile_field' // Plugin BP_XProfile_Field_Activity
+	);
+
+	// Check if this activity stream action is disabled
+	if ( in_array( $activity_type, $disabled_actions ) ) {
+		$can_comment = false;
+	}
+
+	return $can_comment;
+}
+
+/**
+ * Modify whether the activity item can be favorited
+ *
+ * @since 1.0.0
+ *
+ * @param bool $can_favorite Whether the item can be favorited
+ * @return bool Whether the item can be favorited
+ */
+function vgsr_bp_activity_can_favorite( $can_favorite ) {
+
+	// Bail when we're not in the activities template loop
+	if ( ! isset( $GLOBALS['activities_template'] ) || ! is_a( $GLOBALS['activities_template'], 'BP_Activity_Template' ) ) {
+		return $can_favorite;
+	}
+
+	// Define disabled actions
+	$disabled_actions = array(
+		'new_avatar',           // Updated profile photos
+		'updated_profile',      // Profile updates
+		'updated_profile_field' // Plugin BP_XProfile_Field_Activity
+	);
+
+	// Check if this activity stream action is disabled
+	if ( in_array( bp_get_activity_type(), $disabled_actions ) ) {
+		$can_favorite = false;
+	}
+
+	return $can_favorite;
+}

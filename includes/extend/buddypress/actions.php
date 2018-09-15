@@ -16,6 +16,8 @@ add_filter( 'bp_activity_custom_post_type_post_action',         'vgsr_bp_activit
 add_filter( 'bp_blogs_format_activity_action_new_blog_post',    'vgsr_bp_activity_post_type_post_action',    10, 2 );
 add_filter( 'bp_activity_custom_post_type_comment_action',      'vgsr_bp_activity_post_type_comment_action', 10, 2 );
 add_filter( 'bp_blogs_format_activity_action_new_blog_comment', 'vgsr_bp_activity_post_type_comment_action', 10, 2 );
+add_filter( 'bp_activity_can_comment',                          'vgsr_bp_activity_can_comment',              10, 2 );
+add_filter( 'bp_activity_can_favorite',                         'vgsr_bp_activity_can_favorite',             10, 1 );
 
 // Members
 add_action( 'bp_members_directory_member_types',      'vgsr_bp_members_directory_tabs'            );
