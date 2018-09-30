@@ -125,6 +125,9 @@ function vgsr_bp_members_jaargroep_filter() {
 	if ( ! $jaargroepen || ! is_user_vgsr() || ! vgsr_bp_is_root_blog() )
 		return;
 
+	// Sort descending
+	rsort( $jaargroepen );
+
 	?>
 
 	<li id="members-jaargroep-select" class="last vgsr-filter">

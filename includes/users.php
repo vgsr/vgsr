@@ -399,7 +399,6 @@ function vgsr_get_jaargroep( $user = 0 ) {
  * @global $wpdb WPDB
  *
  * @uses apply_filters() Calls 'vgsr_get_jaargroepen'
- *
  * @return array Jaargroepen
  */
 function vgsr_get_jaargroepen() {
