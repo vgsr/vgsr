@@ -140,6 +140,7 @@ final class VGSR {
 		require( $this->extend_dir . 'buddypress/buddypress.php'           );
 		require( $this->extend_dir . 'event-organiser/event-organiser.php' );
 		require( $this->extend_dir . 'gravityforms/gravityforms.php'       );
+		require( $this->extend_dir . 'initials-default-avatar.php'         );
 		require( $this->extend_dir . 'responsive-lightbox.php'             );
 		require( $this->extend_dir . 'woosidebars.php'                     );
 		require( $this->extend_dir . 'wordpress-seo/wordpress-seo.php'     );
