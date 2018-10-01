@@ -96,15 +96,19 @@ function vgsr_bp_is_vgsr_component( $component = '' ) {
 /** Member Types ***********************************************************/
 
 /**
- * Return the collection of VGSR member types
+ * Return the collection of custom member types
  *
  * @since 0.1.0
  *
- * @uses apply_filters() Calls 'vgsr_bp_member_types'
+ * @uses apply_filters() Calls 'vgsr_bp_get_member_types'
+ *
+ * @param bool $strict Optional. Whether to return only true VGSR member types. Defaults to False.
  * @return array Member types
  */
-function vgsr_bp_member_types() {
-	return (array) apply_filters( 'vgsr_bp_member_types', array(
+function vgsr_bp_get_member_types( $strict = false ) {
+
+	// Define types
+	$member_types = array(
 
 		// Lid
 		vgsr_bp_lid_member_type() => array(
@@ -122,17 +126,23 @@ function vgsr_bp_member_types() {
 				'singular_name' => esc_html__( 'Oud-lid',   'vgsr' ),
 				'plural_name'   => esc_html__( 'Oud-leden', 'vgsr' ),
 			)
-		),
+		)
+	);
+
+	// When not in strict mode
+	if ( ! $strict ) {
 
 		// Ex-lid
-		vgsr_bp_exlid_member_type() => array(
+		$member_types[ vgsr_bp_exlid_member_type() ] = array(
 			'labels' => array(
 				'name'          => esc_html__( 'Ex-leden', 'vgsr' ),
 				'singular_name' => esc_html__( 'Ex-lid',   'vgsr' ),
 				'plural_name'   => esc_html__( 'Ex-leden', 'vgsr' ),
 			)
-		),
-	) );
+		);
+	}
+
+	return (array) apply_filters( 'vgsr_bp_get_member_types', $member_types, $strict );
 }
 
 /**
@@ -188,7 +198,7 @@ function vgsr_bp_is_vgsr_member_type( $member_type = '' ) {
 		$member_type = bp_get_current_member_type();
 	}
 
-	$types = vgsr_bp_member_types();
+	$types = vgsr_bp_get_member_types( true );
 	$is    = in_array( $member_type, array_keys( $types ) );
 
 	return (bool) apply_filters( 'vgsr_bp_is_vgsr_member_type', $is, $member_type );
@@ -334,7 +344,7 @@ function vgsr_bp_get_total_member_count( $args = array() ) {
  */
 function vgsr_bp_get_total_vgsr_member_count() {
 	return vgsr_bp_get_total_member_count( array(
-		'member_type__in' => array_keys( vgsr_bp_member_types() )
+		'member_type__in' => array_keys( vgsr_bp_get_member_types( true ) )
 	) );
 }
 

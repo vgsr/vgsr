@@ -501,7 +501,7 @@ class VGSR_BuddyPress {
 	public function register_member_types() {
 
 		// Walk our member types
-		foreach ( vgsr_bp_member_types() as $type => $args ) {
+		foreach ( vgsr_bp_get_member_types() as $type => $args ) {
 
 			// Register the member type
 			bp_register_member_type( $type, $args );

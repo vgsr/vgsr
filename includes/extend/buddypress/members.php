@@ -352,7 +352,7 @@ function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter
 
 		// Default scope All Members to all vgsr member types
 		if ( 'all' === $object_scope || empty( $object_scope ) ) {
-			foreach ( array_keys( vgsr_bp_member_types() ) as $member_type ) {
+			foreach ( array_keys( vgsr_bp_get_member_types( true ) ) as $member_type ) {
 				$query_string .= "&member_type__in[]={$member_type}";
 			}
 
