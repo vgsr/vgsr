@@ -79,10 +79,15 @@ function vgsr_bp_admin_settings_fields( $fields = array() ) {
  *
  * @since 1.0.0
  */
-function vgsr_bp_admin_setting_callback_profile_fields() { /* Nothing to display */ }
+function vgsr_bp_admin_setting_callback_profile_fields() { ?>
+
+	<p><?php esc_html_e( 'The following field settings enable synchronization between BuddyPress profile fields and WordPress user data. When either field is updated, the associated data is updated as well.', 'vgsr' ); ?></p>
+
+	<?php
+}
 
 /**
- * Display an XProfile field selector for the setting's input
+ * Display an XProfile field selector for the setting field
  *
  * @since 1.0.0
  *
