@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.2.0
  *
- * @param  array $field_types List of field types
+ * @param array $field_types List of field types
  * @return array List of field types
  */
 function vgsr_bp_xprofile_register_field_types( $field_types ) {
@@ -34,9 +34,9 @@ function vgsr_bp_xprofile_register_field_types( $field_types ) {
  *
  * @since 0.2.0
  *
- * @param  array $children Field children
- * @param  bool $for_editing Whether the children are for editing
- * @param  BP_XProfile_Field $field Field object
+ * @param array $children Field children
+ * @param bool $for_editing Whether the children are for editing
+ * @param BP_XProfile_Field $field Field object
  * @return array Field children
  */
 function vgsr_bp_xprofile_field_get_children( $children, $for_editing, $field ) {
@@ -55,6 +55,7 @@ function vgsr_bp_xprofile_field_get_children( $children, $for_editing, $field ) 
 			$children = array();
 
 			foreach ( $data as $key => $user ) {
+				// Mock an option child with default property values
 				$children[] = (object) array(
 					'id'                => "{$user->ID}",
 					'group_id'          => '0',
@@ -119,7 +120,7 @@ function vgsr_bp_xprofile_sync_get_fields() {
  *
  * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_meta_for_field'
  *
- * @param  BP_XProfile_Field|int $field Profile field object or ID
+ * @param BP_XProfile_Field|int $field Profile field object or ID
  * @return string|bool Meta key to sync or False when not found
  */
 function vgsr_bp_xprofile_sync_get_meta_for_field( $field ) {
@@ -145,15 +146,15 @@ function vgsr_bp_xprofile_sync_get_meta_for_field( $field ) {
  *
  * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_field_for_meta'
  *
- * @param  string $meta_key Meta key
+ * @param string $meta_key Meta key
  * @return BP_XProfile_Field|bool Profile field to sync or False when not found
  */
 function vgsr_bp_xprofile_sync_get_field_for_meta( $meta_key ) {
 	$field = false;
 
 	foreach ( vgsr_bp_xprofile_sync_get_fields() as $_meta_key => $field_id ) {
-		if ( $meta_key === $_meta_key && $field_id ) {
-			$field = xprofile_get_field( $field_id );
+		if ( $meta_key === $_meta_key && $_field = xprofile_get_field( $field_id ) ) {
+			$field = $_field;
 			break;
 		}
 	}
