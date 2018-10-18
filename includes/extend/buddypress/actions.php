@@ -39,6 +39,7 @@ add_filter( 'bp_user_query_uid_clauses',              'vgsr_bp_user_query_uid_cl
 add_filter( 'bp_xprofile_get_field_types',    'vgsr_bp_xprofile_register_field_types'      );
 add_filter( 'bp_xprofile_field_get_children', 'vgsr_bp_xprofile_field_get_children', 10, 3 );
 add_action( 'xprofile_field_after_save',      'vgsr_bp_xprofile_save_field'                );
+add_filter( 'bp_disable_profile_sync',        '__return_true'                              );
 add_action( 'xprofile_data_after_save',       'vgsr_bp_xprofile_sync_field_to_meta'        );
 add_action( 'updated_user_meta',              'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
 

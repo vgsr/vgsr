@@ -108,6 +108,11 @@ function vgsr_bp_xprofile_save_field( $field ) {
  */
 function vgsr_bp_xprofile_sync_get_fields() {
 	return (array) apply_filters( 'vgsr_bp_xprofile_sync_get_fields', array(
+		'nickname' => array(
+			'fields'         => array( 1 ),
+			'meta_callback'  => 'vgsr_bp_xprofile_sync_display_name_to_meta',
+			'field_callback' => 'vgsr_bp_xprofile_sync_display_name_to_field'
+		),
 		'jaargroep'    => get_site_option( '_vgsr_bp_jaargroep_field' ),
 		'ancienniteit' => get_site_option( '_vgsr_bp_ancienniteit_field' ),
 		'first_name'   => get_site_option( '_vgsr_bp_first_name_field' ),
@@ -209,7 +214,7 @@ function vgsr_bp_xprofile_sync_field_to_meta( $profile_data ) {
 		// Default sync
 		} else {
 			remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
-			update_user_meta( $profile_data->user_id, $meta_key, $profile_data->value );
+			bp_update_user_meta( $profile_data->user_id, $meta_key, $profile_data->value );
 			add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
 		}
 	}
@@ -284,7 +289,7 @@ function vgsr_bp_xprofile_sync_last_name_to_meta( $profile_data, $fields ) {
 
 	// Update user metadata
 	remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
-	update_user_meta( $profile_data->user_id, 'last_name', $meta_value );
+	bp_update_user_meta( $profile_data->user_id, 'last_name', $meta_value );
 	add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
 }
 
@@ -336,6 +341,38 @@ function vgsr_bp_xprofile_sync_last_name_to_field( $user_id, $meta_key, $meta_va
 		xprofile_set_field_data( $fields['surname'], $user_id, $field_value );
 		add_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
 	}
+}
+
+/**
+ * Synchronize the member's display name profile data to their user metadata 
+ *
+ * @since 1.0.0
+ *
+ * @param BP_XProfile_ProfileData $profile_data Profile data
+ * @param array $fields Field ids
+ */
+function vgsr_bp_xprofile_sync_display_name_to_meta( $profile_data, $fields ) {
+	remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+	bp_update_user_meta( $profile_data->user_id, 'nickname', $profile_data->value );
+	wp_update_user( array( 'ID' => $profile_data->user_id, 'display_name' => $profile_data->value ) );
+	add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+}
+
+/**
+ * Synchronize the member's display name user metadata to their profile data
+ *
+ * @since 1.0.0
+ *
+ * @param int $user_id User ID
+ * @param string $meta_key Meta key
+ * @param string $meta_value Meta value
+ * @param array $fields Field ids
+ */
+function vgsr_bp_xprofile_sync_display_name_to_field( $user_id, $meta_key, $meta_value, $fields ) {
+	remove_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+	xprofile_set_field_data( $fields[0], $user_id, $meta_value );
+	wp_update_user( array( 'ID' => $user_id, 'display_name' => $meta_value ) );
+	add_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
 }
 
 /** Template ***************************************************************/
