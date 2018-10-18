@@ -109,7 +109,16 @@ function vgsr_bp_xprofile_save_field( $field ) {
 function vgsr_bp_xprofile_sync_get_fields() {
 	return (array) apply_filters( 'vgsr_bp_xprofile_sync_get_fields', array(
 		'jaargroep'    => get_site_option( '_vgsr_bp_jaargroep_field' ),
-		'ancienniteit' => get_site_option( '_vgsr_bp_ancienniteit_field' )
+		'ancienniteit' => get_site_option( '_vgsr_bp_ancienniteit_field' ),
+		'first_name'   => get_site_option( '_vgsr_bp_first_name_field' ),
+		'last_name'    => array(
+			'fields'         => array(
+				'surname_prefix' => get_site_option( '_vgsr_bp_surname_prefix_field' ),
+				'surname'        => get_site_option( '_vgsr_bp_last_name_field' )
+			),
+			'meta_callback'  => 'vgsr_bp_xprofile_sync_last_name_to_meta',
+			'field_callback' => 'vgsr_bp_xprofile_sync_last_name_to_field'
+		)
 	) );
 }
 
@@ -121,7 +130,7 @@ function vgsr_bp_xprofile_sync_get_fields() {
  * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_meta_for_field'
  *
  * @param BP_XProfile_Field|int $field Profile field object or ID
- * @return string|bool Meta key to sync or False when not found
+ * @return string|array|bool Meta key or meta context to sync or False when not found
  */
 function vgsr_bp_xprofile_sync_get_meta_for_field( $field ) {
 	$field    = xprofile_get_field( $field );
@@ -129,7 +138,13 @@ function vgsr_bp_xprofile_sync_get_meta_for_field( $field ) {
 
 	if ( $field ) {
 		foreach ( vgsr_bp_xprofile_sync_get_fields() as $_meta_key => $field_id ) {
-			if ( $field_id && $field_id == $field->id ) {
+
+			// Match custom sync context
+			if ( is_array( $field_id ) && isset( $field_id['fields'] ) && in_array( $field->id, array_values( $field_id['fields'] ) ) ) {
+				$meta_key = array_merge( array( 'meta_key' => $_meta_key ), $field_id );
+
+			// Match meta key
+			} elseif ( $field_id == $field->id ) {
 				$meta_key = $_meta_key;
 				break;
 			}
@@ -147,14 +162,23 @@ function vgsr_bp_xprofile_sync_get_meta_for_field( $field ) {
  * @uses apply_filters() Calls 'vgsr_bp_xprofile_sync_get_field_for_meta'
  *
  * @param string $meta_key Meta key
- * @return BP_XProfile_Field|bool Profile field to sync or False when not found
+ * @return BP_XProfile_Field|array|bool Profile field or field context to sync or False when not found
  */
 function vgsr_bp_xprofile_sync_get_field_for_meta( $meta_key ) {
 	$field = false;
 
 	foreach ( vgsr_bp_xprofile_sync_get_fields() as $_meta_key => $field_id ) {
-		if ( $meta_key === $_meta_key && $_field = xprofile_get_field( $field_id ) ) {
-			$field = $_field;
+		if ( $meta_key === $_meta_key && $field_id ) {
+
+			// Match custom sync context
+			if ( is_array( $field_id ) ) {
+				$field = $field_id;
+
+			// Match profile field
+			} else {
+				$field = xprofile_get_field( $field_id );
+			}
+
 			break;
 		}
 	}
@@ -173,9 +197,21 @@ function vgsr_bp_xprofile_sync_field_to_meta( $profile_data ) {
 
 	// When synching meta, update profile field
 	if ( $meta_key = vgsr_bp_xprofile_sync_get_meta_for_field( $profile_data->field_id ) ) {
-		remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
-		update_user_meta( $profile_data->user_id, $meta_key, $profile_data->value );
-		add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+
+		// Custom sync
+		if ( is_array( $meta_key ) ) {
+
+			// Run custom sync callback
+			if ( isset( $meta_key['meta_callback'] ) ) {
+				call_user_func_array( $meta_key['meta_callback'], array( $profile_data, $meta_key['fields'] ) );
+			}
+
+		// Default sync
+		} else {
+			remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+			update_user_meta( $profile_data->user_id, $meta_key, $profile_data->value );
+			add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+		}
 	}
 }
 
@@ -193,8 +229,111 @@ function vgsr_bp_xprofile_sync_meta_to_field( $meta_id, $user_id, $meta_key, $me
 
 	// When synching meta, update profile field
 	if ( $field = vgsr_bp_xprofile_sync_get_field_for_meta( $meta_key ) ) {
+
+		// Custom sync
+		if ( is_array( $field ) ) {
+
+			// Run custom sync callback
+			if ( isset( $field['field_callback'] ) ) {
+				call_user_func_array( $field['field_callback'], array( $user_id, $meta_key, $meta_value, $field['fields'] ) );
+			}
+
+		// Default sync
+		} else {
+			remove_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+			xprofile_set_field_data( $field->id, $user_id, $meta_value, $field->is_required );
+			add_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+		}
+	}
+}
+
+/**
+ * Synchronize the member's last name profile data to their user metadata 
+ *
+ * @since 1.0.0
+ *
+ * @param BP_XProfile_ProfileData $profile_data Profile data
+ * @param array $fields Field ids
+ */
+function vgsr_bp_xprofile_sync_last_name_to_meta( $profile_data, $fields ) {
+
+	// Get which field is updated and which is not
+	$this_field  = array_search( $profile_data->field_id, $fields );
+	$other_field = array_values( array_diff( array_keys( $fields ), array( $this_field ) ) )[0];
+
+	// Get the data for the other field
+	$other_profile_data = xprofile_get_field_data( $fields[ $other_field ], $profile_data->user_id );
+
+	// Setup list of the combined values
+	$parts = array(
+		$this_field  => $profile_data->value,
+		$other_field => $other_profile_data ? $other_profile_data : '' // Default other field to empty string
+	);
+
+	// Bail when the surname part is emtpy
+	if ( ! $parts['surname'] )
+		return;
+
+	// Append space to the prefix
+	if ( $parts['surname_prefix'] ) {
+		$parts['surname_prefix'] .= ' ';
+	}
+
+	// Combine parts
+	$meta_value = $parts['surname_prefix'] . $parts['surname'];
+
+	// Update user metadata
+	remove_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+	update_user_meta( $profile_data->user_id, 'last_name', $meta_value );
+	add_action( 'updated_user_meta', 'vgsr_bp_xprofile_sync_meta_to_field', 10, 4 );
+}
+
+/**
+ * Synchronize the member's last name user metadata to their profile data
+ *
+ * @since 1.0.0
+ *
+ * @param int $user_id User ID
+ * @param string $meta_key Meta key
+ * @param string $meta_value Meta value
+ * @param array $fields Field ids
+ */
+function vgsr_bp_xprofile_sync_last_name_to_field( $user_id, $meta_key, $meta_value, $fields ) {
+
+	// Define default field values
+	$field_value        = $meta_value;
+	$prefix_field_value = '';
+
+	// Process when multiple pieces were found
+	if ( false !== strpos( trim( $field_value ), ' ' ) ) {
+
+		// Get common surname prefixes
+		$prefixes = vgsr_surname_prefixes();
+		usort( $prefixes, 'vgsr_sort_by_length' );
+
+		// Walk all prefixes
+		foreach ( $prefixes as $prefix ) {
+
+			// Assign values when the prefix was found
+			if ( 0 === strpos( strtolower( $field_value ), $prefix ) ) {
+				$field_value        = substr( $field_value, strlen( $prefix ) + 1 );
+				$prefix_field_value = $prefix;
+				break;
+			}
+		}
+	}
+
+	// Update surname prefix profile field
+	if ( $fields['surname_prefix'] ) {
 		remove_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
-		xprofile_set_field_data( $field->id, $user_id, $meta_value, $field->is_required );
+		xprofile_set_field_data( $fields['surname_prefix'], $user_id, $prefix_field_value );
+		add_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+	}
+
+	// Update surname profile field
+	if ( $fields['surname'] ) {
+		remove_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
+		xprofile_set_field_data( $fields['surname'], $user_id, $field_value );
 		add_action( 'xprofile_data_after_save', 'vgsr_bp_xprofile_sync_field_to_meta' );
 	}
 }

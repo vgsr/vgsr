@@ -373,6 +373,21 @@ function vgsr_pre_comment_approved( $approved, $commentdata ) {
 	return $approved;
 }
 
+/** Helpers ****************************************************************/
+
+/**
+ * Sorting method comparing string length
+ *
+ * @since 1.0.0
+ *
+ * @param string $a First item
+ * @param string $b Second item
+ * @return int Sorting order
+ */
+function vgsr_sort_by_length( $a, $b ) {
+	return strlen( $b ) - strlen( $a );
+}
+
 /** Data *******************************************************************/
 
 /**
@@ -385,7 +400,7 @@ function vgsr_pre_comment_approved( $approved, $commentdata ) {
  */
 function vgsr_surname_prefixes() {
 	$prefixes = _x(
-		"aan,aan de,aan den,aan der,aan het,aan 't,bij,bij de,bij den,bij het,bij 't,boven d',d',de,den,der,in,in de,in den,in der,in het,in 't,onder,onder de,onder den,onder het,onder 't,op,over,over de,over den,over het,over 't,op de,op den,op der,op het,op 't,op ten,'s,'t,te,ten,ter,tot,uit,uit de,uit den,uit het,uit 't,uit ten,uijt,uijt de,uijt den,uijt het,uijt 't,uijt ten,van,van de,van den,van der,van het,van 't,van ter,ver,voor,voor de,voor den,voor in 't",
+		"aan,aan de,aan den,aan der,aan het,aan 't,bij,bij de,bij den,bij het,bij 't,boven d',d',de,den,der,in,in de,in den,in der,in het,in 't,onder,onder de,onder den,onder het,onder 't,op,op de,op den,op der,op het,op 't,op ten,over,over de,over den,over het,over 't,'s,'t,te,ten,ter,tot,uit,uit de,uit den,uit het,uit 't,uit ten,uijt,uijt de,uijt den,uijt het,uijt 't,uijt ten,van,van de,van den,van der,van het,van 't,van ter,ver,voor,voor de,voor den,voor in 't",
 		'Comma-separated list of surname prefixes in your language',
 		'vgsr'
 	);

@@ -45,25 +45,58 @@ function vgsr_bp_admin_settings_fields( $fields = array() ) {
 	// Profile fields
 	$fields['bp_profile_fields'] = array(
 
+		// First Name field
+		'_vgsr_bp_first_name_field' => array(
+			'title'             => esc_html_x( 'First name', 'Profile field name', 'vgsr' ),
+			'callback'          => 'vgsr_bp_admin_setting_callback_xprofile_field',
+			'sanitize_callback' => 'intval',
+			'args'              => array(
+				'setting'     => '_vgsr_bp_first_name_field',
+				'description' => esc_html__( "Select the field that holds the member's value for this data.", 'vgsr' )
+			)
+		),
+
+		// Surname Prefix field
+		'_vgsr_bp_surname_prefix_field' => array(
+			'title'             => esc_html_x( 'Surname prefix', 'Profile field name', 'vgsr' ),
+			'callback'          => 'vgsr_bp_admin_setting_callback_xprofile_field',
+			'sanitize_callback' => 'intval',
+			'args'              => array(
+				'setting'     => '_vgsr_bp_surname_prefix_field',
+				'description' => esc_html__( "Select the field that holds the member's value for this data.", 'vgsr' )
+			)
+		),
+
+		// Last Name field
+		'_vgsr_bp_last_name_field' => array(
+			'title'             => esc_html_x( 'Last name', 'Profile field name', 'vgsr' ),
+			'callback'          => 'vgsr_bp_admin_setting_callback_xprofile_field',
+			'sanitize_callback' => 'intval',
+			'args'              => array(
+				'setting'     => '_vgsr_bp_last_name_field',
+				'description' => esc_html__( "Select the field that holds the member's value for this data.", 'vgsr' )
+			)
+		),
+
 		// Jaargroep field
 		'_vgsr_bp_jaargroep_field' => array(
-			'title'             => esc_html__( 'Jaargroep Field', 'vgsr' ),
+			'title'             => esc_html_x( 'Jaargroep', 'Profile field name', 'vgsr' ),
 			'callback'          => 'vgsr_bp_admin_setting_callback_xprofile_field',
 			'sanitize_callback' => 'intval',
 			'args'              => array(
 				'setting'     => '_vgsr_bp_jaargroep_field',
-				'description' => esc_html__( "Select the field that holds the member's Jaargroep value.", 'vgsr' )
+				'description' => esc_html__( "Select the field that holds the member's value for this data.", 'vgsr' )
 			)
 		),
 
 		// Ancienniteit field
 		'_vgsr_bp_ancienniteit_field' => array(
-			'title'             => esc_html__( 'Ancienniteit Field', 'vgsr' ),
+			'title'             => esc_html_x( 'Anciënniteit', 'Profile field name', 'vgsr' ),
 			'callback'          => 'vgsr_bp_admin_setting_callback_xprofile_field',
 			'sanitize_callback' => 'intval',
 			'args'              => array(
 				'setting'     => '_vgsr_bp_ancienniteit_field',
-				'description' => esc_html__( "Select the field that holds the member's Anciennteit value.", 'vgsr' )
+				'description' => esc_html__( "Select the field that holds the member's value for this data.", 'vgsr' )
 			)
 		),
 
