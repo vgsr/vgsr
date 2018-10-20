@@ -123,7 +123,8 @@ function vgsr_bp_xprofile_sync_get_fields() {
 			),
 			'meta_callback'  => 'vgsr_bp_xprofile_sync_last_name_to_meta',
 			'field_callback' => 'vgsr_bp_xprofile_sync_last_name_to_field'
-		)
+		),
+		'gender'       => get_site_option( '_vgsr_bp_gender_field' )
 	) );
 }
 

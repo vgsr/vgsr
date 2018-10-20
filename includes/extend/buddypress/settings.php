@@ -100,6 +100,16 @@ function vgsr_bp_admin_settings_fields( $fields = array() ) {
 			)
 		),
 
+		// Gender field
+		'_vgsr_bp_gender_field' => array(
+			'title'             => esc_html_x( 'Gender', 'Profile field name', 'vgsr' ),
+			'callback'          => 'vgsr_bp_admin_setting_callback_xprofile_field',
+			'sanitize_callback' => 'intval',
+			'args'              => array(
+				'setting'     => '_vgsr_bp_gender_field',
+				'description' => esc_html__( "Select the field that holds the member's value for this data.", 'vgsr' )
+			)
+		)
 	);
 
 	return $fields;
