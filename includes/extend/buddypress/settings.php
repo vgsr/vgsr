@@ -22,10 +22,10 @@ defined( 'ABSPATH' ) || exit;
  */
 function vgsr_bp_admin_settings_sections( $sections = array() ) {
 
-	// Profile fields
-	$sections['bp_profile_fields'] = array(
-		'title'    => esc_html__( 'Profile Fields', 'vgsr' ),
-		'callback' => 'vgsr_bp_admin_setting_callback_profile_fields',
+	// Profile synchronization fields
+	$sections['vgsr_bp_profile_sync_fields'] = array(
+		'title'    => esc_html__( 'Profile Synchronization', 'vgsr' ),
+		'callback' => 'vgsr_bp_admin_setting_callback_profile_sync_fields',
 		'page'     => 'vgsr'
 	);
 
@@ -43,7 +43,7 @@ function vgsr_bp_admin_settings_sections( $sections = array() ) {
 function vgsr_bp_admin_settings_fields( $fields = array() ) {
 
 	// Profile fields
-	$fields['bp_profile_fields'] = array(
+	$fields['vgsr_bp_profile_sync_fields'] = array(
 
 		// First Name field
 		'_vgsr_bp_first_name_field' => array(
@@ -115,19 +115,21 @@ function vgsr_bp_admin_settings_fields( $fields = array() ) {
 	return $fields;
 }
 
-/** Profile Fields ********************************************************/
+/** Profile Synchronization ***********************************************/
 
 /**
  * Display the description for the Profile Fields section
  *
  * @since 1.0.0
  */
-function vgsr_bp_admin_setting_callback_profile_fields() { ?>
+function vgsr_bp_admin_setting_callback_profile_sync_fields() { ?>
 
 	<p><?php esc_html_e( 'The following field settings enable synchronization between BuddyPress profile fields and WordPress user data. When either field is updated, the associated data is updated as well.', 'vgsr' ); ?></p>
 
 	<?php
 }
+
+/** Profile Fields ********************************************************/
 
 /**
  * Display an XProfile field selector for the setting field
