@@ -681,108 +681,18 @@ class VGSR_BuddyPress {
 
 		// Query Leden
 		if ( 'lid' === $type ) {
-			$sql_clauses['where'] = $this->query_is_user_lid();
+			$sql_clauses['where'] = vgsr_bp_query_is_user_lid();
 
 		// Query Oud-leden
 		} elseif ( 'oud-lid' === $type ) {
-			$sql_clauses['where'] = $this->query_is_user_oudlid();
+			$sql_clauses['where'] = vgsr_bp_query_is_user_oudlid();
 
 		// Query all vgsr
 		} elseif ( true === $type ) {
-			$sql_clauses['where'] = $this->query_is_user_vgsr();
+			$sql_clauses['where'] = vgsr_bp_query_is_user_vgsr();
 		}
 
 		return $sql_clauses;
-	}
-
-	/**
-	 * Modify the user query SQL to query by all vgsr member types
-	 *
-	 * @since 0.1.0
-	 */
-	public function query_is_user_vgsr() {
-		return $this->query_where_user_by_member_type( array( vgsr_bp_lid_member_type(), vgsr_bp_oudlid_member_type() ) );
-	}
-
-	/**
-	 * Modify the user query SQL to query by Lid member type
-	 *
-	 * @since 0.1.0
-	 */
-	public function query_is_user_lid() {
-		return $this->query_where_user_by_member_type( vgsr_bp_lid_member_type() );
-	}
-
-	/**
-	 * Modify the user query SQL to query by Oud-lid member type
-	 *
-	 * @since 0.1.0
-	 */
-	public function query_is_user_oudlid() {
-		return $this->query_where_user_by_member_type( vgsr_bp_oudlid_member_type() );
-	}
-
-	/**
-	 * Return a query WHERE statement to query users by member type
-	 *
-	 * @see BP_User_Query::get_sql_clause_for_member_types()
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param string|array Member type name(s)
-	 * @return string Member type SQL WHERE statement
-	 */
-	private function query_where_user_by_member_type( $member_types = '' ) {
-		global $wpdb;
-
-		// Parse and sanitize types.
-		if ( ! is_array( $member_types ) ) {
-			$member_types = preg_split( '/[,\s+]/', $member_types );
-		}
-
-		$types = array();
-		foreach ( $member_types as $mt ) {
-			if ( bp_get_member_type_object( $mt ) ) {
-				$types[] = $mt;
-			}
-		}
-
-		$tax_query = new WP_Tax_Query( array(
-			array(
-				'taxonomy' => bp_get_member_type_tax_name(),
-				'field'    => 'name',
-				'operator' => 'IN',
-				'terms'    => $types,
-			),
-		) );
-
-		// Switch to the root blog, where member type taxonomies live.
-		$site_id  = bp_get_taxonomy_term_site_id( bp_get_member_type_tax_name() );
-		$switched = false;
-		if ( $site_id !== get_current_blog_id() ) {
-			switch_to_blog( $site_id );
-			$switched = true;
-		}
-
-		// Generete SQL clause
-		$sql_clauses = $tax_query->get_sql( 'u', 'ID' );
-
-		$clause = '';
-
-		// The no_results clauses are the same between IN and NOT IN.
-		if ( false !== strpos( $sql_clauses['where'], '0 = 1' ) ) {
-			$clause = $sql_clauses['where'];
-
-		// IN clauses must be converted to a subquery.
-		} elseif ( preg_match( '/' . $wpdb->term_relationships . '\.term_taxonomy_id IN \([0-9, ]+\)/', $sql_clauses['where'], $matches ) ) {
-			$clause = "{$wpdb->users}.ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE {$matches[0]} )";
-		}
-
-		if ( $switched ) {
-			restore_current_blog();
-		}
-
-		return $clause;
 	}
 
 	/** Pages & Templates **************************************************/
