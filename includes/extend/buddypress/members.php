@@ -327,6 +327,35 @@ function vgsr_bp_member_dashboard_profile_button( $user_id = 0 ) {
 /** Query ******************************************************************/
 
 /**
+ * Return the SQL WHERE statement for the matched 'vgsr' parameter
+ *
+ * @since 1.0.0
+ *
+ * @param bool|string $arg The 'vgsr' query parameter.
+ * @return string SQL WHERE statement
+ */
+function vgsr_bp_query_for_vgsr_arg( $arg = '' ) {
+
+	// Define return variable
+	$retval = '';
+
+	// Query Leden
+	if ( 'lid' === $arg ) {
+		$retval = vgsr_bp_query_is_user_lid();
+
+	// Query Oud-leden
+	} elseif ( 'oud-lid' === $arg ) {
+		$retval = vgsr_bp_query_is_user_oudlid();
+
+	// Query all vgsr
+	} elseif ( true === $arg ) {
+		$retval = vgsr_bp_query_is_user_vgsr();
+	}
+
+	return $retval;
+}
+
+/**
  * Return the SQL WHERE statement to query by all vgsr member types
  *
  * @since 0.1.0

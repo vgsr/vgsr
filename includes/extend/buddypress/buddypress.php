@@ -676,20 +676,9 @@ class VGSR_BuddyPress {
 	 */
 	public function pre_user_query( $sql_clauses, $query ) {
 
-		// Get the 'vgsr' query argument
-		$type = $query->get( 'vgsr' );
-
-		// Query Leden
-		if ( 'lid' === $type ) {
-			$sql_clauses['where'] = vgsr_bp_query_is_user_lid();
-
-		// Query Oud-leden
-		} elseif ( 'oud-lid' === $type ) {
-			$sql_clauses['where'] = vgsr_bp_query_is_user_oudlid();
-
-		// Query all vgsr
-		} elseif ( true === $type ) {
-			$sql_clauses['where'] = vgsr_bp_query_is_user_vgsr();
+		// Add query part for the 'vgsr' query parameter
+		if ( $type = $query->get( 'vgsr' ) ) {
+			$sql_clauses['where'] = vgsr_bp_query_for_vgsr_arg( $type );
 		}
 
 		return $sql_clauses;
