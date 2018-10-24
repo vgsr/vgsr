@@ -88,13 +88,14 @@ class VGSR_BuddyPress {
 		// Admin
 		add_filter( 'vgsr_admin_redirect_url', array( $this, 'admin_redirect_url' ) );
 
-		// Define member types and define user checks
-		add_action( 'bp_register_member_types',        array( $this, 'register_member_types' )        );
-		add_filter( 'is_user_vgsr',                    array( $this, 'is_user_vgsr'          ), 10, 2 );
-		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'           ), 10, 2 );
-		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'        ), 10, 2 );
-		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'        ), 10, 2 );
-		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'  ), 10, 2 );
+		// Define member types and setup user checks
+		add_action( 'bp_register_member_types',        array( $this, 'register_member_types'  )        );
+		add_filter( 'is_user_vgsr',                    array( $this, 'is_user_vgsr'           ), 10, 2 );
+		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'            ), 10, 2 );
+		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'         ), 10, 2 );
+		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'         ), 10, 2 );
+		add_filter( 'bp_user_query_uid_clauses',       array( $this, 'user_query_uid_clauses' ), 10, 2 );
+		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'   ), 10, 2 );
 
 		// Caps
 		add_filter( 'vgsr_map_settings_meta_caps', array( $this, 'map_meta_caps' ), 10, 4 );
@@ -679,6 +680,29 @@ class VGSR_BuddyPress {
 		// Add query part for the 'vgsr' query parameter
 		if ( $type = $query->get( 'vgsr' ) ) {
 			$sql_clauses['where'] = vgsr_bp_query_for_vgsr_arg( $type );
+		}
+
+		return $sql_clauses;
+	}
+
+	/**
+	 * Modify the BP user query to return only vgsr users
+	 *
+	 * Adds vgsr conditions to the uid query that prefetches all user ids that
+	 * are later run through `WP_User_Query`. The other filter on `WP_User_Query`
+	 * will run too late for this.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $sql_clauses SQL clauses
+	 * @param BP_User_Query $query
+	 * @return array SQL clauses
+	 */
+	public function user_query_uid_clauses( $sql_clauses, $query ) {
+
+		// Add query part for the 'vgsr' query parameter
+		if ( ! empty( $query->query_vars['vgsr'] ) ) {
+			$sql_clauses['where'][] = vgsr_bp_query_for_vgsr_arg( $query->query_vars['vgsr'] );
 		}
 
 		return $sql_clauses;
