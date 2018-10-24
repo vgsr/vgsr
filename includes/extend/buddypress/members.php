@@ -502,6 +502,21 @@ function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter
 }
 
 /**
+ * Return list of custom query args that are passed to `bp_has_members()`
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_bp_custom_has_members_args'
+ * @return array Custom args passed to `bp_has_members()`
+ */
+function vgsr_bp_custom_has_members_args() {
+	return (array) apply_filters( 'vgsr_bp_custom_has_members_args', array(
+		'vgsr',
+		'vgsr_jaargroep'
+	) );
+}
+
+/**
  * Modify the parsed members query arguments
  *
  * Since BP's directory queries do not allow for custom query arg parsing,
@@ -515,13 +530,17 @@ function vgsr_bp_legacy_ajax_querystring( $query_string, $object, $object_filter
  */
 function vgsr_bp_parse_has_members_args( $args = array() ) {
 
-	// Jaargroep filtering
-	if ( ! empty( $args['vgsr_jaargroep'] ) ) {
+	// Get custom args
+	$custom_args = vgsr_bp_custom_has_members_args();
+	$intersect   = array_intersect_key( $args, array_flip( $custom_args ) );
+
+	// Custom args provided
+	if ( $intersect ) {
 
 		// Define type argument container. Hijack `type` argument
-		$args['type'] = array(
-			'_type'     => $args['type'],
-			'jaargroep' => $args['vgsr_jaargroep']
+		$args['type'] = array_merge(
+			array( '_type' => $args['type'] ),
+			$intersect
 		);
 	}
 
@@ -549,8 +568,14 @@ function vgsr_bp_parse_core_get_users_args( $args = array() ) {
 		$type = $args['type']['_type'];
 		unset( $args['type']['_type'] );
 
-		// Define query modifiers
-		$args['vgsr_jaargroep'] = $args['type']['jaargroep'];
+		// Walk custom args
+		foreach ( vgsr_bp_custom_has_members_args() as $arg ) {
+
+			// Move custom query argument over
+			if ( isset( $args['type'][ $arg ] ) ) {
+				$args[ $arg ] = $args['type'][ $arg ];
+			}
+		}
 
 		// Reset `type` argument
 		$args['type'] = $type;
