@@ -395,9 +395,10 @@ function vgsr_bp_query_is_user_oudlid() {
  * @global WPDB $wpdb
  *
  * @param string|array Member type name(s)
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
  * @return string Member type SQL WHERE statement
  */
-function vgsr_bp_query_where_user_by_member_type( $member_types = '' ) {
+function vgsr_bp_query_where_user_by_member_type( $member_types = '', $users_alias = 'u' ) {
 	global $wpdb;
 
 	// Parse and sanitize types.
@@ -430,7 +431,7 @@ function vgsr_bp_query_where_user_by_member_type( $member_types = '' ) {
 	}
 
 	// Generete SQL clause
-	$sql_clauses = $tax_query->get_sql( 'u', 'ID' );
+	$sql_clauses = $tax_query->get_sql( $users_alias, 'ID' );
 
 	$clause = '';
 
@@ -440,7 +441,7 @@ function vgsr_bp_query_where_user_by_member_type( $member_types = '' ) {
 
 	// IN clauses must be converted to a subquery.
 	} elseif ( preg_match( '/' . $wpdb->term_relationships . '\.term_taxonomy_id IN \([0-9, ]+\)/', $sql_clauses['where'], $matches ) ) {
-		$clause = "{$wpdb->users}.ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE {$matches[0]} )";
+		$clause = "{$users_alias}.ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE {$matches[0]} )";
 	}
 
 	if ( $switched ) {
