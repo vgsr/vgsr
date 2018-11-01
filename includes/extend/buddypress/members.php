@@ -610,30 +610,44 @@ function vgsr_bp_members_get_query_arg( $arg = '' ) {
 /**
  * Modify the SQL clauses for the user ID query of a BP_User_Query
  *
+ * @see BP_User_Query::prepare_user_ids_query()
+ *
  * @since 0.2.0
  *
  * @global $wpdb WPDB
  *
  * @param  array $sql SQL clauses
- * @param  BP_User_Query $user_query User query object
+ * @param  BP_User_Query $query User query object
  * @return array SQL clauses
  */
-function vgsr_bp_user_query_uid_clauses( $sql, $user_query ) {
+function vgsr_bp_user_query_uid_clauses( $sql, $query ) {
 	global $wpdb;
 
-	$qv = $user_query->query_vars;
+	$qv = $query->query_vars;
 
 	// Ordering by ancienniteit
-	if ( 'ancienniteit' == $qv['type'] ) {
+	if ( 'ancienniteit' === $qv['type'] ) {
+
+		// Construct custom query order
 		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} ancienniteit ON u.ID = ancienniteit.user_id";
 		$sql['where'][] = $wpdb->prepare( "ancienniteit.meta_key = %s", 'ancienniteit' );
 		$sql['orderby'] = "ORDER BY CAST(ancienniteit.meta_value AS SIGNED)";
 		$sql['order']   = "ASC";
 	}
 
+	// Ordering by random for vgsr users
+	if ( 'random' === $qv['type'] && ! empty( $qv['vgsr'] ) ) {
+
+		// Remove last_activity restriction: use wp_users table
+		$query->uid_name  = 'ID';
+		$query->uid_table = $wpdb->users;
+		$sql['select']    = "SELECT u.{$query->uid_name} as id FROM {$query->uid_table} u";
+		unset( $sql['where'][ array_search( $wpdb->prepare( "u.component = %s AND u.type = 'last_activity'", buddypress()->members->id ), $sql['where'] ) ] );
+	}
+
 	// Jaargroep filtering
 	if ( ! empty( $qv['vgsr_jaargroep'] ) ) {
-		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} jaargroep ON u.{$user_query->uid_name} = jaargroep.user_id";
+		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} jaargroep ON u.{$query->uid_name} = jaargroep.user_id";
 		$sql['where'][] = $wpdb->prepare( "jaargroep.meta_key = %s AND jaargroep.meta_value = %s", 'jaargroep', $qv['vgsr_jaargroep'] );
 	}
 
