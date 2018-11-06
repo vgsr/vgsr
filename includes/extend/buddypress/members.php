@@ -626,7 +626,7 @@ function vgsr_bp_user_query_uid_clauses( $sql, $query ) {
 	$qv = $query->query_vars;
 
 	// Ordering by ancienniteit
-	if ( 'ancienniteit' === $qv['type'] ) {
+	if ( 'ancienniteit' === $qv['type'] || ( ! empty( $qv['vgsr'] ) && '' === $qv['type'] ) ) {
 
 		// Construct custom query order
 		$sql['select'] .= " LEFT OUTER JOIN {$wpdb->usermeta} ancienniteit ON u.ID = ancienniteit.user_id";
@@ -636,7 +636,7 @@ function vgsr_bp_user_query_uid_clauses( $sql, $query ) {
 	}
 
 	// Ordering by random for vgsr users
-	if ( 'random' === $qv['type'] && ! empty( $qv['vgsr'] ) ) {
+	if ( ! empty( $qv['vgsr'] ) && 'random' === $qv['type'] ) {
 
 		// Remove last_activity restriction: use wp_users table
 		$query->uid_name  = 'ID';
