@@ -288,7 +288,7 @@ class VGSR_Admin {
 			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:not(:checked) + label span.post-is-open, .misc-pub-vgsr input[type=\"checkbox\"]:checked + label span.post-is-vgsr { display: inline; }";
 			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label span.post-is-open, .misc-pub-vgsr input[type=\"checkbox\"]:not(:checked) + label span.post-is-vgsr { display: none; }";
 
-			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label span span { font-weight: 600; }";
+			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"] + label span span { font-weight: 600; }";
 			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label:before { content: '\\f155'; color: #888; }";
 		}
 
@@ -434,7 +434,7 @@ class VGSR_Admin {
 		<div class="misc-pub-section misc-pub-vgsr">
 			<input type="checkbox" id="post_vgsr" name="vgsr_post_vgsr" value="1" <?php checked( vgsr_is_post_vgsr( $post->ID ) ); ?>/>
 			<label for="post_vgsr" class="dashicons-before">
-				<span class="post-is-open"><?php _e( 'Show to all site visitors', 'vgsr' ); ?></span>
+				<span class="post-is-open"><?php _e( 'Show to <span>all site visitors</span>', 'vgsr' ); ?></span>
 				<span class="post-is-vgsr"><?php _e( 'Show only to <span>VGSR members</span>', 'vgsr' ); ?></span>
 			</label>
 			<?php wp_nonce_field( 'vgsr_post_vgsr_save', 'vgsr_post_vgsr_nonce' ); ?>
