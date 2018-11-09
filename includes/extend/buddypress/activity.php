@@ -220,13 +220,16 @@ function vgsr_bp_activity_can_comment( $can_comment, $activity_type ) {
  *
  * @since 1.0.0
  *
+ * @global BP_Activity_Template $activities_template
+ *
  * @param bool $can_favorite Whether the item can be favorited
  * @return bool Whether the item can be favorited
  */
 function vgsr_bp_activity_can_favorite( $can_favorite ) {
+	global $activities_template;
 
 	// Bail when we're not in the activities template loop
-	if ( ! isset( $GLOBALS['activities_template'] ) || ! is_a( $GLOBALS['activities_template'], 'BP_Activity_Template' ) ) {
+	if ( ! $activities_template || ! is_a( $activities_template, 'BP_Activity_Template' ) || ! $activities_template->has_activities() ) {
 		return $can_favorite;
 	}
 
