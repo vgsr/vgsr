@@ -93,6 +93,7 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_vgsr',                    array( $this, 'is_user_vgsr'           ), 10, 2 );
 		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'            ), 10, 2 );
 		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'         ), 10, 2 );
+		add_filter( 'is_user_exlid',                   array( $this, 'is_user_exlid'          ), 10, 2 );
 		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'         ), 10, 2 );
 		add_filter( 'bp_user_query_uid_clauses',       array( $this, 'user_query_uid_clauses' ), 10, 2 );
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'   ), 10, 2 );
@@ -518,7 +519,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @param string $member_type Member type name
 	 * @param int $user_id Optional. User ID. Defaults to current user.
-	 * @return boolean User has member type
+	 * @return bool User has member type
 	 */
 	public function has_member_type( $member_type, $user_id = null ) {
 
@@ -634,7 +635,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
-	 * @return boolean User is VGSR
+	 * @return bool Is user VGSR?
 	 */
 	public function is_user_vgsr( $is, $user_id = null ) {
 		return ( $is ? $is : ( $this->is_user_lid( false, $user_id ) || $this->is_user_oudlid( false, $user_id ) ) );
@@ -647,7 +648,7 @@ class VGSR_BuddyPress {
 	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
-	 * @return boolean User is Lid
+	 * @return bool Is user lid?
 	 */
 	public function is_user_lid( $is, $user_id = null ) {
 		return ( $is ? $is : $this->has_member_type( vgsr_bp_lid_member_type(), $user_id ) );
@@ -660,10 +661,23 @@ class VGSR_BuddyPress {
 	 *
 	 * @param bool $is User validation
 	 * @param int $user_id User ID
-	 * @return boolean User is Oud-lid
+	 * @return bool Is user oud-lid?
 	 */
 	public function is_user_oudlid( $is, $user_id = null ) {
 		return ( $is ? $is : $this->has_member_type( vgsr_bp_oudlid_member_type(), $user_id ) );
+	}
+
+	/**
+	 * Filter whether the given user is Ex-lid.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param bool $is User validation
+	 * @param int $user_id User ID
+	 * @return bool Is user Ex-lid?
+	 */
+	public function is_user_exlid( $is, $user_id = null ) {
+		return ( $is ? $is : $this->has_member_type( vgsr_bp_exlid_member_type(), $user_id ) );
 	}
 
 	/**

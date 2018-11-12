@@ -175,7 +175,7 @@ function vgsr_bp_oudlid_member_type() {
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_exlid_member_type'
- * @return string Oud-lid member type name
+ * @return string Ex-lid member type name
  */
 function vgsr_bp_exlid_member_type() {
 	return apply_filters( 'vgsr_bp_exlid_member_type', 'exlid' );
