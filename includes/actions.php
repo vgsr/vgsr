@@ -101,4 +101,5 @@ add_action( 'gform_loaded',            'vgsr_setup_gravityforms',            10 
 add_action( 'vgsr_ready',              'vgsr_setup_initials_default_avatar', 10    );
 add_action( 'vgsr_ready',              'vgsr_setup_responsive_lightbox',     10    ); // Lightbox integration
 add_action( 'vgsr_ready',              'vgsr_setup_woosidebars',             10    ); // Widget areas integration
+add_action( 'vgsr_ready',              'vgsr_setup_user_switching',          10    ); // User switching
 add_action( 'vgsr_ready',              'vgsr_setup_wpseo',                   10    ); // SEO integration
