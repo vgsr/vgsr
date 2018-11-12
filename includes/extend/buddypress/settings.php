@@ -42,6 +42,14 @@ function vgsr_bp_admin_settings_sections( $sections = array() ) {
  */
 function vgsr_bp_admin_settings_fields( $fields = array() ) {
 
+	// Add BP access
+	$fields['vgsr_settings_access']['_vgsr_hide_buddypress'] = array(
+		'title'             => esc_html__( 'Hide BuddyPress', 'vgsr' ),
+		'callback'          => 'vgsr_bp_admin_setting_callback_hide_buddypress',
+		'sanitize_callback' => 'intval',
+		'args'              => array()
+	);
+
 	// Profile fields
 	$fields['vgsr_bp_profile_sync_fields'] = array(
 
@@ -113,6 +121,21 @@ function vgsr_bp_admin_settings_fields( $fields = array() ) {
 	);
 
 	return $fields;
+}
+
+/** Access ****************************************************************/
+
+/**
+ * Display the content of the Hide BuddyPress settings field
+ *
+ * @since 1.0.0
+ */
+function vgsr_bp_admin_setting_callback_hide_buddypress() { ?>
+
+	<input name="_vgsr_hide_buddypress" id="_vgsr_hide_buddypress" type="checkbox" value="1" <?php checked( get_site_option( '_vgsr_hide_buddypress' ) ); ?>>
+	<label for="_vgsr_hide_buddypress"><?php esc_html_e( 'Hide profiles and all related BuddyPress components for all, except admins', 'vgsr' ); ?></label>
+
+	<?php
 }
 
 /** Profile Synchronization ***********************************************/

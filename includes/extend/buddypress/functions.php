@@ -348,7 +348,49 @@ function vgsr_bp_get_total_vgsr_member_count() {
 	) );
 }
 
+/** Access *****************************************************************/
+
+/**
+ * Return whether to hide BuddyPress entirely for non-admins
+ *
+ * @since 1.0.0
+ *
+ * @param int $user_id Optional. User ID. Defaults to the current user.
+ * @param string $cap Optional. Capability to check users for admin access against.
+ * @return bool Hide BP BuddyPress for this user?
+ */
+function vgsr_bp_hide_for_user( $user_id = 0 ) {
+
+	// Default to the current user
+	if ( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	// Hide BP for non-vgsr users or for all non-admins
+	$hide = ! is_user_vgsr( $user_id ) || vgsr_hide_buddypress();
+
+	// Prevent hiding for (super) admin users
+	if ( $hide && user_can( $user_id, is_multisite() ? 'manage_network_options' : 'manage_options' ) ) {
+		$hide = false;
+	}
+
+	return $hide;
+}
+
 /** Options ****************************************************************/
+
+/**
+ * Return whether to hide BuddyPress for all non-admins
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_hide_buddypress'
+ *
+ * @return bool Hide BuddyPress?
+ */
+function vgsr_hide_buddypress() {
+	return (bool) apply_filters( 'vgsr_hide_buddypress', get_site_option( '_vgsr_hide_buddypress', false ) );
+}
 
 /**
  * Return whether custom activity posting is blocked
@@ -356,6 +398,7 @@ function vgsr_bp_get_total_vgsr_member_count() {
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_block_activity_posting'
+ *
  * @return bool Activity posting is blocked
  */
 function vgsr_bp_block_activity_posting() {

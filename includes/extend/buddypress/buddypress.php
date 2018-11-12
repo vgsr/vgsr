@@ -167,7 +167,7 @@ class VGSR_BuddyPress {
 	 * @since 0.1.0
 	 *
 	 * @param bool $is Is this a BuddyPress page?
-	 * @return boolean Is BuddyPress
+	 * @return bool Is BuddyPress
 	 */
 	public function is_buddypress( $is ) {
 
@@ -215,8 +215,8 @@ class VGSR_BuddyPress {
 		if ( ! get_current_user_id() ) {
 			$components = array();
 
-		// The user is non-vgsr, so don't load exclusive components
-		} elseif ( ! is_user_vgsr() ) {
+		// Hide for user, so don't load exclusive components
+		} elseif ( vgsr_bp_hide_for_user() ) {
 			$components = array_diff_key( $components, array_flip( vgsr_bp_components() ) );
 		}
 
@@ -230,19 +230,23 @@ class VGSR_BuddyPress {
 	 */
 	public function block_components() {
 
-		// Current user is non-vgsr and page is BP but not their profile, so 404
-		if ( is_buddypress() && ! bp_is_my_profile() && ! is_user_vgsr() ) {
+		// Hide BP for the current user and page is BP
+		if ( is_buddypress() && vgsr_bp_hide_for_user() ) {
 
-			// For members directory redirect to own profile
-			if ( bp_is_members_directory() ) {
+			// When not fully hiding BuddyPress, redirect to own profile from the members directory
+			if ( ! vgsr_hide_buddypress() && bp_is_members_directory() ) {
 				bp_core_redirect( bp_core_get_user_domain( bp_loggedin_user_id() ) );
 				exit;
 			}
 
-			// 404 and prevent components from loading their templates
-			remove_all_actions( 'bp_template_redirect' );
-			bp_do_404();
-			return;
+			// 404 when fully hiding BP or not on own profile
+			if ( vgsr_hide_buddypress() || ! bp_is_my_profile() ) {
+
+				// 404 and prevent components from loading their templates
+				remove_all_actions( 'bp_template_redirect' );
+				bp_do_404();
+				return;
+			}
 
 		// Viewing a non-vgsr user's profile
 		} elseif ( bp_is_user() && ! is_user_vgsr( bp_displayed_user_id() ) ) {
@@ -390,8 +394,8 @@ class VGSR_BuddyPress {
 		// Define the default component when
 		// ... the activity component is active
 		// ... AND the activity component is exclusive
-		// ... AND the displayed user is non-vgsr
-		if ( bp_is_active( 'activity' ) && vgsr_bp_is_vgsr_component( 'activity' ) && ! is_user_vgsr( bp_displayed_user_id() ) ) {
+		// ... AND BP should be hidden for the displayed user
+		if ( bp_is_active( 'activity' ) && vgsr_bp_is_vgsr_component( 'activity' ) && vgsr_bp_hide_for_user( bp_displayed_user_id() ) ) {
 			$bp = buddypress();
 
 			// Set the default component to XProfile
