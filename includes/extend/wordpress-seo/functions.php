@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 function vgsr_wpseo_bp_breadcrumb_links( $crumbs = array() ) {
 
 	// Bail when not a BP page
-	if ( ! is_buddypress() ) {
+	if ( ! is_buddypress() || is_404() ) {
 		return $crumbs;
 	}
 
