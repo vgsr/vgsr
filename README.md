@@ -6,13 +6,15 @@ Main utility plugin for vgsr.nl.
 
 > This WordPress plugin requires at least [WordPress](https://wordpress.org) 4.4 and [BuddyPress](https://buddypress.org) 2.6.
 
-VGSR is designed, used and maintained to support vgsr.nl and bring in to its full potential for the glory of the VGSR community as a whole and her members specifically. The plugin adds custom support for the following plugins:
+VGSR is designed, used and maintained to support vgsr.nl and bring in to its full potential for the glory of the VGSR community as a whole and her members specifically. The plugin has support for the following plugins:
 
 * bbPress
 * BuddyPress
 * Event Organiser
+* Initials Default Avatar
 * Gravity Forms
 * Responsive Lightbox
+* User Switching
 * WP SEO
 
 ## Installation ##
