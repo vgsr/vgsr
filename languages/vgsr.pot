@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-13 19:05+0000\n"
+"POT-Creation-Date: 2018-11-13 16:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -18,22 +18,53 @@ msgstr ""
 msgid "Vereniging van Gereformeerde Studenten te Rotterdam"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:438
+#: ../../../../src/wp-content/plugins/vgsr/includes/functions.php:427
+msgctxt "Comma-separated list of surname prefixes in your language"
+msgid ""
+"aan,aan de,aan den,aan der,aan het,aan 't,bij,bij de,bij den,bij het,bij 't,"
+"boven d',d',de,den,der,in,in de,in den,in der,in het,in 't,onder,onder de,"
+"onder den,onder het,onder 't,op,op de,op den,op der,op het,op 't,op ten,over,"
+"over de,over den,over het,over 't,'s,'t,te,ten,ter,tot,uit,uit de,uit den,"
+"uit het,uit 't,uit ten,uijt,uijt de,uijt den,uijt het,uijt 't,uijt ten,van,"
+"van de,van den,van der,van het,van 't,van ter,ver,voor,voor de,voor den,voor "
+"in 't"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:454
 #, php-format
+msgid "Honourable amice %s,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:455
+#, php-format
+msgid "Honourable amica %s,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:457
+#, php-format
+msgid "Honourable amica aut amice %s,"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:464
+#, php-format
+msgctxt "General salutation"
 msgid "Dear mr. %s,"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:439
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:465
 #, php-format
+msgctxt "General salutation"
 msgid "Dear mrs. %s,"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:441
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:467
 #, php-format
+msgctxt "General salutation"
 msgid "Dear mr. or mrs. %s,"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:491
+#: ../../../../src/wp-content/plugins/vgsr/includes/users.php:523
+msgctxt "General closing"
 msgid "Sincerely,"
 msgstr ""
 
@@ -73,7 +104,7 @@ msgid "vgsr"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:437
-msgid "Show to all site visitors"
+msgid "Show to <span>all site visitors</span>"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/admin/admin.php:438
@@ -106,11 +137,11 @@ msgstr ""
 msgid "&mdash; No Page &mdash;"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:219
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:218
 msgid "VGSR Settings"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:288
+#: ../../../../src/wp-content/plugins/vgsr/includes/admin/settings.php:286
 msgid "Main"
 msgstr ""
 
@@ -171,32 +202,32 @@ msgid ""
 "home page title."
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:112
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:114
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:116
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:118
 #: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:74
 msgid "Leden"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:113
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:117
 msgid "Lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:121
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:123
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:125
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:127
 #: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/classes/class-vgsr-bp-xprofile-field-type-vgsr-users.php:75
 msgid "Oud-leden"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:122
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:126
 msgid "Oud-lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:130
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:132
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:138
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:140
 msgid "Ex-leden"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:131
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/functions.php:139
 msgid "Ex-lid"
 msgstr ""
 
@@ -209,184 +240,223 @@ msgstr ""
 msgid "Anciënniteit"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:131
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:134
 msgid "Jaargroep:"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:133
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:136
 msgctxt "Jaargroep member filter"
 msgid "All"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:163
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:166
 msgid "Viewing 1 active profile"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:164
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:167
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s active profile"
 msgid_plural "Viewing %1$s - %2$s of %3$s active profiles"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:169
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:172
 msgid "Viewing 1 profile with friends"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:170
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:173
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s profile with friends"
 msgid_plural "Viewing %1$s - %2$s of %3$s profiles with friends"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:175
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:178
 msgid "Viewing 1 online profile"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:176
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:179
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s online profile"
 msgid_plural "Viewing %1$s - %2$s of %3$s online profiles"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:181
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:184
 msgid "Viewing 1 profile"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:182
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:185
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s profile"
 msgid_plural "Viewing %1$s - %2$s of %3$s profiles"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:190
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:193
 msgid "Viewing 1 active lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:191
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:194
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s active lid"
 msgid_plural "Viewing %1$s - %2$s of %3$s active leden"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:196
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:199
 msgid "Viewing 1 lid with friends"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:197
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:200
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s lid with friends"
 msgid_plural "Viewing %1$s - %2$s of %3$s leden with friends"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:202
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:205
 msgid "Viewing 1 online lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:203
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:206
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s online lid"
 msgid_plural "Viewing %1$s - %2$s of %3$s online leden"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:208
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:211
 msgid "Viewing 1 lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:209
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:212
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s lid"
 msgid_plural "Viewing %1$s - %2$s of %3$s leden"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:217
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:220
 msgid "Viewing 1 active oud-lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:218
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:221
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s active oud-lid"
 msgid_plural "Viewing %1$s - %2$s of %3$s active oud-leden"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:223
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:226
 msgid "Viewing 1 oud-lid with friends"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:224
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:227
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s oud-lid with friends"
 msgid_plural "Viewing %1$s - %2$s of %3$s oud-leden with friends"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:229
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:232
 msgid "Viewing 1 online oud-lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:230
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:233
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s online oud-lid"
 msgid_plural "Viewing %1$s - %2$s of %3$s online oud-leden"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:235
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:238
 msgid "Viewing 1 oud-lid"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:236
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:239
 #, php-format
 msgid "Viewing %1$s - %2$s of %3$s oud-lid"
 msgid_plural "Viewing %1$s - %2$s of %3$s oud-leden"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:318
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:321
 msgid "Edit this user in the admin."
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:319
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/members.php:322
 msgid "Dashboard Profile"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:27
-msgid "Profile Fields"
+msgid "Profile Synchronization"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:50
-msgid "Jaargroep Field"
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:47
+msgid "Hide BuddyPress"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:55
-msgid "Select the field that holds the member's Jaargroep value."
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:58
+msgctxt "Profile field name"
+msgid "First name"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:61
-msgid "Ancienniteit Field"
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:63
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:74
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:85
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:96
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:107
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:118
+msgid "Select the field that holds the member's value for this data."
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:66
-msgid "Select the field that holds the member's Anciennteit value."
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:69
+msgctxt "Profile field name"
+msgid "Surname prefix"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:99
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:80
+msgctxt "Profile field name"
+msgid "Last name"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:91
+msgctxt "Profile field name"
+msgid "Jaargroep"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:102
+msgctxt "Profile field name"
+msgid "Anciënniteit"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:113
+msgctxt "Profile field name"
+msgid "Gender"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:136
+msgid ""
+"Hide profiles and all related BuddyPress components for all, except admins"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:150
+msgid ""
+"The following field settings enable synchronization between BuddyPress "
+"profile fields and WordPress user data. When either field is updated, the "
+"associated data is updated as well."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:172
 msgid "Activate the Extended Profiles component to use this setting."
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:125
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/settings.php:198
 msgid "View"
 msgstr ""
 
-#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/xprofile.php:233
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/buddypress/xprofile.php:410
 msgid "&mdash; No Field &mdash;"
 msgstr ""
 
@@ -559,6 +629,21 @@ msgstr ""
 msgid ""
 "Provide a comma-separated list of ids of users who are allowed to export and "
 "download the form's entries along with their respondent's data."
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/functions.php:483
+msgctxt "Gravity Forms export field"
+msgid "User login"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/functions.php:489
+msgctxt "Gravity Forms export field"
+msgid "User display name"
+msgstr ""
+
+#: ../../../../src/wp-content/plugins/vgsr/includes/extend/gravityforms/functions.php:495
+msgctxt "Gravity Forms export field"
+msgid "User email"
 msgstr ""
 
 #: ../../../../src/wp-content/plugins/vgsr/includes/extend/wordpress-seo/functions.php:140
