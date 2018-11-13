@@ -30,19 +30,26 @@ This plugin is not hosted in the official WordPress repository. Instead, updatin
 
 == Changelog ==
 
+= 0.4.0 =
+* Added support for Initials Default Avatar
+* Added support for User Switching
+* Added synching of User-Profile data for first name, last name, display name, gender
+* Added option to fully hide BuddyPress pages for non-admins
+* Fixed default sort order for BuddyPress VGSR profiles is now ancienniteit
+
 = 0.3.0 =
-* Adds Gravity Forms form option to allow selected users to download form entries
-* Fixes bug where WP SEO breadcrumbs were overwritten for search pages
+* Added Gravity Forms form option to allow selected users to download form entries
+* Fixed bug where WP SEO breadcrumbs were overwritten for search pages
 
 = 0.2.1 =
-* Improves visibility of gallery posts in breadcrumbs, nav menus etc.
-* Adds support for Responsive Lightbox
+* Improved visibility of gallery posts in breadcrumbs, nav menus etc.
+* Added support for Responsive Lightbox
 
 = 0.2.0 =
-* Adds theme-compat logic for custom templates
-* Adds support for Event Organiser
-* Adds support for Gravity Forms
-* Adds support for WP SEO
+* Added theme-compat logic for custom templates
+* Added support for Event Organiser
+* Added support for Gravity Forms
+* Added support for WP SEO
 
 = 0.1.0 =
 * First stable development release
