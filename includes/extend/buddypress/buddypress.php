@@ -769,7 +769,7 @@ class VGSR_BuddyPress {
 	public function get_button( $button, $args ) {
 
 		// When blocking custom activity posting, remove the public message button
-		if ( 'public_message' === $args['id'] && vgsr_bp_block_activity_posting() ) {
+		if ( isset( $args['id'] ) && 'public_message' === $args['id'] && vgsr_bp_block_activity_posting() ) {
 			$button = '';
 		}
 
