@@ -689,15 +689,18 @@ class VGSR_BuddyPress {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @global WPDB $wpdb
+	 *
 	 * @param array $sql_clauses SQL clauses to append
 	 * @param WP_User_Query $query
 	 * @return array SQL clauses
 	 */
 	public function pre_user_query( $sql_clauses, $query ) {
+		global $wpdb;
 
 		// Add query part for the 'vgsr' query parameter
 		if ( $type = $query->get( 'vgsr' ) ) {
-			$sql_clauses['where'] = vgsr_bp_query_for_vgsr_arg( $type );
+			$sql_clauses['where'] = vgsr_bp_query_for_vgsr_arg( $type, $wpdb->users );
 		}
 
 		return $sql_clauses;
@@ -720,7 +723,7 @@ class VGSR_BuddyPress {
 
 		// Add query part for the 'vgsr' query parameter
 		if ( ! empty( $query->query_vars['vgsr'] ) ) {
-			$sql_clauses['where'][] = vgsr_bp_query_for_vgsr_arg( $query->query_vars['vgsr'] );
+			$sql_clauses['where'][] = vgsr_bp_query_for_vgsr_arg( $query->query_vars['vgsr'], 'u' );
 		}
 
 		return $sql_clauses;

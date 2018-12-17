@@ -331,25 +331,26 @@ function vgsr_bp_member_dashboard_profile_button( $user_id = 0 ) {
  *
  * @since 1.0.0
  *
- * @param bool|string $arg The 'vgsr' query parameter.
+ * @param bool|string $vgsr_arg The 'vgsr' query parameter.
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
  * @return string SQL WHERE statement
  */
-function vgsr_bp_query_for_vgsr_arg( $arg = '' ) {
+function vgsr_bp_query_for_vgsr_arg( $vgsr_arg, $users_alias = 'u' ) {
 
 	// Define return variable
 	$retval = '';
 
 	// Query Leden
-	if ( 'lid' === $arg ) {
-		$retval = vgsr_bp_query_is_user_lid();
+	if ( 'lid' === $vgsr_arg ) {
+		$retval = vgsr_bp_query_is_user_lid( $users_alias );
 
 	// Query Oud-leden
-	} elseif ( 'oud-lid' === $arg ) {
-		$retval = vgsr_bp_query_is_user_oudlid();
+	} elseif ( 'oud-lid' === $vgsr_arg ) {
+		$retval = vgsr_bp_query_is_user_oudlid( $users_alias );
 
 	// Query all vgsr
-	} elseif ( true === $arg ) {
-		$retval = vgsr_bp_query_is_user_vgsr();
+	} elseif ( true === $vgsr_arg ) {
+		$retval = vgsr_bp_query_is_user_vgsr( $users_alias );
 	}
 
 	return $retval;
@@ -359,30 +360,39 @@ function vgsr_bp_query_for_vgsr_arg( $arg = '' ) {
  * Return the SQL WHERE statement to query by all vgsr member types
  *
  * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL WHERE statement
  */
-function vgsr_bp_query_is_user_vgsr() {
+function vgsr_bp_query_is_user_vgsr( $users_alias = 'u' ) {
 	return vgsr_bp_query_where_user_by_member_type( array(
 		vgsr_bp_lid_member_type(),
 		vgsr_bp_oudlid_member_type()
-	) );
+	), $users_alias );
 }
 
 /**
  * Return the SQL WHERE statement to query by Lid member type
  *
  * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL WHERE statement
  */
-function vgsr_bp_query_is_user_lid() {
-	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_lid_member_type() );
+function vgsr_bp_query_is_user_lid( $users_alias = 'u' ) {
+	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_lid_member_type(), $users_alias );
 }
 
 /**
  * Return the SQL WHERE statement to query by Oud-lid member type
  *
  * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL WHERE statement
  */
-function vgsr_bp_query_is_user_oudlid() {
-	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_oudlid_member_type() );
+function vgsr_bp_query_is_user_oudlid( $users_alias = 'u' ) {
+	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_oudlid_member_type(), $users_alias );
 }
 
 /**

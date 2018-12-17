@@ -201,7 +201,7 @@ function vgsr_pre_user_query( $users_query ) {
 			// order null values to be sorted after meta values.
 			$order                      = 'ASC' === strtoupper( $users_query->get( 'order' ) ) ? 'ASC' : 'DESC';
 			$users_query->query_from   .= $wpdb->prepare( " LEFT JOIN {$wpdb->usermeta} AS ancienniteit ON {$wpdb->users}.ID = ancienniteit.user_id AND ancienniteit.meta_key = %s", 'ancienniteit' );
-			$users_query->query_orderby = str_replace( 'ORDER BY', sprintf( 'ORDER BY CASE WHEN ancienniteit.meta_value IS NULL THEN 1 ELSE 0 END, ancienniteit.meta_value %s,', $order ), $users_query->query_orderby );
+			$users_query->query_orderby = str_replace( 'ORDER BY', sprintf( 'ORDER BY CASE WHEN ancienniteit.meta_value IS NULL THEN 1 ELSE 0 END, CAST(ancienniteit.meta_value AS SIGNED) %s,', $order ), $users_query->query_orderby );
 		}
 	}
 }
