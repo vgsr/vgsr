@@ -88,6 +88,18 @@ function vgsr_admin_url() {
 /** Login ******************************************************************/
 
 /**
+ * Define context-aware login hooks
+ *
+ * @since 0.5.0
+ */
+function vgsr_login_init() {
+
+	// Version-dependent filter name
+	$filter_name = version_compare( get_bloginfo( 'version' ), '5.2-beta3', '>=' ) ? 'login_headertext' : 'login_headertitle';
+	add_filter( $filter_name, 'vgsr_login_header_title' );
+}
+
+/**
  * Return the site's title for the login logo
  *
  * @since 0.1.0

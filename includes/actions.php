@@ -55,9 +55,9 @@ add_filter( 'get_previous_post_where', 'vgsr_get_adjacent_post_where', 10, 5 );
 
 /** Login *********************************************************************/
 
+add_action( 'login_init',              'vgsr_login_init',              10    );
 add_action( 'login_enqueue_scripts',   'vgsr_login_enqueue_scripts',   10    );
 add_filter( 'login_headerurl',         'get_home_url',                 10    );
-add_filter( 'login_headertitle',       'vgsr_login_header_title',      10    );
 
 /** Template ******************************************************************/
 
