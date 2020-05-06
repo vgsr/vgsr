@@ -700,7 +700,7 @@ class VGSR_BuddyPress {
 
 		// Add query part for the 'vgsr' query parameter
 		if ( $type = $query->get( 'vgsr' ) ) {
-			$sql_clauses['where'] = vgsr_bp_query_for_vgsr_arg( $type, $wpdb->users );
+			$sql_clauses['where'] = vgsr_bp_query_vgsr_where_arg( $type, $wpdb->users );
 		}
 
 		return $sql_clauses;
@@ -723,7 +723,7 @@ class VGSR_BuddyPress {
 
 		// Add query part for the 'vgsr' query parameter
 		if ( ! empty( $query->query_vars['vgsr'] ) ) {
-			$sql_clauses['where'][] = vgsr_bp_query_for_vgsr_arg( $query->query_vars['vgsr'], 'u' );
+			$sql_clauses['where'][] = vgsr_bp_query_vgsr_where_arg( $query->query_vars['vgsr'], 'u' );
 		}
 
 		return $sql_clauses;

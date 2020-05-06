@@ -335,25 +335,48 @@ function vgsr_bp_member_dashboard_profile_button( $user_id = 0 ) {
  * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
  * @return string SQL WHERE statement
  */
-function vgsr_bp_query_for_vgsr_arg( $vgsr_arg, $users_alias = 'u' ) {
+function vgsr_bp_query_vgsr_where_arg( $vgsr_arg, $users_alias = 'u' ) {
 
 	// Define return variable
 	$retval = '';
 
 	// Query Leden
 	if ( 'lid' === $vgsr_arg ) {
-		$retval = vgsr_bp_query_is_user_lid( $users_alias );
+		$retval = vgsr_bp_query_where_user_lid( $users_alias );
 
 	// Query Oud-leden
 	} elseif ( 'oud-lid' === $vgsr_arg ) {
-		$retval = vgsr_bp_query_is_user_oudlid( $users_alias );
+		$retval = vgsr_bp_query_where_user_oudlid( $users_alias );
 
-	// Query all vgsr
+	// Query Ex-leden
+	} elseif ( 'ex-lid' === $vgsr_arg ) {
+		$retval = vgsr_bp_query_where_user_exlid( $users_alias );
+
+	// Query all leden
+	} elseif ( 'all' === $vgsr_arg ) {
+		$retval = vgsr_bp_query_where_user_all( $users_alias );
+
+	// Query all vgsr (leden & oud-leden)
 	} elseif ( true === $vgsr_arg ) {
-		$retval = vgsr_bp_query_is_user_vgsr( $users_alias );
+		$retval = vgsr_bp_query_where_user_vgsr( $users_alias );
 	}
 
 	return $retval;
+}
+
+/**
+ * Return the SQL WHERE statement to query by relevant vgsr member types: Lid & Oud-lid
+ *
+ * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL WHERE statement
+ */
+function vgsr_bp_query_where_user_vgsr( $users_alias = 'u' ) {
+	return vgsr_bp_query_where_user_by_member_type( array(
+		vgsr_bp_lid_member_type(),
+		vgsr_bp_oudlid_member_type()
+	), $users_alias );
 }
 
 /**
@@ -364,10 +387,11 @@ function vgsr_bp_query_for_vgsr_arg( $vgsr_arg, $users_alias = 'u' ) {
  * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
  * @return string SQL WHERE statement
  */
-function vgsr_bp_query_is_user_vgsr( $users_alias = 'u' ) {
+function vgsr_bp_query_where_user_all( $users_alias = 'u' ) {
 	return vgsr_bp_query_where_user_by_member_type( array(
 		vgsr_bp_lid_member_type(),
-		vgsr_bp_oudlid_member_type()
+		vgsr_bp_oudlid_member_type(),
+		vgsr_bp_exlid_member_type()
 	), $users_alias );
 }
 
@@ -379,7 +403,7 @@ function vgsr_bp_query_is_user_vgsr( $users_alias = 'u' ) {
  * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
  * @return string SQL WHERE statement
  */
-function vgsr_bp_query_is_user_lid( $users_alias = 'u' ) {
+function vgsr_bp_query_where_user_lid( $users_alias = 'u' ) {
 	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_lid_member_type(), $users_alias );
 }
 
@@ -391,8 +415,20 @@ function vgsr_bp_query_is_user_lid( $users_alias = 'u' ) {
  * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
  * @return string SQL WHERE statement
  */
-function vgsr_bp_query_is_user_oudlid( $users_alias = 'u' ) {
+function vgsr_bp_query_where_user_oudlid( $users_alias = 'u' ) {
 	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_oudlid_member_type(), $users_alias );
+}
+
+/**
+ * Return the SQL WHERE statement to query by Ex-lid member type
+ *
+ * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL WHERE statement
+ */
+function vgsr_bp_query_where_user_exlid( $users_alias = 'u' ) {
+	return vgsr_bp_query_where_user_by_member_type( vgsr_bp_exlid_member_type(), $users_alias );
 }
 
 /**
@@ -428,7 +464,7 @@ function vgsr_bp_query_where_user_by_member_type( $member_types = '', $users_ali
 			'taxonomy' => bp_get_member_type_tax_name(),
 			'field'    => 'name',
 			'operator' => 'IN',
-			'terms'    => $types,
+			'terms'    => $types
 		),
 	) );
 
@@ -440,12 +476,12 @@ function vgsr_bp_query_where_user_by_member_type( $member_types = '', $users_ali
 		$switched = true;
 	}
 
-	// Generete SQL clause
+	// Generate SQL clause
 	$sql_clauses = $tax_query->get_sql( $users_alias, 'ID' );
 
 	$clause = '';
 
-	// The no_results clauses are the same between IN and NOT IN.
+	// The no_results clauses are the same for IN and NOT IN.
 	if ( false !== strpos( $sql_clauses['where'], '0 = 1' ) ) {
 		$clause = $sql_clauses['where'];
 
