@@ -102,7 +102,7 @@ function vgsr_bp_is_vgsr_component( $component = '' ) {
  *
  * @uses apply_filters() Calls 'vgsr_bp_get_member_types'
  *
- * @param bool $strict Optional. Whether to return only true VGSR member types. Defaults to False.
+ * @param bool $strict Optional. Whether to return only actual VGSR member types. Defaults to False.
  * @return array Member types
  */
 function vgsr_bp_get_member_types( $strict = false ) {

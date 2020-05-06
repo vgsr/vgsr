@@ -701,6 +701,15 @@ class VGSR_BuddyPress {
 		// Add query part for the 'vgsr' query parameter
 		if ( $type = $query->get( 'vgsr' ) ) {
 			$sql_clauses['where'] = vgsr_bp_query_vgsr_where_arg( $type, $wpdb->users );
+
+			// Consider sorting for multi-type queries
+			if ( in_array( $type, array( 'all', true ), true ) ) {
+
+				// First leden, then others
+				if ( 'ancienniteit-relevance' === $query->get( 'orderby' ) ) {
+					$sql_clauses['orderby'] = vgsr_bp_query_vgsr_orderby_arg( $type, $wpdb->users );
+				}
+			}
 		}
 
 		return $sql_clauses;

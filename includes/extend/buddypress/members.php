@@ -498,6 +498,137 @@ function vgsr_bp_query_where_user_by_member_type( $member_types = '', $users_ali
 }
 
 /**
+ * Return the SQL ORDERBY statement for the matched 'vgsr' parameter
+ *
+ * @since 1.0.0
+ *
+ * @param bool|string $vgsr_arg The 'vgsr' query parameter.
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL WHERE statement
+ */
+function vgsr_bp_query_vgsr_orderby_arg( $vgsr_arg, $users_alias = 'u' ) {
+
+	// Define return variable
+	$retval = '';
+
+	// Query all leden
+	if ( 'all' === $vgsr_arg ) {
+		$retval = vgsr_bp_query_orderby_user_all( $users_alias );
+
+	// Query all vgsr (leden & oud-leden)
+	} elseif ( true === $vgsr_arg ) {
+		$retval = vgsr_bp_query_orderby_user_vgsr( $users_alias );
+	}
+
+	return $retval;
+}
+
+/**
+ * Return the SQL ORDERBY statement to query by relevant vgsr member types: Lid & Oud-lid
+ *
+ * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL ORDERBY statement
+ */
+function vgsr_bp_query_orderby_user_vgsr( $users_alias = 'u' ) {
+	return vgsr_bp_query_orderby_user_by_member_type( array(
+		vgsr_bp_lid_member_type(),
+		vgsr_bp_oudlid_member_type()
+	), $users_alias );
+}
+
+/**
+ * Return the SQL ORDERBY statement to query by all vgsr member types
+ *
+ * @since 0.1.0
+ *
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string SQL ORDERBY statement
+ */
+function vgsr_bp_query_orderby_user_all( $users_alias = 'u' ) {
+	return vgsr_bp_query_orderby_user_by_member_type( array(
+		vgsr_bp_lid_member_type(),
+		vgsr_bp_oudlid_member_type(),
+		vgsr_bp_exlid_member_type()
+	), $users_alias );
+}
+
+/**
+ * Return the SQL ORDERBY statement to query users ordered by member type
+ *
+ * @see BP_User_Query::get_sql_clause_for_member_types()
+ *
+ * @since 0.1.0
+ *
+ * @global WPDB $wpdb
+ *
+ * @param string|array Member type name(s)
+ * @param string $users_alias Optional. Alias for the users table. Defaults to 'u'.
+ * @return string Member type SQL ORDERBY statement
+ */
+function vgsr_bp_query_orderby_user_by_member_type( $member_types = '', $users_alias = 'u' ) {
+	global $wpdb;
+
+	// Parse and sanitize types.
+	if ( ! is_array( $member_types ) ) {
+		$member_types = preg_split( '/[,\s+]/', $member_types );
+	}
+
+	$types = array();
+	foreach ( $member_types as $mt ) {
+		if ( bp_get_member_type_object( $mt ) ) {
+			$types[] = $mt;
+		}
+	}
+
+	// Bail early when a single or no member types were found
+	if ( 2 > count( $types ) ) {
+		return '';
+	}
+
+	// Switch to the root blog, where member type taxonomies live.
+	$site_id  = bp_get_taxonomy_term_site_id( bp_get_member_type_tax_name() );
+	$switched = false;
+	if ( $site_id !== get_current_blog_id() ) {
+		switch_to_blog( $site_id );
+		$switched = true;
+	}
+
+	$term_query = new WP_Term_Query();
+	$query_args = array(
+		'taxonomy' => bp_get_member_type_tax_name(),
+		'fields'   => 'tt_ids',
+		'name'     => $types,
+		'orderby'  => 'name__in'
+	);
+
+	// Query term ids
+	$term_ids = $term_query->query( $query_args );
+
+	$clause = '';
+
+	// Terms must be converted to a subquery.
+	if ( count( $term_ids ) ) {
+
+		// Setup the when-then part
+		$whenthen = implode( ' WHEN ', array_map( function( $value, $key ) { return $value . ' THEN ' . $key; }, $term_ids, array_keys( $term_ids ) ) );
+		$term_list = implode( ',', $term_ids );
+
+		// Setup subquery
+		$clause = ' (' . $wpdb->prepare( "SELECT CASE term_taxonomy_id WHEN {$whenthen} ELSE %d END FROM {$wpdb->term_relationships} WHERE term_taxonomy_id IN ({$term_list}) AND object_id = {$users_alias}.ID",
+			count( $term_ids )
+		) . ')';
+	}
+
+	if ( $switched ) {
+		restore_current_blog();
+	}
+
+	return $clause;
+}
+
+/**
  * Modify the ajax query string from the legacy template pack
  *
  * @since 0.1.0

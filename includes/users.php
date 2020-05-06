@@ -173,11 +173,10 @@ function vgsr_pre_user_query( $users_query ) {
 	global $wpdb;
 
 	/**
-	 * Define what constitutes a vgsr user. Since this is left to
-	 * extensions or other plugins, the filter allows for modifying
-	 * the vgsr user definition.
+	 * Define what constitutes a vgsr user. Since this is left to extensions or
+	 * other plugins, the filter allows for modifying the vgsr user definition.
 	 */
-	$sql_clauses = apply_filters( 'vgsr_pre_user_query', array( 'join' => '', 'where' => '' ), $users_query );
+	$sql_clauses = apply_filters( 'vgsr_pre_user_query', array( 'join' => '', 'where' => '', 'orderby' => '' ), $users_query );
 
 	// Append JOIN statement
 	if ( ! empty( $sql_clauses['join'] ) ) {
@@ -192,7 +191,7 @@ function vgsr_pre_user_query( $users_query ) {
 	}
 
 	// Order by anciënniteit
-	if ( 'ancienniteit' === $users_query->get( 'orderby' ) ) {
+	if ( in_array( $users_query->get( 'orderby' ), array( 'ancienniteit', 'ancienniteit-relevance' ), true ) ) {
 
 		// Anciënniteit by user meta
 		if ( apply_filters( 'vgsr_use_ancienniteit_meta', true ) ) {
@@ -203,6 +202,12 @@ function vgsr_pre_user_query( $users_query ) {
 			$users_query->query_from   .= $wpdb->prepare( " LEFT JOIN {$wpdb->usermeta} AS ancienniteit ON {$wpdb->users}.ID = ancienniteit.user_id AND ancienniteit.meta_key = %s", 'ancienniteit' );
 			$users_query->query_orderby = str_replace( 'ORDER BY', sprintf( 'ORDER BY CASE WHEN ancienniteit.meta_value IS NULL THEN 1 ELSE 0 END, CAST(ancienniteit.meta_value AS SIGNED) %s,', $order ), $users_query->query_orderby );
 		}
+	}
+
+	// Order by relevant members first, then anciënniteit
+	if ( 'ancienniteit-relevance' === $users_query->get( 'orderby' ) && ! empty( $sql_clauses['orderby'] ) ) {
+		$orderby = preg_replace( '/^\s*/', '', $sql_clauses['orderby'] );
+		$users_query->query_orderby = str_replace( 'ORDER BY', 'ORDER BY ' . $orderby . ',', $users_query->query_orderby );
 	}
 }
 
