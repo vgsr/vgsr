@@ -359,6 +359,27 @@ function vgsr_the_category( $cat ) {
 	return $cat;
 }
 
+/**
+ * Support use of the 'name__in' orderby query for WP_Terms_Query
+ *
+ * @since 1.0.0
+ *
+ * @param string   $orderby    `ORDERBY` clause of the terms query.
+ * @param array    $args       An array of term query arguments.
+ * @param string[] $taxonomies An array of taxonomy names.
+ * @return string `ORDERBY` clause
+ */
+function vgsr_get_terms_orderby_name__in( $orderby, $args, $taxonomy ) {
+
+	// Only parse when not already done so
+	if ( 't.name' === $orderby && 'name__in' === $args['orderby'] ) {
+		$slugs   = implode( "', '", array_map( 'sanitize_title_for_query', $args['name'] ) );
+		$orderby = "FIELD( t.name, '" . $slugs . "')";
+	}
+
+	return $orderby;
+}
+
 /** Comments ***************************************************************/
 
 /**

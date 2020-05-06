@@ -81,6 +81,9 @@ add_filter( 'wp_nav_menu_objects',     'vgsr_nav_menu_objects',        10, 2 );
 add_filter( 'the_category_list',       'vgsr_the_category_list',       10, 2 );
 add_filter( 'the_category',            'vgsr_the_category',            10    );
 
+// Query
+add_filter( 'get_terms_orderby',       'vgsr_get_terms_orderby_name__in', 10, 3 );
+
 /** Comments ******************************************************************/
 
 add_action( 'parse_comment_query',     'vgsr_parse_comment_query',     10    );
