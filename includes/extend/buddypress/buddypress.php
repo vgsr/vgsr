@@ -94,6 +94,7 @@ class VGSR_BuddyPress {
 		add_filter( 'is_user_lid',                     array( $this, 'is_user_lid'            ), 10, 2 );
 		add_filter( 'is_user_oudlid',                  array( $this, 'is_user_oudlid'         ), 10, 2 );
 		add_filter( 'is_user_exlid',                   array( $this, 'is_user_exlid'          ), 10, 2 );
+		add_filter( 'vgsr_get_lid_type',               array( $this, 'vgsr_get_lid_type'      ), 10, 2 );
 		add_filter( 'vgsr_pre_user_query',             array( $this, 'pre_user_query'         ), 10, 2 );
 		add_filter( 'bp_user_query_uid_clauses',       array( $this, 'user_query_uid_clauses' ), 10, 2 );
 		add_action( 'bp_members_admin_user_metaboxes', array( $this, 'admin_user_metaboxes'   ), 10, 2 );
@@ -710,6 +711,30 @@ class VGSR_BuddyPress {
 	 */
 	public function is_user_exlid( $is, $user_id = null ) {
 		return ( $is ? $is : $this->has_member_type( vgsr_bp_exlid_member_type(), $user_id ) );
+	}
+
+	/**
+	 * Filter the user's vgsr lid type.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $type Lid type
+	 * @param int $user_id User ID
+	 * @return string Lid type
+	 */
+	public function vgsr_get_lid_type( $type, $user_id ) {
+
+		if ( empty( $type ) ) {
+			$member_type = bp_get_member_type( $user_id );
+			$types       = vgsr_bp_get_member_types();
+
+			// Set type when found
+			if ( isset( $types[ $member_type ] ) ) {
+				$type = $types[ $member_type ]['type'];
+			}
+		}
+
+		return $type;
 	}
 
 	/**
