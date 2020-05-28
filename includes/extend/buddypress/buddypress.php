@@ -608,9 +608,37 @@ class VGSR_BuddyPress {
 	 */
 	public function set_member_type( $user_id, $member_type, $append ) {
 
-		// When assigning Oud-lid or Ex-lid member types, remove the Lid member type
-		if ( in_array( $member_type, array( vgsr_bp_oudlid_member_type(), vgsr_bp_exlid_member_type() ) ) ) {
-			bp_remove_member_type( $user_id, vgsr_bp_lid_member_type() );
+		// Holds the removable member types
+		$to_remove = array();
+
+		/*
+		 * To make sure only a single vgsr member type applies to the user at any
+		 * point in time, remove any other vgsr member types.
+		 */
+		switch ( $member_type ) {
+
+			// Lid
+			case vgsr_bp_lid_member_type() :
+				$to_remove[] = vgsr_bp_oudlid_member_type();
+				$to_remove[] = vgsr_bp_exlid_member_type();
+				break;
+
+			// Oud-lid
+			case vgsr_bp_oudlid_member_type() :
+				$to_remove[] = vgsr_bp_lid_member_type();
+				$to_remove[] = vgsr_bp_exlid_member_type();
+				break;
+
+			// Ex-lid
+			case vgsr_bp_exlid_member_type() :
+				$to_remove[] = vgsr_bp_lid_member_type();
+				$to_remove[] = vgsr_bp_oudlid_member_type();
+				break;
+		}
+
+		// Remove the member types
+		foreach ( $to_remove as $type_to_remove ) {
+			bp_remove_member_type( $user_id, $type_to_remove );
 		}
 	}
 
