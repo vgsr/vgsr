@@ -102,7 +102,7 @@ function vgsr_bp_is_vgsr_component( $component = '' ) {
  *
  * @uses apply_filters() Calls 'vgsr_bp_get_member_types'
  *
- * @param bool $strict Optional. Whether to return only actual VGSR member types. Defaults to False.
+ * @param bool $strict Optional. Whether to return only 'active' VGSR member types. Defaults to False.
  * @return array Member types
  */
 function vgsr_bp_get_member_types( $strict = false ) {
@@ -112,6 +112,7 @@ function vgsr_bp_get_member_types( $strict = false ) {
 
 		// Lid
 		vgsr_bp_lid_member_type() => array(
+			'type'   => 'lid',
 			'labels' => array(
 				'name'          => esc_html__( 'Leden', 'vgsr' ),
 				'singular_name' => esc_html__( 'Lid',   'vgsr' ),
@@ -121,6 +122,7 @@ function vgsr_bp_get_member_types( $strict = false ) {
 
 		// Oud-lid
 		vgsr_bp_oudlid_member_type() => array(
+			'type'   => 'oud-lid',
 			'labels' => array(
 				'name'          => esc_html__( 'Oud-leden', 'vgsr' ),
 				'singular_name' => esc_html__( 'Oud-lid',   'vgsr' ),
@@ -134,6 +136,7 @@ function vgsr_bp_get_member_types( $strict = false ) {
 
 		// Ex-lid
 		$member_types[ vgsr_bp_exlid_member_type() ] = array(
+			'type'   => 'ex-lid',
 			'labels' => array(
 				'name'          => esc_html__( 'Ex-leden', 'vgsr' ),
 				'singular_name' => esc_html__( 'Ex-lid',   'vgsr' ),
@@ -148,6 +151,8 @@ function vgsr_bp_get_member_types( $strict = false ) {
 /**
  * Return the member type for Lid
  *
+ * Member types are preferred to not contain non-alphanumeric characters.
+ *
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_lid_member_type'
@@ -160,6 +165,8 @@ function vgsr_bp_lid_member_type() {
 /**
  * Return the member type for Oud-lid
  *
+ * Member types are preferred to not contain non-alphanumeric characters.
+ *
  * @since 0.1.0
  *
  * @uses apply_filters() Calls 'vgsr_bp_oudlid_member_type'
@@ -171,6 +178,8 @@ function vgsr_bp_oudlid_member_type() {
 
 /**
  * Return the member type for Ex-lid
+ *
+ * Member types are preferred to not contain non-alphanumeric characters.
  *
  * @since 0.1.0
  *

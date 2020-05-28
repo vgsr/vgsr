@@ -285,6 +285,28 @@ function is_user_exlid( $user = 0, $by = 'slug' ) {
 	return (bool) apply_filters( 'is_user_exlid', false, vgsr_get_user_id( $user, $by ) );
 }
 
+/**
+ * Return the vgsr lid type the user is marked as
+ *
+ * @since 1.0.0
+ *
+ * @uses apply_filters() Calls 'vgsr_get_lid_type'
+ *
+ * @param WP_User|int|string $user Optional. User object or user ID|slug|name|email. Defaults to the current user.
+ * @param string             $by   Optional. Type of input to get the user by for string values. Defaults to 'slug'.
+ * @return string VGSR lid type or Empty text when not found.
+ */
+function vgsr_get_lid_type( $user = 0, $by = 'slug' ) {
+	$type = apply_filters( 'vgsr_get_lid_type', '', vgsr_get_user_id( $user, $by ) );
+
+	// Force lid type to be one of lid/oud-lid/ex-lid
+	if ( ! in_array( $type, array( 'lid', 'oud-lid', 'ex-lid' ), true ) ) {
+		$type = '';
+	}
+
+	return $type;
+}
+
 /** Attributes ************************************************************/
 
 /**
