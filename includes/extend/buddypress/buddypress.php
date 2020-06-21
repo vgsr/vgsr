@@ -118,6 +118,10 @@ class VGSR_BuddyPress {
 			add_action( 'bp_core_loaded', array( $this, 'hide_buddypress' ), 20 );
 			add_action( 'bp_setup_nav',   array( $this, 'bp_setup_nav'    ), 99 );
 		}
+
+		// Email
+		add_filter( 'bp_email_get_tokens',     array( $this, 'email_get_tokens'     ), 10, 4 );
+		add_filter( 'bp_email_get_salutation', array( $this, 'email_get_salutation' ), 10, 3 );
 	}
 
 	/** General ************************************************************/
@@ -933,6 +937,62 @@ class VGSR_BuddyPress {
 		if ( $post_parent ) {
 			$post->post_parent = $post_parent;
 		}
+	}
+
+	/** Email **************************************************************/
+
+	/**
+	 * Modify the email tokens.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array    $tokens        Email tokens.
+	 * @param string   $property_name Unused.
+	 * @param string   $transform     Unused.
+	 * @param BP_Email $email         Email being sent.
+	 * @return array
+	 */
+	public function email_get_tokens( $tokens, $property_name, $transform, $email ) {
+
+		// When no salutation token exists
+		if ( ! isset( $tokens['recipient.salutation'] ) ) {
+
+			// Default salutation. See `bp_get_email_salutation()`.
+			$tokens['recipient.salutation'] = sprintf(
+				/* translators: %s: the email token for the recipient name */
+				_x( 'Hi %s,', 'recipient salutation', 'buddypress' ),
+				$tokens['recipient.name']
+			);
+
+			// When a user is addressed
+			$recipient = $tokens['recipient.username'];
+			if ( $recipient ) {
+
+				// Get user object
+				$user = get_user_by( 'login', $recipient );
+
+				// When a VGSR member, add salutation token
+				if ( is_user_vgsr( $user ) ) {
+					$tokens['recipient.salutation'] = vgsr_get_salutation( $user );
+				}
+			}
+		}
+
+		return $tokens;
+	}
+
+	/**
+	 * Modify the email salutation.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $value    The Recipient Salutation.
+	 * @param array  $settings Email Settings.
+	 * @param string $token    The Recipient token.
+	 * @return string The recipient salutation
+	 */
+	public function email_get_salutation( $salutation, $settings, $token ) {
+		return '{{recipient.salutation}}';
 	}
 }
 
