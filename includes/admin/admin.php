@@ -103,6 +103,13 @@ class VGSR_Admin {
 		add_action( 'quick_edit_custom_box',       array( $this, 'vgsr_post_quick_edit'    ), 10, 2 );
 		add_action( 'save_post',                   array( $this, 'vgsr_post_save_meta'     )        );
 
+		// Users
+		add_filter( 'wpmu_users_columns',            array( $this, 'get_users_columns'      )        );
+		add_filter( 'manage_users_columns',          array( $this, 'get_users_columns'      )        );
+		add_filter( 'manage_users_sortable_columns', array( $this, 'sortable_users_columns' )        );
+		add_filter( 'manage_users-network_sortable_columns', array( $this, 'sortable_users_columns' )        );
+		add_filter( 'manage_users_custom_column',    array( $this, 'users_columns_content'  ), 10, 3 );
+
 		/** Dependencies ******************************************************/
 
 		// Allow plugins to modify these actions
@@ -274,7 +281,7 @@ class VGSR_Admin {
 		$screen = get_current_screen();
 		$styles = array();
 
-		// List view
+		// Posts administration
 		if ( 'edit' === $screen->base ) {
 			$styles[] = ".fixed .column-vgsr { width: 5%; text-align: center; }";
 
@@ -290,6 +297,11 @@ class VGSR_Admin {
 
 			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"] + label span span { font-weight: 600; }";
 			$styles[] = ".misc-pub-vgsr input[type=\"checkbox\"]:checked + label:before { content: '\\f155'; color: #888; }";
+
+		// Users administration
+		} elseif ( in_array( $screen->base, array( 'users', 'users-network' ) ) ) {
+			$styles[] = ".fixed .column-vgsr-jaargroep { width: 100px; }";
+			$styles[] = ".fixed .column-vgsr-jaargroep .row-actions { display: block; color: #aaa; }";
 		}
 
 		// Add styles to the screen
@@ -376,7 +388,7 @@ class VGSR_Admin {
 	}
 
 	/**
-	 * Display dedicated column content
+	 * Output content for the post administration columns
 	 *
 	 * @since 0.0.6
 	 *
@@ -412,6 +424,86 @@ class VGSR_Admin {
 		}
 
 		return $states;
+	}
+
+	/** Users *****************************************************************/
+
+	/**
+	 * Filter the (network) users administration columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $columns List table columns
+	 * @return array List table columns
+	 */
+	public function get_users_columns( $columns ) {
+
+		// Insert Jaargroep column after 'name' column
+		$jaargroep = array( 'vgsr-jaargroep' => esc_html_x( 'Jaargroep', 'Users list table column header', 'vgsr' ) );
+		$pos       = array_search( 'name', array_keys( $columns ) ) + 1;
+		$columns   = array_slice( $columns, 0, $pos, true ) + $jaargroep + array_slice( $columns, $pos, count( $columns ) - 1, true );
+
+		return $columns;
+	}
+
+	/**
+	 * Filter the sortable (network) users administration columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $columns List table columns
+	 * @return array List table columns
+	 */
+	public function sortable_users_columns( $columns ) {
+
+		// Make Jaargroep column sortable by anciënniteit
+		$columns['vgsr-jaargroep'] = array( 'ancienniteit', false );
+
+		return $columns;
+	}
+
+	/**
+	 * Return content for the (network) users administration columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $content Column content
+	 * @param string $column Column name
+	 * @param int $user_id User ID
+	 * @return string Column content
+	 */
+	public function users_columns_content( $content, $column, $user_id ) {
+
+		switch ( $column ) {
+
+			// Jaargroep
+			case 'vgsr-jaargroep':
+
+				// When the user is vgsr or ex-lid
+				if ( is_user_vgsr( $user_id ) || is_user_exlid( $user_id ) ) {
+					$jaargroep = vgsr_get_jaargroep( $user_id, array( 'default_to_ancienniteit' => false ) );
+
+					// User has jaargroep
+					if ( $jaargroep ) {
+						$url_args = array_merge( array( 'jaargroep' => $jaargroep ), (array) $_GET );
+						$url      = add_query_arg( $url_args, self_admin_url( 'users.php' ) );
+						$content .= sprintf( '<a href="%s">%s</a>', $url, $jaargroep );
+
+					// User has no jaargroep
+					} else {
+						$content .= '<span aria-hidden="true">&#8212;</span><span class="screen-reader-text">' . _x( 'Unknown', 'name' ) . '</span>';
+					}
+
+					// Add anciënniteit data for super admins
+					if ( is_super_admin() && $ancienniteit = vgsr_get_ancienniteit( $user_id ) ) {
+						$content .= sprintf( '<small class="row-actions" title="%s">%s</small>', esc_html__( 'The ancienniteit value of this user.', 'vgsr' ), $ancienniteit );
+					}
+				}
+
+				break;
+		}
+
+		return $content;
 	}
 
 	/** Exclusivity ***********************************************************/
