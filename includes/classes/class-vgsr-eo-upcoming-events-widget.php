@@ -61,7 +61,7 @@ class VGSR_EO_Upcoming_Events_Widget extends WP_Widget {
 		) );
 
 		// Get last date to compare
-		$last_date = date( 'Y-m-d', time( '-1 day' ) );
+		$last_date = date( 'Y-m-d', strtotime( '-1 day' ) );
 
 		// Only list events for number of days
 		foreach ( $query->posts as $k => $post ) {
