@@ -418,17 +418,21 @@ function vgsr_get_ancienniteit( $user = 0 ) {
  * @uses apply_filters() Calls 'vgsr_get_jaargroep'
  *
  * @param WP_User|int $user Optional. User object or ID. Defaults to the current user.
+ * @param array $args Optional. Define additional parameters.
  * @return int User jaargroep
  */
-function vgsr_get_jaargroep( $user = 0 ) {
+function vgsr_get_jaargroep( $user = 0, $args = array() ) {
 	$user      = vgsr_get_user( $user );
 	$jaargroep = 0;
+	$args      = wp_parse_args( $args, array(
+		'default_to_ancienniteit' => true
+	) );
 
 	if ( $user ) {
 		$jaargroep = $user->get( 'jaargroep' );
 
-		// Default to the ancienniteit / 1000
-		if ( ! $jaargroep && $ancienniteit = vgsr_get_ancienniteit( $user ) ) {
+		// Default to the first 4 chars of ancienniteit
+		if ( ! $jaargroep && $args['default_to_ancienniteit'] && $ancienniteit = vgsr_get_ancienniteit( $user ) ) {
 			$jaargroep = (int) substr( $ancienniteit, 0, 4 );
 		}
 	}
@@ -444,13 +448,22 @@ function vgsr_get_jaargroep( $user = 0 ) {
  * @global $wpdb WPDB
  *
  * @uses apply_filters() Calls 'vgsr_get_jaargroepen'
+ *
+ * @param array $args Optional. Define additional parameters.
  * @return array Jaargroepen
  */
-function vgsr_get_jaargroepen() {
+function vgsr_get_jaargroepen( $args = array() ) {
 	global $wpdb;
 
-	$query  = $wpdb->prepare( "SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s ORDER BY meta_value ASC", 'jaargroep' );
-	$retval = array_unique( array_map( 'intval', $wpdb->get_col( $query ) ) );
+	// Parse args
+	$args = wp_parse_args( $args, array(
+		'default_to_ancienniteit' => true
+	) );
+
+	// Define query
+	$query_where = $args['default_to_ancienniteit'] ? 'WHERE meta_key IN ( %s, %s )' : 'WHERE meta_key = %s';
+	$query  = $wpdb->prepare( "SELECT LEFT(meta_value, 4) as meta_value FROM {$wpdb->usermeta} $query_where ORDER BY meta_value ASC", 'jaargroep', 'ancienniteit' );
+	$retval = array_values( array_unique( array_map( 'intval', $wpdb->get_col( $query ) ) ) );
 
 	return (array) apply_filters( 'vgsr_get_jaargroepen', $retval );
 }
