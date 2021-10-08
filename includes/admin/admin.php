@@ -485,9 +485,7 @@ class VGSR_Admin {
 
 					// User has jaargroep
 					if ( $jaargroep ) {
-						$url_args = array_merge( array( 'jaargroep' => $jaargroep ), (array) $_GET );
-						$url      = add_query_arg( $url_args, self_admin_url( 'users.php' ) );
-						$content .= sprintf( '<a href="%s">%s</a>', $url, $jaargroep );
+						$content .= sprintf( '<a href="%s">%s</a>', add_query_arg( array( 'jaargroep' => $jaargroep ) ), $jaargroep );
 
 					// User has no jaargroep
 					} else {
