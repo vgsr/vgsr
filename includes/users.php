@@ -190,6 +190,12 @@ function vgsr_pre_user_query( $users_query ) {
 		$users_query->query_where .= " AND $where";
 	}
 
+	// Filter by jaargroep
+	if ( isset( $_GET['jaargroep'] ) && ! empty( $_GET['jaargroep'] ) ) {
+		$users_query->query_from  .= $wpdb->prepare(" LEFT JOIN {$wpdb->usermeta} AS jaargroep ON {$wpdb->users}.ID = jaargroep.user_id AND jaargroep.meta_key = %s", 'jaargroep' );
+		$users_query->query_where .= $wpdb->prepare( " AND jaargroep.meta_value = %d", (int) $_GET['jaargroep'] );
+	}
+
 	// Order by anciënniteit
 	if ( in_array( $users_query->get( 'orderby' ), array( 'ancienniteit', 'ancienniteit-relevance' ), true ) ) {
 
