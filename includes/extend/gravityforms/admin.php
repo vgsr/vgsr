@@ -39,17 +39,45 @@ class VGSR_GravityForms_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' )     );
 
 		// Forms & Fields
-		add_filter( 'admin_head',                   array( $this, 'admin_print_scripts'  )        );
-		add_filter( 'gform_form_actions',           array( $this, 'admin_form_actions'   ), 10, 2 );
-		add_filter( 'gform_pre_form_settings_save', array( $this, 'update_form_settings' )        );
-		add_action( 'gform_editor_js',              array( $this, 'print_editor_scripts' )        );
-		add_filter( 'gform_tooltips',               array( $this, 'tooltips'             )        );
-
-		add_filter( 'gform_form_settings',           'vgsr_gf_admin_register_form_setting',  10, 2 );
-		add_action( 'gform_field_advanced_settings', 'vgsr_gf_admin_register_field_setting', 10, 2 );
+		add_filter( 'admin_head',                        array( $this, 'admin_print_scripts'            )        );
+		add_filter( 'gform_form_actions',                array( $this, 'admin_form_actions'             ), 10, 2 );
+		add_action( 'gform_editor_js',                   array( $this, 'print_editor_scripts'           )        );
+		add_filter( 'gform_tooltips',                    array( $this, 'tooltips'                       )        );
+		add_filter( 'gform_form_settings_fields',        array( $this, 'register_form_settings_fields'  ), 10, 2 );
+		add_action( 'gform_field_advanced_settings',     array( $this, 'register_field_legacy_settings' ), 10, 2 );
+		if ( vgsr_gf_admin_use_legacy_settings() ) {
+			add_filter( 'gform_form_settings',           array( $this, 'register_form_legacy_settings'  ), 10, 2 );
+			add_filter( 'gform_pre_form_settings_save',  array( $this, 'update_form_legacy_settings'    )        );
+		}
 	}
 
 	/** Public methods **************************************************/
+
+	/**
+	 * Apply a i18n function with a custom context
+	 *
+	 * This method is used to circumvent direct use of external plugin domains
+	 * which is considered illegal by some translation coding standards.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|array $args I18n function argument(s)
+	 * @param string $i18n Optional. I18n function name. Defaults to '__'.
+	 * @param string $domain Optional. Translation domain. Defaults to 'gravityforms'.
+	 * @return string Translated text
+	 */
+	public function i18n( $args, $i18n = '__', $domain = 'gravityforms' ) {
+
+		// Bail when no arguments were passed
+		if ( empty( $args ) )
+			return '';
+
+		// Append translation domain
+		$args   = (array) $args;
+		$args[] = $domain;
+
+		return call_user_func_array( $i18n, $args );
+	}
 
 	/**
 	 * Modify the admin menus
@@ -134,20 +162,146 @@ class VGSR_GravityForms_Admin {
 	/** Form Settings ******************************************************/
 
 	/**
-	 * Run the update form setting logic
+	 * Register the plugin form setting's field
+	 *
+	 * This filter is used since GF 2.5.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $settings Form settings sections and their fields
+	 * @param array $form Form object
+	 * @return array Form settings
+	 */
+	public function register_form_settings_fields( $settings, $form ) {
+
+		// Get form settings fields
+		$fields = vgsr_gf_admin_get_form_settings_fields();
+
+		// Loop through fields
+		foreach ( $fields as $field_id => $field ) {
+			$section = $field['section'];
+
+			// Map attributes
+			$field['name'] = $field_id;
+			$field['label'] = $field['title'];
+			unset( $field['callback'] );
+
+			// Settings sections are stored by their key
+			if ( ! isset( $settings[ $section ] ) ) {
+				$settings[ $section ] = array( 'title' => $this->i18n( 'Restrictions', 'esc_html__' ), 'fields' => array() );
+			}
+
+			// Append field
+			$settings[ $section ]['fields'][] = $field;
+		}
+
+		return $settings;
+
+	}
+
+	/**
+	 * Modify the form settings sections
 	 *
 	 * @since 0.0.6
 	 *
-	 * @param array $settings Settings to be updated
-	 * @return array Settings
+	 * @param array $settings Form settings sections
+	 * @param object $form Form object
 	 */
-	public function update_form_settings( $settings ) {
+	public function register_form_legacy_settings( $settings, $form ) {
 
-		// Sanitize form from $_POST var
-		$settings[ vgsr_gf_get_exclusivity_meta_key() ] = isset( $_POST['vgsr_form_vgsr'] ) ? 1 : 0;
-		$settings['vgsrExporters'] = array_filter( array_map( 'absint', explode( ',', $_POST['vgsr_form_exporters'] ) ) );
+		// Get form settings fields
+		$fields = vgsr_gf_admin_get_form_settings_fields();
+
+		// Loop through fields
+		foreach ( $fields as $field_id => $field ) {
+
+			// Parse field args
+			$field = wp_parse_args( $field, array(
+				'title'    => '',
+				'tooltip'  => '',
+				'section'  => '',
+				'callback' => '',
+			) );
+
+			// Settings sections are stored by their translated title
+			$section = $this->i18n( $field['section'] );
+
+			// Setup section when the setting's section does not exist
+			if ( ! isset( $settings[ $section ] ) ) {
+				$settings[ $section ] = array();
+			}
+
+			// Prefix tooltip with title
+			if ( ! empty( $field['tooltip'] ) ) {
+				$field['tooltip'] = '<h6>' . $field['title'] . '</h6>' . $field['tooltip'];
+			}
+
+			// Construct and fetch the field's content
+			ob_start(); ?>
+
+	<tr>
+		<th><?php echo esc_html( $field['title'] ); ?> <?php gform_tooltip( $field['tooltip'], "tooltip tooltip_{$field_id}" ); ?></th>
+		<td><?php call_user_func_array( $field['callback'], array( $form ) ); ?></td>
+	</tr>
+
+			<?php
+
+			$settings[ $section ][ $field_id ] = ob_get_clean();
+		}
 
 		return $settings;
+	}
+
+	/**
+	 * Modify the updated form when settings are saved
+	 *
+	 * @since 0.0.6
+	 *
+	 * @param array $form Updated form
+	 * @return array Updated form
+	 */
+	public function update_form_legacy_settings( $form ) {
+
+		// Get form settings fields
+		$fields = vgsr_gf_admin_get_form_settings_fields();
+
+		// Loop through fields
+		foreach ( $fields as $field_id => $field ) {
+
+			// Get value from saved data
+			$value = isset( $_POST[ $field_id ] ) ? $_POST[ $field_id ] : null;
+
+			// Sanitize value
+			if ( isset( $field['sanitize_callback'] ) && is_callable( $field['sanitize_callback'] ) ) {
+				$value = call_user_func_array( $field['sanitize_callback'], array( $value ) );
+			}
+
+			// Set updated value
+			$form[ $field_id ] = $value;
+		}
+
+		return $form;
+	}
+
+	/**
+	 * Modify form field settings
+	 *
+	 * @since 0.0.6
+	 *
+	 * @param int $position Settings position
+	 * @param int $form_id Form ID
+	 */
+	public function register_field_legacy_settings( $position, $form_id ) {
+
+		// Following the Visibility settings and the form is not already exclusive
+		if ( 450 === $position && ! vgsr_gf_is_form_vgsr( $form_id, false ) ) : ?>
+
+		<li class="vgsr_only_setting field_setting">
+			<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php vgsr_gf_exclusivity_meta_key(); ?>', this.checked );" />
+			<label for="vgsr_form_field_vgsr" class="inline"><?php printf( esc_html__( 'VGSR: %s', 'vgsr' ), esc_html__( 'Make this an exclusive field', 'vgsr' ) ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
+		</li>
+
+		<?php endif;
 	}
 
 	/**

@@ -180,10 +180,13 @@ function vgsr_version_updater() {
 
 	/** 0.1.0 Branch ********************************************************/
 
-	// 0.1.0
-	if ( $raw_db_version < 10 ) {
+	// 1.0.0
+	if ( $raw_db_version < 20211220 ) {
 
-		// Do stuff
+		// Updates for GravityForms integration
+		if ( function_exists( 'vgsr_gf_admin_upgrade_form_settings' ) ) {
+			vgsr_gf_admin_upgrade_form_settings();
+		}
 	}
 
 	/** All done! *********************************************************/

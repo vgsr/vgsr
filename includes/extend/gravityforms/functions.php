@@ -228,30 +228,6 @@ function vgsr_gf_get_forms( $args = array() ) {
 	return $forms;
 }
 
-/** Helpers ****************************************************************/
-
-/**
- * Apply a i18n function with the 'gravityforms' context
- *
- * @since 0.3.0
- *
- * @param string|array $args I18n function argument(s)
- * @param string $i18n Optional. I18n function name. Defaults to '__'.
- * @return string Translated text
- */
-function vgsr_gf_i18n( $args, $i18n = '__' ) {
-
-	// Bail when no arguments were passed
-	if ( empty( $args ) )
-		return '';
-
-	// Append translation domain
-	$args   = (array) $args;
-	$args[] = 'gravityforms';
-
-	return call_user_func_array( $i18n, $args );
-}
-
 /** Is VGSR ****************************************************************/
 
 /**
@@ -462,7 +438,7 @@ function vgsr_gf_can_user_export_form( $form, $user_id = 0 ) {
 		$exporters = vgsr_gf_get_form_meta( $form, 'vgsrExporters' );
 
 		if ( $exporters ) {
-			$retval = in_array( $user_id, array_map( 'intval', $exporters ), true );
+			$retval = in_array( $user_id, wp_parse_id_list( $exporters ), true );
 		}
 	}
 
@@ -547,4 +523,33 @@ function vgsr_gf_export_field_value( $value, $form_id, $field, $entry ) {
 	}
 
 	return $value;
+}
+
+/** Update *****************************************************************/
+
+/**
+ * Upgrade settings on forms per the new specification
+ *
+ * @since 1.0.0
+ *
+ * @see GFFormSettings::initialize_settings_renderer() for saving form data.
+ */
+function vgsr_gf_admin_upgrade_form_settings() {
+
+	// Walk all forms
+	foreach ( vgsr_gf_get_forms() as $form ) {
+
+		// Get form exporters
+		$exporters = vgsr_gf_get_form_meta( $form, 'vgsrExporters' );
+
+		// Turn arrays into strings
+		if ( is_array( $exporters ) ) {
+			$form->vgsrExporters = implode( ',', wp_parse_id_list( $exporters ) );
+		} else {
+			continue;
+		}
+
+		// Save form.
+		GFFormDetail::save_form_info( $form->id, addslashes( json_encode( $form ) ) );
+	}
 }

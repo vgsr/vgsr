@@ -11,75 +11,92 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Modify the form settings sections
+ * Return whether to use GF's legacy settings
  *
- * @since 0.0.6
+ * @since 1.0.0
  *
- * @param array $settings Form settings sections
- * @param object $form Form object
+ * @return Bool Use GF legacy settings?
  */
-function vgsr_gf_admin_register_form_setting( $settings, $form ) {
-
-	/** Exclusivity ****************************************************/
-
-	// Start output buffer and setup our settings field markup
-	ob_start(); ?>
-
-	<tr>
-		<th><?php esc_html_e( 'VGSR', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_setting' ); ?></th>
-		<td>
-			<input type="checkbox" id="vgsr_form_vgsr" name="vgsr_form_vgsr" value="1" <?php checked( vgsr_gf_get_form_meta( $form, vgsr_gf_get_exclusivity_meta_key() ) ); ?> />
-			<label for="vgsr_form_vgsr"><?php esc_html_e( 'Make this an exclusive form', 'vgsr' ); ?></label>
-		</td>
-	</tr>
-
-	<?php
-
-	// Settings sections are stored by their translatable title.
-	// Append the field to the section and end the output buffer
-	$settings[ vgsr_gf_i18n( 'Restrictions' ) ][ vgsr_gf_get_exclusivity_meta_key() ] = ob_get_clean();
-
-	/** Exporters ******************************************************/
-
-	$exporters = vgsr_gf_get_form_meta( $form, 'vgsrExporters' );
-	$exporters = $exporters ? array_map( 'intval', $exporters ) : array();
-
-	// Start output buffer and setup our settings field markup
-	ob_start(); ?>
-
-	<tr>
-		<th><?php esc_html_e( 'Exporters', 'vgsr' ); ?> <?php gform_tooltip( 'vgsr_form_exporters' ); ?></th>
-		<td>
-			<input type="text" id="vgsr_form_exporters" name="vgsr_form_exporters" value="<?php echo implode( ',', $exporters ); ?>" />
-		</td>
-	</tr>
-
-	<?php
-
-	// Settings sections are stored by their translatable title.
-	// Append the field to the section and end the output buffer
-	$settings[ vgsr_gf_i18n( 'Form Options' ) ]['vgsrExporters'] = ob_get_clean();
-
-	return $settings;
+function vgsr_gf_admin_use_legacy_settings() {
+	return version_compare( GFCommon::$version, '2.5', '<' );
 }
 
 /**
- * Modify form field settings
+ * Get the form settings fields
  *
- * @since 0.0.6
+ * @since 1.0.0
  *
- * @param int $position Settings position
- * @param int $form_id Form ID
+ * @uses apply_filters() Calls 'vgsr_gf_admin_get_form_settings_fields'
+ * @return array Form settings fields
  */
-function vgsr_gf_admin_register_field_setting( $position, $form_id ) {
+function vgsr_gf_admin_get_form_settings_fields() {
+	$legacy_settings = vgsr_gf_admin_use_legacy_settings();
 
-	// Following the Visibility settings and the form is not already exclusive
-	if ( 450 === $position && ! vgsr_gf_is_form_vgsr( $form_id, false ) ) : ?>
+	return (array) apply_filters( 'vgsr_gf_admin_get_form_settings_fields', array(
 
-	<li class="vgsr_only_setting field_setting">
-		<input type="checkbox" id="vgsr_form_field_vgsr" name="vgsr_form_field_vgsr" value="1" onclick="SetFieldProperty( '<?php vgsr_gf_exclusivity_meta_key(); ?>', this.checked );" />
-		<label for="vgsr_form_field_vgsr" class="inline"><?php printf( esc_html__( 'VGSR: %s', 'vgsr' ), esc_html__( 'Make this an exclusive field', 'vgsr' ) ); ?> <?php gform_tooltip( 'vgsr_field_setting' ); ?></label>
-	</li>
+		// VGSR Only
+		vgsr_gf_get_exclusivity_meta_key() => array(
+			'section'           => $legacy_settings ? 'Restrictions' : 'form_basics',
+			'type'              => 'toggle',
+			'title'             => esc_html__( 'VGSR', 'vgsr' ),
+			'tooltip'           => $legacy_settings ? 'vgsr_form_setting' : gform_tooltip( 'vgsr_form_setting', '', true ),
+			'callback'          => 'vgsr_gf_admin_form_setting_callback_vgsr_only',
+			'sanitize_callback' => 'intval',
+		),
 
-	<?php endif;
+		// Exporters
+		'vgsrExporters' => array(
+			'section'           => $legacy_settings ? 'Form Options' : 'form_options',
+			'type'              => 'text',
+			'title'             => esc_html__( 'Exporters', 'vgsr' ),
+			'tooltip'           => $legacy_settings ? 'vgsr_form_exporters' : gform_tooltip( 'vgsr_form_exporters', '', true ),
+			'callback'          => 'vgsr_gf_admin_form_setting_callback_vgsr_exporters',
+			'sanitize_callback' => 'vgsr_gf_sanitize_id_list_to_string',
+		)
+	) );
+}
+
+/**
+ * Display the vgsr exclusivity form legacy settings field
+ *
+ * @since 1.0.0
+ *
+ * @param array $form Form data
+ */
+function vgsr_gf_admin_form_setting_callback_vgsr_only( $form ) {
+	$meta_key = vgsr_gf_get_exclusivity_meta_key(); ?>
+
+	<input type="checkbox" id="<?php echo $meta_key; ?>" name="<?php echo $meta_key; ?>" value="1" <?php checked( vgsr_gf_get_form_meta( $form, $meta_key ) ); ?> />
+	<label for="<?php echo $meta_key; ?>"><?php esc_html_e( 'Make this an exclusive form', 'vgsr' ); ?></label>
+
+	<?php
+}
+
+/**
+ * Display the vgsr exporters form legacy settings field
+ *
+ * @since 1.0.0
+ *
+ * @param array $form Form data
+ */
+function vgsr_gf_admin_form_setting_callback_vgsr_exporters( $form ) {
+	$exporters = vgsr_gf_get_form_meta( $form, 'vgsrExporters' );
+
+	?>
+
+	<input type="text" id="vgsrExporters" name="vgsrExporters" value="<?php echo $exporters; ?>" />
+
+	<?php
+}
+
+/**
+ * Sanitize id list and return concatenated string
+ *
+ * @since 1.0.0
+ *
+ * @param  string $value Input to sanitize
+ * @return string Sanitized id list
+ */
+function vgsr_gf_sanitize_id_list_to_string( $value ) {
+	return implode( ',', wp_parse_id_list( $value ) );
 }
