@@ -343,7 +343,8 @@ class VGSR_GravityForms_Admin {
 	 *
 	 * @since 0.2.0
 	 */
-	public function print_editor_scripts() { ?>
+	public function print_editor_scripts() {
+		$meta_key = vgsr_gf_get_exclusivity_meta_key(); ?>
 
 		<script type="text/javascript">
 			// Enable vgsr-only setting input for all field types
@@ -353,24 +354,33 @@ class VGSR_GravityForms_Admin {
 
 			// Hook to GF's field settings load trigger
 			jQuery( document ).on( 'gform_load_field_settings', function( e, field, form ) {
-				jQuery('#vgsr_form_field_vgsr').attr( 'checked', typeof field.<?php vgsr_gf_exclusivity_meta_key(); ?> === 'undefined' ? false : field.<?php vgsr_gf_exclusivity_meta_key(); ?> );
+				jQuery('#vgsr_form_field_vgsr').attr( 'checked', typeof field.<?php echo $meta_key; ?> === 'undefined' ? false : field.<?php echo $meta_key; ?> );
 			});
 
 			// Mark selected field
 			jQuery('#vgsr_form_field_vgsr').on( 'change', function() {
 				jQuery('.field_selected').removeClass('vgsr-only').filter( function() {
-					return !! GetSelectedField()['<?php vgsr_gf_exclusivity_meta_key(); ?>'];
+					return !! GetSelectedField()['<?php echo $meta_key; ?>'];
 				}).addClass('vgsr-only');
 			});
 		</script>
 
 		<style type="text/css">
+			<?php if ( vgsr_gf_admin_use_legacy_settings() ) : ?>
 			.gfield.vgsr-only .gfield_label .gfield_required:before {
 				content: '\2014  <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
 				color: #888;
 				text-transform: uppercase;
 				margin-right: 5px;
 			}
+			<?php else : ?>
+			.gfield.vgsr-only .gfield_label:after {
+				content: '\2014  <?php _ex( 'vgsr', 'exclusivity label', 'vgsr' ); ?>';
+				color: #888;
+				text-transform: uppercase;
+				margin-left: 5px;
+			}
+			<?php endif; ?>
 		</style>
 
 		<?php
